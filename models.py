@@ -108,6 +108,19 @@ class ScenePage(Page):
             FieldPanel('hemispheric_color'),
         ], heading="Ambient settings", classname="collapsible collapsed"
         ),
+        InlinePanel('layers', label="Layers",),
+    ]
+
+class ScenePageLayer(Orderable):
+    page = ParentalKey(ScenePage, related_name='layers')
+    name = models.CharField(max_length=250, default="0",
+        help_text="As in CAD file",)
+    material = models.ForeignKey(MaterialPage, blank=True, null=True,
+        on_delete=models.SET_NULL)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('material'),
     ]
 
 class ScenePageCadFile(Orderable):
