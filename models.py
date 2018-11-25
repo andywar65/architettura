@@ -14,7 +14,8 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 class ScenePage(Page):
-    introduction = models.CharField(max_length=250, null=True, blank=True, help_text="Project description",)
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Scene description",)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -27,7 +28,7 @@ class ScenePage(Page):
         "Date article published", blank=True, null=True
         )
     author = models.ForeignKey(User, blank=True, null=True,
-        on_delete=models.CASCADE)
+        on_delete=models.PROTECT)
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
