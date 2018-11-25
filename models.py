@@ -35,6 +35,21 @@ class ScenePage(Page):
     double_face = models.BooleanField(default=False, help_text="Planes are visible on both sides?",)
     ar = models.BooleanField(default=False, help_text="Is it Augmented Reality?",)
 
+    equirectangular_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete = models.SET_NULL,
+        related_name = '+',
+        help_text="Landscape surrounding your project",
+        )
+    ambient_light_intensity = models.FloatField(default="1",
+        help_text="Range 1 to 0",)
+    ambient_light_color = models.CharField(max_length=250, default="white",
+        help_text="Accepts hex (#ffffff) or HTML color",)
+    hemispheric_color = models.CharField(max_length=250, default="white",
+        help_text="Ambient light color from below",)
+
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
     ]
@@ -54,6 +69,13 @@ class ScenePage(Page):
             FieldPanel('double_face'),
         ], heading="VR/AR settings", classname="collapsible collapsed"
         ),
+        MultiFieldPanel([
+            ImageChooserPanel('equirectangular_image'),
+            FieldPanel('ambient_light_intensity'),
+            FieldPanel('ambient_light_color'),
+            FieldPanel('hemispheric_color'),
+        ], heading="Ambient settings", classname="collapsible collapsed"
+        ),
     ]
 
 class ScenePageCadFile(Orderable):
@@ -66,7 +88,7 @@ class ScenePageCadFile(Orderable):
         help_text="CAD file of your project",
         )
     x_position = models.FloatField(default="0",
-    help_text="In meters, displacement with respect to axis origin",)
+        help_text="In meters, displacement with respect to axis origin",)
     y_position = models.FloatField(default="0", help_text="In meters, see above",)
     z_position = models.FloatField(default="0", help_text="In meters, see above",)
 
