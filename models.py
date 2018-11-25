@@ -1,6 +1,7 @@
 from django import forms
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from modelcluster.fields import ParentalKey
 
@@ -25,6 +26,8 @@ class ScenePage(Page):
     date_published = models.DateField(
         "Date article published", blank=True, null=True
         )
+    author = models.ForeignKey(User, blank=True, null=True,
+        on_delete=models.CASCADE)
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -34,6 +37,7 @@ class ScenePage(Page):
         MultiFieldPanel([
             FieldPanel('introduction'),
             ImageChooserPanel('image'),
+            FieldPanel('author'),
             FieldPanel('date_published'),
         ], heading="Presentation"),
     ]
