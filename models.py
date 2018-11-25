@@ -30,6 +30,11 @@ class ScenePage(Page):
     author = models.ForeignKey(User, blank=True, null=True,
         on_delete=models.PROTECT)
 
+    shadows = models.BooleanField(default=False, help_text="Want to cast shadows?",)
+    fly_camera = models.BooleanField(default=False, help_text="Vertical movement of camera?",)
+    double_face = models.BooleanField(default=False, help_text="Planes are visible on both sides?",)
+    ar = models.BooleanField(default=False, help_text="Is it Augmented Reality?",)
+
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
     ]
@@ -40,5 +45,34 @@ class ScenePage(Page):
             ImageChooserPanel('image'),
             FieldPanel('author'),
             FieldPanel('date_published'),
-        ], heading="Presentation"),
+        ], heading="Presentation", classname="collapsible collapsed"),
+        MultiFieldPanel([
+            InlinePanel('cad_files', label="CAD file/s",),
+            FieldPanel('ar'),
+            FieldPanel('shadows'),
+            FieldPanel('fly_camera'),
+            FieldPanel('double_face'),
+        ], heading="VR/AR settings", classname="collapsible collapsed"
+        ),
+    ]
+
+class ScenePageCadFile(Orderable):
+    page = ParentalKey(ScenePage, related_name='cad_files')
+    dxf_file = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        on_delete = models.SET_NULL,
+        related_name = '+',
+        help_text="CAD file of your project",
+        )
+    x_position = models.FloatField(default="0",
+    help_text="In meters, displacement with respect to axis origin",)
+    y_position = models.FloatField(default="0", help_text="In meters, see above",)
+    z_position = models.FloatField(default="0", help_text="In meters, see above",)
+
+    panels = [
+        DocumentChooserPanel('dxf_file'),
+        FieldPanel('x_position'),
+        FieldPanel('y_position'),
+        FieldPanel('z_position'),
     ]
