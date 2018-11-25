@@ -13,6 +13,38 @@ from wagtail.documents.models import Document
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
+class MaterialPage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Material description",)
+
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('introduction'),
+        InlinePanel('image_files', label="Images",),
+    ]
+
+class MaterialPageImages(Orderable):
+    page = ParentalKey(MaterialPage, related_name='image_files')
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete = models.SET_NULL,
+        related_name = '+',
+        help_text="Sets general appearance of material",
+    )
+    color = models.CharField(max_length=250, default="white", help_text="Accepts hex (#ffffff) or HTML color",)
+    pattern = models.BooleanField(default=False, help_text="Is it a 1x1 meter pattern?",)
+
+    panels = [
+        ImageChooserPanel('image'),
+        FieldPanel('pattern'),
+        FieldPanel('color'),
+    ]
+
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Scene description",)
