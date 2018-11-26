@@ -23,26 +23,34 @@ class MaterialPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('introduction'),
-        InlinePanel('image_files', label="Images",),
+        InlinePanel('image_files', label="Components",),
     ]
 
-class MaterialPageImages(Orderable):
+class MaterialPageComponent(Orderable):
     page = ParentalKey(MaterialPage, related_name='image_files')
+    name = models.CharField(max_length=250, default="brick",)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete = models.SET_NULL,
         related_name = '+',
-        help_text="Sets general appearance of material",
+        help_text="Sets general appearance of material component",
     )
-    color = models.CharField(max_length=250, default="white", help_text="Accepts hex (#ffffff) or HTML color",)
-    pattern = models.BooleanField(default=False, help_text="Is it a 1x1 meter pattern?",)
+    color = models.CharField(max_length=250, default="white",
+        help_text="Accepts hex (#ffffff) or HTML color",)
+    pattern = models.BooleanField(default=False,
+        help_text="Is it a 1x1 meter pattern?",)
+    #thickness = models.IntegerField(default=0, help_text="In millimeters")
+    #weight = models.IntegerField(default=0, help_text="In Newtons per cubic meter")
 
     panels = [
+        FieldPanel('name'),
         ImageChooserPanel('image'),
         FieldPanel('pattern'),
         FieldPanel('color'),
+        #FieldPanel('thickness'),
+        #FieldPanel('weight'),
     ]
 
 class ScenePage(Page):
