@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-scenepage{% endblock %}
+
+{% block content %}
+  <h1 id="scene-title">{{ page.title }}</h1>
+  <p id="scene-author">By: {{ page.author }}</p>
+  <p id="scene-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
+{% endblock %}

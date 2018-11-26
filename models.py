@@ -1,4 +1,3 @@
-from django import forms
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -11,7 +10,6 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.documents.models import Document
 from wagtail.documents.edit_handlers import DocumentChooserPanel
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 class MaterialPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
@@ -71,9 +69,11 @@ class ScenePage(Page):
         on_delete=models.PROTECT)
 
     shadows = models.BooleanField(default=False, help_text="Want to cast shadows?",)
-    fly_camera = models.BooleanField(default=False, help_text="Vertical movement of camera?",)
-    double_face = models.BooleanField(default=False, help_text="Planes are visible on both sides?",)
-    ar = models.BooleanField(default=False, help_text="Is it Augmented Reality?",)
+    fly_camera = models.BooleanField(default=False,
+        help_text="Vertical movement of camera?",)
+    double_face = models.BooleanField(default=False,
+        help_text="Planes are visible on both sides?",)
+    #ar = models.BooleanField(default=False, help_text="Is it Augmented Reality?",)
 
     equirectangular_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -103,11 +103,11 @@ class ScenePage(Page):
         ], heading="Presentation", classname="collapsible collapsed"),
         MultiFieldPanel([
             InlinePanel('cad_files', label="CAD file/s",),
-            FieldPanel('ar'),
+            #FieldPanel('ar'),
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
-        ], heading="VR/AR settings", classname="collapsible collapsed"
+        ], heading="VR settings", classname="collapsible collapsed"
         ),
         MultiFieldPanel([
             ImageChooserPanel('equirectangular_image'),
@@ -144,10 +144,46 @@ class ScenePageCadFile(Orderable):
         help_text="In meters, displacement with respect to axis origin",)
     y_position = models.FloatField(default="0", help_text="In meters, see above",)
     z_position = models.FloatField(default="0", help_text="In meters, see above",)
+    rotation = models.FloatField(default="0",
+        help_text="In degrees, counterclockwise around Z axis",)
 
     panels = [
         DocumentChooserPanel('dxf_file'),
         FieldPanel('x_position'),
         FieldPanel('y_position'),
         FieldPanel('z_position'),
+        FieldPanel('rotation'),
+    ]
+
+class ArScenePage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Scene description",)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
+    )
+    date_published = models.DateField(
+        "Date article published", blank=True, null=True
+        )
+    author = models.ForeignKey(User, blank=True, null=True,
+        on_delete=models.PROTECT)
+    scene = models.ForeignKey(ScenePage, blank=True, null=True,
+        on_delete=models.PROTECT, help_text="Choose Scene you'd like to see in AR")
+
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
+    ]
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            FieldPanel('introduction'),
+            ImageChooserPanel('image'),
+            FieldPanel('author'),
+            FieldPanel('date_published'),
+        ], heading="Presentation", classname="collapsible collapsed"),
+        FieldPanel('scene'),
     ]
