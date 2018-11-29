@@ -12,4 +12,10 @@
   <h1 id="scene-title">{{ page.title }}</h1>
   <p id="scene-author">By: {{ page.author }}</p>
   <p id="scene-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
+  <a-scene style="width: 100%; height: 768px" embedded>
+    <a-asset>
+      <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
+      <img id="sky" src="{{ page.get_sky_path }}">
+    </a-asset>
+  </a-scene>
 {% endblock %}

@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -117,6 +119,13 @@ class ScenePage(Page):
         ),
         InlinePanel('layers', label="Layers",),
     ]
+
+    def get_sky_path(self):
+        if self.equirectangular_image:
+            return os.path.join(settings.MEDIA_URL, 'original_images',
+                self.equirectangular_image.filename)
+        else:
+            return os.path.join(settings.STATIC_URL, 'architettura/images/target.png')
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
