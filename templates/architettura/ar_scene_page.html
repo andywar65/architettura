@@ -2,7 +2,12 @@
 {% load static wagtailuserbar %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-{% block body_class %}template-scenepage{% endblock %}
+{% block extra_css %}
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.8.2.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-ar-v1.6.2.min.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}template-arscenepage{% endblock %}
 
 {% block content %}
   <h1 id="scene-title">{{ page.title }}</h1>

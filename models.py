@@ -103,7 +103,6 @@ class ScenePage(Page):
         ], heading="Presentation", classname="collapsible collapsed"),
         MultiFieldPanel([
             InlinePanel('cad_files', label="CAD file/s",),
-            #FieldPanel('ar'),
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
