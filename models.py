@@ -1,4 +1,5 @@
 import os
+from architettura import aframe
 
 from django.db import models
 from django.conf import settings
@@ -16,6 +17,7 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 class MaterialPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Material description",)
+    used = models.BooleanField(default=False,)
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -69,7 +71,13 @@ class ScenePage(Page):
         )
     author = models.ForeignKey(User, blank=True, null=True,
         on_delete=models.PROTECT)
-
+    dxf_file = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        on_delete = models.SET_NULL,
+        related_name = '+',
+        help_text="CAD file of your project",
+        )
     shadows = models.BooleanField(default=False, help_text="Want to cast shadows?",)
     fly_camera = models.BooleanField(default=False,
         help_text="Vertical movement of camera?",)
@@ -104,7 +112,8 @@ class ScenePage(Page):
             FieldPanel('date_published'),
         ], heading="Presentation", classname="collapsible collapsed"),
         MultiFieldPanel([
-            InlinePanel('cad_files', label="CAD file/s",),
+            DocumentChooserPanel('dxf_file'),
+            #InlinePanel('cad_files', label="CAD file/s",),
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
@@ -126,6 +135,11 @@ class ScenePage(Page):
                 self.equirectangular_image.filename)
         else:
             return os.path.join(settings.STATIC_URL, 'architettura/images/target.png')
+
+    def add_new_layers(self):
+        layer_list = aframe.get_layer_list(self)
+
+        return layer_list
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')

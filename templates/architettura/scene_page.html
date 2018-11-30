@@ -16,6 +16,9 @@
     <a-asset>
       <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
       <img id="sky" src="{{ page.get_sky_path }}">
+        {% with nl=page.add_new_layers %}
+          {{ nl }}
+        {% endwith %}
     </a-asset>
   </a-scene>
 {% endblock %}
