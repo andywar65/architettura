@@ -138,8 +138,14 @@ class ScenePage(Page):
 
     def add_new_layers(self):
         layer_list = aframe.get_layer_list(self)
+        for layer in layer_list:
+            try:
+                a = ScenePageLayer.objects.get(page_id=self.id, name=layer)
+            except:
+                b = ScenePageLayer(page_id=self.id, name=layer)
+                b.save()
 
-        return layer_list
+        return
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
