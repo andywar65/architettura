@@ -149,7 +149,17 @@ class ScenePage(Page):
 
     def get_material_assets(self):
         material_dict = aframe.get_entity_material(self)
-        print('Remember to erase these lines') 
+        try:
+            layers = ScenePageLayer.objects.filter(page_id=self.id)
+            for layer in layers:
+                try:
+                    m = MaterialPage.objects.get(id=layer.material_id)
+                    material_dict[m.title] = 'dummy path'
+                except:
+                    pass
+        except:
+            pass
+        print('Remember to erase these lines')
         print(material_dict)
         return material_dict
 
