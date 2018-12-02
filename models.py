@@ -147,6 +147,12 @@ class ScenePage(Page):
 
         return
 
+    def get_material_assets(self):
+        material_dict = aframe.get_entity_material(self)
+        print('Remember to erase these lines') 
+        print(material_dict)
+        return material_dict
+
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
     name = models.CharField(max_length=250, default="0",

@@ -18,6 +18,13 @@
       <img id="sky" src="{{ page.get_sky_path }}">
         {% with nl=page.add_new_layers %}
         {% endwith %}
+        {% with materials=page.get_material_assets %}
+          {% if materials %}
+            {% for name, path in materials.items %}
+              <img id="{{ name }}" src="{{ path }}">
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
     </a-asset>
   </a-scene>
 {% endblock %}
