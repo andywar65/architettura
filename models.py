@@ -17,7 +17,6 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 class MaterialPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Material description",)
-    used = models.BooleanField(default=False,)
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -179,7 +178,8 @@ class ScenePage(Page):
     def get_entities(self):
         material_dict = self.prepare_material_dict()
         layer_dict = self.prepare_layer_dict()
-        entities_dict = aframe.parse_dxf(self, material_dict, layer_dict)
+        collection = aframe.parse_dxf(self, material_dict, layer_dict)
+        entities_dict = aframe.make_html(self, collection)
         return entities_dict
 
     def prepare_layer_dict(self):
@@ -190,12 +190,12 @@ class ScenePage(Page):
                 for layer in layers:
                     try:
                         m = MaterialPage.objects.get(id=layer.material_id)
-                        layer_dict[layer.name] = m.title
+                        layer_dict[layer.name] = (m.title, layer.invisible)
                     except:
-                        pass
+                        layer_dict[layer.name] = ('default', layer.invisible)
         except:
             pass
-
+        
         return layer_dict
 
     def prepare_material_dict(self):
@@ -213,18 +213,20 @@ class ScenePage(Page):
                     material_dict[m.title] = component_dict
         except:
             pass
-        
+
         return material_dict
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
     name = models.CharField(max_length=250, default="0",
         help_text="As in CAD file",)
+    invisible = models.BooleanField(default=False, help_text="Hide layer?",)
     material = models.ForeignKey(MaterialPage, blank=True, null=True,
         on_delete=models.SET_NULL)
 
     panels = [
         FieldPanel('name'),
+        FieldPanel('invisible'),
         FieldPanel('material'),
     ]
 
