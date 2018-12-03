@@ -300,7 +300,7 @@ def make_triangle(page, x, data):
     outstr += f'geometry="vertexA:{data["10"]} {data["30"]} {data["20"]}; \n'
     outstr += f'vertexB:{data["11"]} {data["31"]} {data["21"]}; \n'
     outstr += f'vertexC:{data["12"]} {data["32"]} {data["22"]}" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}; '
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
     if page.double_face:
         outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
@@ -326,7 +326,7 @@ def make_box(page, x, data):
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
