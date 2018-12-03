@@ -187,11 +187,13 @@ class ScenePage(Page):
             materials = MaterialPage.objects.all()
             if materials:
                 for m in materials:
-                    x = 0
                     components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    x=0
+                    component_dict = {}
                     for component in components:
-                        material_dict[m.title][x] = (component.name, component.color)
-                        x += 0
+                        component_dict[x] = (component.name, component.color)
+                        x += 1
+                    material_dict[m.title] = component_dict
         except:
             pass
         print('remember to delete prints')
