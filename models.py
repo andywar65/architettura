@@ -195,7 +195,7 @@ class ScenePage(Page):
                         pass
         except:
             pass
-        print(layer_dict)
+
         return layer_dict
 
     def prepare_material_dict(self):
@@ -208,11 +208,12 @@ class ScenePage(Page):
                     x=0
                     component_dict = {}
                     for component in components:
-                        component_dict[x] = (component.name, component.color)
+                        component_dict[x] = (component.name, component.color, component.pattern)
                         x += 1
                     material_dict[m.title] = component_dict
         except:
             pass
+        
         return material_dict
 
 class ScenePageLayer(Orderable):
