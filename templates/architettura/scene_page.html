@@ -26,5 +26,16 @@
           {% endif %}
         {% endwith %}
     </a-asset>
+    <a-entity id="dxf-ent"
+            position="0 0 0"
+            rotation="0 0 0">
+			{% with entities=page.get_entities %}
+			 {% if entities %}
+				{% for key, value in entities.items %}
+				{{ value|safe }}
+				{% endfor %}
+			 {% endif %}
+			{% endwith %}
+    </a-entity>
   </a-scene>
 {% endblock %}

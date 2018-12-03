@@ -55,8 +55,14 @@ def get_entity_material(page):
                     material_dict[attr_value] = 'path'
                 flag = False
         if key == '0':
+
+
             if value == 'ATTRIB':#start attribute
                 flag = 'attrib'
 
     dxf_f.close()
     return material_dict
+
+def parse_dxf(page, material_dict):
+    entities_dict={'key': 'dummy_value'}
+    return entities_dict

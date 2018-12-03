@@ -154,12 +154,47 @@ class ScenePage(Page):
             for layer in layers:
                 try:
                     m = MaterialPage.objects.get(id=layer.material_id)
-                    material_dict[m.title] = 'dummy path'
+                    material_dict[m.title] = 'dummy'
                 except:
                     pass
         except:
             pass
-        print('Remember to erase these lines')
+        image_dict = {}
+        if material_dict:
+            for material, dummy in material_dict.items():
+                try:
+                    m = MaterialPage.objects.get(title=material)
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    for component in components:
+                        try:
+                            if component.image:
+                                image_dict[m.title + '-' + component.name] = os.path.join(settings.MEDIA_URL,
+                                    'original_images', component.image.filename)
+                        except:
+                            pass
+                except:
+                    pass
+        return image_dict
+
+    def get_entities(self):
+        material_dict = self.prepare_material_dict()
+        entities_dict = aframe.parse_dxf(self, material_dict)
+        return entities_dict
+
+    def prepare_material_dict(self):
+        material_dict = {}
+        try:
+            materials = MaterialPage.objects.all()
+            if materials:
+                for m in materials:
+                    x = 0
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    for component in components:
+                        material_dict[m.title][x] = (component.name, component.color)
+                        x += 0
+        except:
+            pass
+        print('remember to delete prints')
         print(material_dict)
         return material_dict
 
