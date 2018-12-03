@@ -63,6 +63,6 @@ def get_entity_material(page):
     dxf_f.close()
     return material_dict
 
-def parse_dxf(page, material_dict):
+def parse_dxf(page, material_dict, layer_dict):
     entities_dict={'key': 'dummy_value'}
     return entities_dict

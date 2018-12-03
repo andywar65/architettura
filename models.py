@@ -178,8 +178,25 @@ class ScenePage(Page):
 
     def get_entities(self):
         material_dict = self.prepare_material_dict()
-        entities_dict = aframe.parse_dxf(self, material_dict)
+        layer_dict = self.prepare_layer_dict()
+        entities_dict = aframe.parse_dxf(self, material_dict, layer_dict)
         return entities_dict
+
+    def prepare_layer_dict(self):
+        layer_dict = {}
+        try:
+            layers = ScenePageLayer.objects.filter(page_id=self.id)
+            if layers:
+                for layer in layers:
+                    try:
+                        m = MaterialPage.objects.get(id=layer.material_id)
+                        layer_dict[layer.name] = m.title
+                    except:
+                        pass
+        except:
+            pass
+        print(layer_dict)
+        return layer_dict
 
     def prepare_material_dict(self):
         material_dict = {}
@@ -196,8 +213,6 @@ class ScenePage(Page):
                     material_dict[m.title] = component_dict
         except:
             pass
-        print('remember to delete prints')
-        print(material_dict)
         return material_dict
 
 class ScenePageLayer(Orderable):
