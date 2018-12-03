@@ -179,7 +179,7 @@ class ScenePage(Page):
         material_dict = self.prepare_material_dict()
         layer_dict = self.prepare_layer_dict()
         collection = aframe.parse_dxf(self, material_dict, layer_dict)
-        entities_dict = aframe.make_html(self, collection)
+        entities_dict = aframe.make_html(self, collection, material_dict)
         return entities_dict
 
     def prepare_layer_dict(self):
@@ -195,7 +195,7 @@ class ScenePage(Page):
                         layer_dict[layer.name] = ('default', layer.invisible)
         except:
             pass
-        
+
         return layer_dict
 
     def prepare_material_dict(self):
