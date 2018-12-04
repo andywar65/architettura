@@ -283,7 +283,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
     return collection
 
-def reference_animations(collection):#TODO
+def reference_animations(collection):
     collection2 = collection.copy()
     for x, data in collection.items():
         if data['2'] == 'a-animation':
@@ -305,11 +305,39 @@ def reference_animations(collection):#TODO
 def make_html(page, collection):
     entities_dict = {}
     for x, data in collection.items():
+
         if data['2'] == '3dface':
             entities_dict[x] = make_triangle(page, x, data)
 
         elif data['2'] == 'a-box':
             entities_dict[x] = make_box(page, x, data)
+
+        elif data['2'] == 'a-cylinder':
+            output[x] = make_cylinder(page, x, data)
+
+        elif data['2'] == 'a-curvedimage':
+            output[x] = make_curvedimage(x, data)
+
+        elif data['2'] == 'a-cone':
+            output[x] = make_cone(page, x, data)
+
+        elif data['2'] == 'a-sphere':
+            output[x] = make_sphere(page, x, data)
+
+        elif data['2'] == 'a-circle':
+            output[x] = make_circle(page, x, data)
+
+        elif data['2'] == 'a-plane' or data['2'] == 'look-at':
+            output[x] = make_plane(page, x, data)
+
+        elif data['2'] == 'a-light':
+            output[x] = make_light(page, x, data)
+
+        elif data['2'] == 'a-text':
+            output[x] = make_text(x, data)
+
+        elif data['2'] == 'a-link':
+            output[x] = make_link(page, x, data)
 
     return entities_dict
 
@@ -341,6 +369,285 @@ def make_box(page, x, data):
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-box>\n</a-entity>\n'
+    return outstr
+
+def make_cone(page, x, data):#TODO
+    outstr = f'<a-entity id="cone-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-cone id="cone-{x}" \n'
+    outstr += f'position="0 {data["43"]/2} 0" \n'
+    if float(data['43']) < 0:
+        outstr += 'rotation="180 0 0">\n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    outstr += 'geometry="'
+    try:
+        if data['open-ended']!='false':
+            outstr += 'open-ended: true;'
+        if data['radius-top']!='0':
+            outstr += f'radius-top: {data["radius-top"]};'
+        if data['segments-height']!='18':
+            outstr += f'segments-height: {data["segments-height"]};'
+        if data['segments-radial']!='36':
+            outstr += f'segments-radial: {data["segments-radial"]};'
+        if data['theta-length']!='360':
+            outstr += f'theta-length: {data["theta-length"]};'
+        if data['theta-start']!='0':
+            outstr += f'theta-start: {data["theta-start"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
+    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-cone>\n</a-entity>\n'
+    return outstr
+
+def make_circle(page, x, data):#TODO
+    outstr = f'<a-entity id="circle-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-circle id="circle-{x}" \n'
+    if data['2'] == 'circle':
+        outstr += f'rotation="-90 0 0"\n'
+    outstr += f'radius="{fabs(data["41"])}" \n'
+    outstr += 'geometry="'
+    try:
+        if data['segments']!='32':
+            outstr += f'segments: {data["segments"]};'
+        if data['theta-length']!='360':
+            outstr += f'theta-length: {data["theta-length"]};'
+        if data['theta-start']!='0':
+            outstr += f'theta-start: {data["theta-start"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
+    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-circle>\n</a-entity>\n'
+    return outstr
+
+def make_cylinder(page, x, data):#TODO
+    outstr = f'<a-entity id="cylinder-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-cylinder id="cylinder-{x}" \n'
+    outstr += f'position="0 {data["43"]/2} 0" \n'
+    if float(data['43']) < 0:
+        outstr += 'rotation="180 0 0">\n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    outstr += 'geometry="'
+    try:
+        if data['open-ended']!='false':
+            outstr += 'open-ended: true;'
+        if data['radius-top']!='0':
+            outstr += f'radius-top: {data["radius-top"]};'
+        if data['segments-height']!='18':
+            outstr += f'segments-height: {data["segments-height"]};'
+        if data['segments-radial']!='36':
+            outstr += f'segments-radial: {data["segments-radial"]};'
+        if data['theta-length']!='360':
+            outstr += f'theta-length: {data["theta-length"]};'
+        if data['theta-start']!='0':
+            outstr += f'theta-start: {data["theta-start"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
+    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-cylinder>\n</a-entity>\n'
+    return outstr
+
+def make_curvedimage(x, data):#TODO
+    outstr = f'<a-entity id="curvedimage-{x}-ent" \n'
+    outstr += 'shadow="receive: false; cast: false" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-curvedimage id="curvedimage-{x}" \n'
+    outstr += f'position="0 {data["43"]/2} 0" \n'
+    if float(data['43']) < 0:
+        outstr += 'rotation="180 0 0">\n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    try:
+        if data['theta-length']!='270':
+            outstr += f'theta-length="{data["theta-length"]}" '
+        if data['theta-start']!='0':
+            outstr += f'theta-start="{data["theta-start"]}" '
+    except KeyError:
+        pass
+    outstr += f'src="#image-{data["8"]}">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-curvedimage>\n</a-entity>\n'
+    return outstr
+
+def make_sphere(page, x, data):#TODO
+    outstr = f'<a-entity id="sphere-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-sphere id="sphere-{x}" \n'
+    outstr += f'position="0 {data["43"]} 0" \n'
+    if float(data['43']) < 0:
+        outstr += 'rotation="180 0 0">\n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    outstr += 'geometry="'
+    try:
+        if data['phi-length']!='360':
+            outstr += f'phi-length: {data["phi-length"]};'
+        if data['phi-start']!='0':
+            outstr += f'phi-start: {data["phi-start"]};'
+        if data['segments-height']!='18':
+            outstr += f'segments-height: {data["segments-height"]};'
+        if data['segments-width']!='36':
+            outstr += f'segments-width: {data["segments-width"]};'
+        if data['theta-length']!='180':
+            outstr += f'theta-length: {data["theta-length"]};'
+        if data['theta-start']!='0':
+            outstr += f'theta-start: {data["theta-start"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
+    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-sphere>\n</a-entity>\n'
+    return outstr
+
+def make_plane(page, x, data):#TODO
+    outstr = f'<a-entity id="plane-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'<a-plane id="plane-{x}" \n'
+    if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
+        outstr += f'position="0 {data["43"]/2} 0" \n'
+        outstr += 'look-at="#camera-foot" \n'
+    elif data['2'] == 'ceiling':#if it's a ceiling, correct position
+        outstr += f'position="{data["41"]/2} {-data["43"]/2} 0" \n'
+    else:#insertion is at corner
+        outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
+    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
+    outstr += 'geometry="'
+    try:
+        if data['segments-height']!='1':
+            outstr += f'segments-height: {data["segments-height"]};'
+        if data['segments-width']!='1':
+            outstr += f'segments-width: {data["segments-width"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
+    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-plane>\n</a-entity>\n'
+    return outstr
+
+def make_text(x, data):#TODO
+    outstr = f'<a-entity id="text-{x}" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
+    outstr += f'text="width: {data["41"]}; align: {data["align"]}; color: {data["color"]}; '
+    outstr += f'value: {data["text"]}; wrap-count: {data["wrap-count"]}; '
+    outstr += '">\n'
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-entity>\n'
+    return outstr
+
+def make_link(page, x, data):#TODO
+    outstr = f'<a-link id="link-{x}" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
+    outstr += f'scale="{data["41"]} {data["43"]} {data["42"]}"\n'
+    if data['tree'] == 'parent':
+        target = page.get_parent()
+    elif data['tree'] == 'child':
+        target = page.get_first_child()
+    elif data['tree'] == 'previous' or data['tree'] == 'prev':
+        target = page.get_prev_sibling()
+    else:#we default to next sibling
+        target = page.get_next_sibling()
+    try:
+        if target:
+            outstr += f'href="{target.url}"\n'
+            outstr += f'title="{data["title"]}" color="{data["color"]}" on="click"\n'
+            eq_image = target.specific.equirectangular_image
+            if eq_image:
+                outstr += f'image="{eq_image.file.url}"'
+            else:
+                outstr += 'image="#default-sky"'
+            outstr += '>\n'
+            if data['animation']:
+                outstr += is_animation(data)
+            outstr += '</a-link>\n'
+            return outstr
+        else:
+            return ''
+    except:
+        return ''
+
+def make_light(page, x, data):#TODO
+    outstr = f'<a-entity id="light-{x}" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
+    try:
+        if data['type'] == 'ambient':
+            outstr += f'light="type: ambient; color: {data["color"]}; intensity: {data["intensity"]}; '
+            outstr += '">\n'
+        elif data['type'] == 'point':
+            outstr += f'light="type: point; color: {data["color"]}; intensity: {data["intensity"]}; '
+            outstr += f'decay: {data["decay"]}; distance: {data["distance"]}; '
+            if page.shadows:
+                outstr += 'castShadow: true; '
+            outstr += '"> \n'
+        elif data['type'] == 'spot':
+            outstr += f'light="type: spot; color: {data["color"]}; intensity: {data["intensity"]}; '
+            outstr += f'decay: {data["decay"]}; distance: {data["distance"]}; '
+            outstr += f'angle: {data["angle"]}; penumbra: {data["penumbra"]}; '
+            if page.shadows:
+                outstr += 'castShadow: true; '
+            outstr += f'target: #light-{x}-target;"> \n'
+            outstr += f'<a-entity id="light-{x}-target" position="0 -1 0"> </a-entity> \n'
+        else:#defaults to directional
+            outstr += f'light="type: directional; color: {data["color"]}; intensity: {data["intensity"]}; '
+            if page.shadows:
+                outstr += 'castShadow: true; '
+            outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
+            outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
+            outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
+            outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
+            outstr += f'target: #light-{x}-target;"> \n'
+            outstr += f'<a-entity id="light-{x}-target" position="0 -1 0"> </a-entity> \n'
+    except KeyError:#default if no light type is set
+        outstr += 'light="type: point; intensity: 0.75; distance: 50; decay: 2; '
+        if page.shadows:
+            outstr += 'castShadow: true;'
+        outstr += '">\n'
+
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-entity>\n'#close light entity
     return outstr
 
 def is_repeat(repeat, rx, ry):
