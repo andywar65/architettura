@@ -277,13 +277,32 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'type': '', 'MATERIAL': '', 'animation': False}#default values
+                 '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '', 'animation': False}#default values
                 flag = 'block'
                 x += 1
 
     return collection
 
-def make_html(page, collection, material_dict):
+def reference_animations(collection):#TODO
+    collection2 = collection.copy()
+    for x, data in collection.items():
+        if data['2'] == 'a-animation':
+            collection[x] = data
+            for x2, data2 in collection2.items():
+                if data2['2'] != '3dface' or data2['2'] != 'a-door':
+                    if data['10']==data2['10'] and data['20']==data2['20'] and data['30']==data2['30']:
+                        data2['animation'] = True
+                        data2['ATTRIBUTE'] = data['ATTRIBUTE']
+                        data2['FROM'] = data['FROM']
+                        data2['TO'] = data['TO']
+                        data2['BEGIN'] = data['BEGIN']
+                        data2['DIRECTION'] = data['DIRECTION']
+                        data2['REPEAT'] = data['REPEAT']
+                        data2['DURATION'] = data['DURATION']
+                        collection[x2] = data2
+    return collection
+
+def make_html(page, collection):
     entities_dict = {}
     for x, data in collection.items():
         if data['2'] == '3dface':
@@ -316,17 +335,6 @@ def make_box(page, x, data):
     outstr += f'<a-box id="box-{x}" \n'
     outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['segments-depth']!='1':
-            outstr += f'segments-depth: {data["segments-depth"]};'
-        if data['segments-height']!='1':
-            outstr += f'segments-height: {data["segments-height"]};'
-        if data['segments-width']!='1':
-            outstr += f'segments-width: {data["segments-width"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
     outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
