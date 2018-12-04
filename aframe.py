@@ -371,7 +371,7 @@ def make_box(page, x, data):
     outstr += '</a-box>\n</a-entity>\n'
     return outstr
 
-def make_cone(page, x, data):#TODO
+def make_cone(page, x, data):
     outstr = f'<a-entity id="cone-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -384,18 +384,16 @@ def make_cone(page, x, data):#TODO
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     outstr += 'geometry="'
     try:
-        if data['open-ended']!='false':
+        if data['OPEN-ENDED']!='false':
             outstr += 'open-ended: true;'
-        if data['radius-top']!='0':
-            outstr += f'radius-top: {data["radius-top"]};'
-        if data['segments-height']!='18':
-            outstr += f'segments-height: {data["segments-height"]};'
-        if data['segments-radial']!='36':
-            outstr += f'segments-radial: {data["segments-radial"]};'
-        if data['theta-length']!='360':
-            outstr += f'theta-length: {data["theta-length"]};'
-        if data['theta-start']!='0':
-            outstr += f'theta-start: {data["theta-start"]};'
+        if data['RADIUS-TOP']!='0':
+            outstr += f'radius-top: {data["RADIUS-TOP"]};'
+        if data['SEGMENTS-RADIAL']!='36':
+            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
+        if data['THETA-LENGTH']!='360':
+            outstr += f'theta-length: {data["THETA-LENGTH"]};'
+        if data['THETA-START']!='0':
+            outstr += f'theta-start: {data["THETA-START"]};'
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
