@@ -256,13 +256,14 @@ def parse_dxf(page, material_dict, layer_dict):
                             data['color'] = component[1]
                             data['8'] = layer_material + '-' + component[0]
                             data['repeat'] = component[2]
-                    elif data['MATERIAL']:
+                    if data['MATERIAL']:
                         component_pool = material_dict[data['MATERIAL']]
                         if component_pool:
                             component = component_pool[0]
                             data['color'] = component[1]
                             data['8'] = layer_material + '-' + component[0]
                             data['repeat'] = component[2]
+                            data['pool'] = component_pool
 
                     data['num'] = x
                     collection[x] = data
@@ -276,7 +277,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'type': '','animation': False}#default values
+                 '230': 1,'repeat': False, 'type': '', 'MATERIAL': '', 'animation': False}#default values
                 flag = 'block'
                 x += 1
 
