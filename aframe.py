@@ -577,10 +577,11 @@ def make_link(page, x, data):
         if target:
             outstr += f'href="{target.url}"\n'
             outstr += f'title="{data["TITLE"]}" color="{data["color"]}" on="click"\n'
-            #eq_image = target.specific.equirectangular_image
-            if eq_image:
-                outstr += f'image="{eq_image.file.url}"'
-            else:
+            try:
+                eq_image = target.specific.equirectangular_image
+                if eq_image:
+                    outstr += f'image="{eq_image.file.url}"'
+            except:
                 outstr += 'image="#default-sky"'
             outstr += '>\n'
             if data['animation']:
