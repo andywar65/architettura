@@ -1,5 +1,6 @@
 import os
 from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
+from architettura import blocks
 
 from django.conf import settings
 
@@ -339,6 +340,9 @@ def make_html(page, collection):
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, x, data)
 
+        elif data['2'] == 'a-block':
+            entities_dict[x] = make_block(page, x, data)
+
     return entities_dict
 
 def make_triangle(page, x, data):
@@ -634,6 +638,25 @@ def make_light(page, x, data):
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-entity>\n'#close light entity
+    return outstr
+
+def make_block(page, x, data):
+    outstr = f'<a-entity id="block-{x}-ent" \n'
+    if page.shadows:
+        outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+
+    try:
+        if data['TYPE'] == 't01':
+            outstr += blocks.make_table_01(data)
+        #other elifs here
+    except:
+        outstr += blocks.make_table_01(data)
+
+    if data['animation']:
+        outstr += is_animation(data)
+    outstr += '</a-entity>\n'
     return outstr
 
 def is_repeat(repeat, rx, ry):
