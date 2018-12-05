@@ -313,31 +313,31 @@ def make_html(page, collection):
             entities_dict[x] = make_box(page, x, data)
 
         elif data['2'] == 'a-cylinder':
-            output[x] = make_cylinder(page, x, data)
+            entities_dict[x] = make_cylinder(page, x, data)
 
         elif data['2'] == 'a-curvedimage':
-            output[x] = make_curvedimage(x, data)
+            entities_dict[x] = make_curvedimage(x, data)
 
         elif data['2'] == 'a-cone':
-            output[x] = make_cone(page, x, data)
+            entities_dict[x] = make_cone(page, x, data)
 
         elif data['2'] == 'a-sphere':
-            output[x] = make_sphere(page, x, data)
+            entities_dict[x] = make_sphere(page, x, data)
 
         elif data['2'] == 'a-circle':
-            output[x] = make_circle(page, x, data)
+            entities_dict[x] = make_circle(page, x, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
-            output[x] = make_plane(page, x, data)
+            entities_dict[x] = make_plane(page, x, data)
 
         elif data['2'] == 'a-light':
-            output[x] = make_light(page, x, data)
+            entities_dict[x] = make_light(page, x, data)
 
         elif data['2'] == 'a-text':
-            output[x] = make_text(x, data)
+            entities_dict[x] = make_text(x, data)
 
         elif data['2'] == 'a-link':
-            output[x] = make_link(page, x, data)
+            entities_dict[x] = make_link(page, x, data)
 
     return entities_dict
 
@@ -397,7 +397,7 @@ def make_cone(page, x, data):
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
@@ -405,7 +405,7 @@ def make_cone(page, x, data):
     outstr += '</a-cone>\n</a-entity>\n'
     return outstr
 
-def make_circle(page, x, data):#TODO
+def make_circle(page, x, data):
     outstr = f'<a-entity id="circle-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -417,16 +417,16 @@ def make_circle(page, x, data):#TODO
     outstr += f'radius="{fabs(data["41"])}" \n'
     outstr += 'geometry="'
     try:
-        if data['segments']!='32':
-            outstr += f'segments: {data["segments"]};'
-        if data['theta-length']!='360':
-            outstr += f'theta-length: {data["theta-length"]};'
-        if data['theta-start']!='0':
-            outstr += f'theta-start: {data["theta-start"]};'
+        if data['SEGMENTS']!='32':
+            outstr += f'segments: {data["SEGMENTS"]};'
+        if data['THETA-LENGTH']!='360':
+            outstr += f'theta-length: {data["THETA-LENGTH"]};'
+        if data['THETA-START']!='0':
+            outstr += f'theta-start: {data["THETA-START"]};'
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
@@ -434,7 +434,7 @@ def make_circle(page, x, data):#TODO
     outstr += '</a-circle>\n</a-entity>\n'
     return outstr
 
-def make_cylinder(page, x, data):#TODO
+def make_cylinder(page, x, data):
     outstr = f'<a-entity id="cylinder-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -447,22 +447,20 @@ def make_cylinder(page, x, data):#TODO
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     outstr += 'geometry="'
     try:
-        if data['open-ended']!='false':
+        if data['OPEN-ENDED']!='false':
             outstr += 'open-ended: true;'
-        if data['radius-top']!='0':
-            outstr += f'radius-top: {data["radius-top"]};'
-        if data['segments-height']!='18':
-            outstr += f'segments-height: {data["segments-height"]};'
-        if data['segments-radial']!='36':
-            outstr += f'segments-radial: {data["segments-radial"]};'
-        if data['theta-length']!='360':
-            outstr += f'theta-length: {data["theta-length"]};'
-        if data['theta-start']!='0':
-            outstr += f'theta-start: {data["theta-start"]};'
+        if data['RADIUS-TOP']!='0':
+            outstr += f'radius-top: {data["RADIUS-TOP"]};'
+        if data['SEGMENTS-RADIAL']!='36':
+            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
+        if data['THETA-LENGTH']!='360':
+            outstr += f'theta-length: {data["THETA-LENGTH"]};'
+        if data['THETA-START']!='0':
+            outstr += f'theta-start: {data["THETA-START"]};'
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
@@ -470,7 +468,7 @@ def make_cylinder(page, x, data):#TODO
     outstr += '</a-cylinder>\n</a-entity>\n'
     return outstr
 
-def make_curvedimage(x, data):#TODO
+def make_curvedimage(x, data):
     outstr = f'<a-entity id="curvedimage-{x}-ent" \n'
     outstr += 'shadow="receive: false; cast: false" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
@@ -481,19 +479,19 @@ def make_curvedimage(x, data):#TODO
         outstr += 'rotation="180 0 0">\n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     try:
-        if data['theta-length']!='270':
-            outstr += f'theta-length="{data["theta-length"]}" '
-        if data['theta-start']!='0':
-            outstr += f'theta-start="{data["theta-start"]}" '
+        if data['THETA-LENGTH']!='270':
+            outstr += f'theta-length="{data["THETA-LENGTH"]}" '
+        if data['THETA-START']!='0':
+            outstr += f'theta-start="{data["THETA-START"]}" '
     except KeyError:
         pass
-    outstr += f'src="#image-{data["8"]}">\n'
+    outstr += f'src="#{data["8"]}">\n'
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-curvedimage>\n</a-entity>\n'
     return outstr
 
-def make_sphere(page, x, data):#TODO
+def make_sphere(page, x, data):
     outstr = f'<a-entity id="sphere-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -506,22 +504,22 @@ def make_sphere(page, x, data):#TODO
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     outstr += 'geometry="'
     try:
-        if data['phi-length']!='360':
-            outstr += f'phi-length: {data["phi-length"]};'
-        if data['phi-start']!='0':
-            outstr += f'phi-start: {data["phi-start"]};'
-        if data['segments-height']!='18':
-            outstr += f'segments-height: {data["segments-height"]};'
-        if data['segments-width']!='36':
-            outstr += f'segments-width: {data["segments-width"]};'
-        if data['theta-length']!='180':
-            outstr += f'theta-length: {data["theta-length"]};'
-        if data['theta-start']!='0':
-            outstr += f'theta-start: {data["theta-start"]};'
+        if data['PHI-LENGTH']!='360':
+            outstr += f'phi-length: {data["PHI-LENGTH"]};'
+        if data['PHI-START']!='0':
+            outstr += f'phi-start: {data["PHI-START"]};'
+        if data['SEGMENTS-HEIGHT']!='18':
+            outstr += f'segments-height: {data["SEGMENTS-HEIGHT"]};'
+        if data['SEGMENTS-WIDTH']!='36':
+            outstr += f'segments-width: {data["SEGMENTS-WIDTH"]};'
+        if data['THETA-LENGTH']!='180':
+            outstr += f'theta-length: {data["THETA-LENGTH"]};'
+        if data['THETA-START']!='0':
+            outstr += f'theta-start: {data["THETA-START"]};'
         outstr += '" \n'
     except KeyError:
         outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
@@ -529,7 +527,7 @@ def make_sphere(page, x, data):#TODO
     outstr += '</a-sphere>\n</a-entity>\n'
     return outstr
 
-def make_plane(page, x, data):#TODO
+def make_plane(page, x, data):
     outstr = f'<a-entity id="plane-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -539,21 +537,10 @@ def make_plane(page, x, data):#TODO
     if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
         outstr += f'position="0 {data["43"]/2} 0" \n'
         outstr += 'look-at="#camera-foot" \n'
-    elif data['2'] == 'ceiling':#if it's a ceiling, correct position
-        outstr += f'position="{data["41"]/2} {-data["43"]/2} 0" \n'
     else:#insertion is at corner
         outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
     outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['segments-height']!='1':
-            outstr += f'segments-height: {data["segments-height"]};'
-        if data['segments-width']!='1':
-            outstr += f'segments-width: {data["segments-width"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
-    outstr += f'material="src: #image-{data["8"]}; color: {data["color"]}'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     if data['animation']:
@@ -561,35 +548,35 @@ def make_plane(page, x, data):#TODO
     outstr += '</a-plane>\n</a-entity>\n'
     return outstr
 
-def make_text(x, data):#TODO
+def make_text(x, data):
     outstr = f'<a-entity id="text-{x}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
-    outstr += f'text="width: {data["41"]}; align: {data["align"]}; color: {data["color"]}; '
-    outstr += f'value: {data["text"]}; wrap-count: {data["wrap-count"]}; '
+    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["color"]}; '
+    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
     outstr += '">\n'
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-entity>\n'
     return outstr
 
-def make_link(page, x, data):#TODO
+def make_link(page, x, data):
     outstr = f'<a-link id="link-{x}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
     outstr += f'scale="{data["41"]} {data["43"]} {data["42"]}"\n'
-    if data['tree'] == 'parent':
+    if data['TREE'] == 'parent':
         target = page.get_parent()
-    elif data['tree'] == 'child':
+    elif data['TREE'] == 'child':
         target = page.get_first_child()
-    elif data['tree'] == 'previous' or data['tree'] == 'prev':
+    elif data['TREE'] == 'previous' or data['tree'] == 'prev':
         target = page.get_prev_sibling()
     else:#we default to next sibling
         target = page.get_next_sibling()
     try:
         if target:
             outstr += f'href="{target.url}"\n'
-            outstr += f'title="{data["title"]}" color="{data["color"]}" on="click"\n'
+            outstr += f'title="{data["TITLE"]}" color="{data["color"]}" on="click"\n'
             eq_image = target.specific.equirectangular_image
             if eq_image:
                 outstr += f'image="{eq_image.file.url}"'
@@ -605,30 +592,30 @@ def make_link(page, x, data):#TODO
     except:
         return ''
 
-def make_light(page, x, data):#TODO
+def make_light(page, x, data):
     outstr = f'<a-entity id="light-{x}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
     try:
-        if data['type'] == 'ambient':
-            outstr += f'light="type: ambient; color: {data["color"]}; intensity: {data["intensity"]}; '
+        if data['TYPE'] == 'ambient':
+            outstr += f'light="type: ambient; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
             outstr += '">\n'
-        elif data['type'] == 'point':
-            outstr += f'light="type: point; color: {data["color"]}; intensity: {data["intensity"]}; '
-            outstr += f'decay: {data["decay"]}; distance: {data["distance"]}; '
+        elif data['TYPE'] == 'point':
+            outstr += f'light="type: point; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+            outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
             if page.shadows:
                 outstr += 'castShadow: true; '
             outstr += '"> \n'
-        elif data['type'] == 'spot':
-            outstr += f'light="type: spot; color: {data["color"]}; intensity: {data["intensity"]}; '
-            outstr += f'decay: {data["decay"]}; distance: {data["distance"]}; '
-            outstr += f'angle: {data["angle"]}; penumbra: {data["penumbra"]}; '
+        elif data['TYPE'] == 'spot':
+            outstr += f'light="type: spot; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+            outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
+            outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
             if page.shadows:
                 outstr += 'castShadow: true; '
             outstr += f'target: #light-{x}-target;"> \n'
             outstr += f'<a-entity id="light-{x}-target" position="0 -1 0"> </a-entity> \n'
         else:#defaults to directional
-            outstr += f'light="type: directional; color: {data["color"]}; intensity: {data["intensity"]}; '
+            outstr += f'light="type: directional; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
             if page.shadows:
                 outstr += 'castShadow: true; '
             outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
