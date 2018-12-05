@@ -293,3 +293,85 @@ class ArScenePage(Page):
         ], heading="Presentation", classname="collapsible collapsed"),
         FieldPanel('scene'),
     ]
+
+    def add_new_layers(self):
+        layer_list = aframe.get_layer_list(self.scene)
+        for layer in layer_list:
+            try:
+                a = ScenePageLayer.objects.get(page_id=self.scene.id, name=layer)
+            except:
+                b = ScenePageLayer(page_id=self.scene.id, name=layer)
+                b.save()
+
+        return
+
+    def get_material_assets(self):
+        material_dict = aframe.get_entity_material(self.scene)
+        try:
+            layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
+            for layer in layers:
+                try:
+                    m = MaterialPage.objects.get(id=layer.material_id)
+                    material_dict[m.title] = 'dummy'
+                except:
+                    pass
+        except:
+            pass
+        image_dict = {}
+        if material_dict:
+            for material, dummy in material_dict.items():
+                try:
+                    m = MaterialPage.objects.get(title=material)
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    for component in components:
+                        try:
+                            if component.image:
+                                image_dict[m.title + '-' + component.name] = os.path.join(settings.MEDIA_URL,
+                                    'original_images', component.image.filename)
+                        except:
+                            pass
+                except:
+                    pass
+        return image_dict
+
+    def get_entities(self):
+        material_dict = self.prepare_material_dict()
+        layer_dict = self.prepare_layer_dict()
+        collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
+        collection = aframe.reference_animations(collection)
+        entities_dict = aframe.make_html(self.scene, collection)
+        return entities_dict
+
+    def prepare_layer_dict(self):
+        layer_dict = {}
+        try:
+            layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
+            if layers:
+                for layer in layers:
+                    try:
+                        m = MaterialPage.objects.get(id=layer.material_id)
+                        layer_dict[layer.name] = (m.title, layer.invisible)
+                    except:
+                        layer_dict[layer.name] = ('default', layer.invisible)
+        except:
+            pass
+
+        return layer_dict
+
+    def prepare_material_dict(self):
+        material_dict = {}
+        try:
+            materials = MaterialPage.objects.all()
+            if materials:
+                for m in materials:
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    x=0
+                    component_dict = {}
+                    for component in components:
+                        component_dict[x] = (component.name, component.color, component.pattern)
+                        x += 1
+                    material_dict[m.title] = component_dict
+        except:
+            pass
+
+        return material_dict
