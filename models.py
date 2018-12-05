@@ -116,7 +116,7 @@ class ScenePage(Page):
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
-        ], heading="VR settings", classname="collapsible collapsed"
+        ], heading="VR settings", classname="collapsible"
         ),
         MultiFieldPanel([
             ImageChooserPanel('equirectangular_image'),
@@ -216,6 +216,12 @@ class ScenePage(Page):
             pass
 
         return material_dict
+
+    def get_ambient_light(self):
+        ambient_light = f'color: {self.ambient_light_color}; '
+        ambient_light += f'groundColor: {self.hemispheric_color}; '
+        ambient_light += f'intensity: {self.ambient_light_intensity}; '
+        return ambient_light
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
