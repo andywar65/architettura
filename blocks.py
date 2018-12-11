@@ -3,7 +3,7 @@ from math import fabs
 def make_table_01(data):
     try:
         component_pool = data['pool']
-        component = component_pool[1]#gets second component for legs
+        component = component_pool[2]#gets third component for legs
         data['leg_color'] = component[1]
         data['leg_image'] = data['MATERIAL'] + '-' + component[0]
     except:
