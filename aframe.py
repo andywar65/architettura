@@ -323,7 +323,7 @@ def make_html(page, collection):
             entities_dict[x] = make_sphere(page, x, data)
 
         elif data['2'] == 'a-circle':
-            entities_dict[x] = make_circle(page, x, data)
+            entities_dict[x] = make_circle(page, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
             entities_dict[x] = make_plane(page, x, data)
@@ -374,33 +374,14 @@ def make_cone(page, data):
     outstr += close_entity(data)
     return outstr
 
-def make_circle(page, x, data):
-    outstr = f'<a-entity id="circle-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-circle id="circle-{x}" \n'
-    if data['2'] == 'circle':
-        outstr += f'rotation="-90 0 0"\n'
-    outstr += f'radius="{fabs(data["41"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['SEGMENTS']!='32':
-            outstr += f'segments: {data["SEGMENTS"]};'
-        if data['THETA-LENGTH']!='360':
-            outstr += f'theta-length: {data["THETA-LENGTH"]};'
-        if data['THETA-START']!='0':
-            outstr += f'theta-start: {data["THETA-START"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
+def make_circle(page, data):
+    outstr = start_entity_wrapper(page, data)
+    outstr += start_entity(data)
+    outstr += entity_geometry(data)
+    outstr += entity_material(data)
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-circle>\n</a-entity>\n'
+    outstr += close_entity(data)
     return outstr
 
 def make_cylinder(page, x, data):#TODO delete this function
@@ -639,42 +620,38 @@ def start_entity(data):
     outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}-ent" \n'
     if data['2'] == 'a-box':
         outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
+    elif data['2'] == 'a-circle':
+        pass
     else:
         outstr += f'position="0 {data["43"]/2} 0" \n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    if data['2'] == 'a-circle':
+        outstr += f'radius="{fabs(data["41"])}" \n'
+    else:
+        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     if float(data['43']) < 0:
         if data['2'] == 'a-cone' or data['2'] == 'a-cylinder':
             outstr += 'rotation="180 0 0">\n'
+
     return outstr
 
 def entity_geometry(data):
+    attr_dict = {
+        'a-cone': ('OPEN-ENDED', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cylinder': ('OPEN-ENDED', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
+        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
+        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
+    }
+    attributes = attr_dict[data['2']]
     outstr = 'geometry="'
-    try:
-        if data['OPEN-ENDED']!='false':
-            outstr += 'open-ended: true;'
-    except:
-        pass
-    try:
-        if data['RADIUS-TOP']!='0':
-            outstr += f'radius-top: {data["RADIUS-TOP"]};'
-    except:
-        pass
-    try:
-        if data['SEGMENTS-RADIAL']!='36':
-            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
-    except:
-        pass
-    try:
-        if data['THETA-LENGTH']!='360':
-            outstr += f'theta-length: {data["THETA-LENGTH"]};'
-    except:
-        pass
-    try:
-        if data['THETA-START']!='0':
-            outstr += f'theta-start: {data["THETA-START"]};'
-    except:
-        pass
-            
+    for attribute in attributes:
+        try:
+            if data[attribute]:
+                print('passed ' + data['2'] + attribute + data[attribute])
+                outstr += f'{attribute.lower()}: {data[attribute]};'
+        except:
+            pass
+
     outstr += '" \n'
     return outstr
 
