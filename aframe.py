@@ -314,10 +314,10 @@ def make_html(page, collection):
             entities_dict[x] = make_box(page, data)
 
         elif data['2'] == 'a-curvedimage':
-            entities_dict[x] = make_curvedimage(x, data)
+            entities_dict[x] = make_curvedimage(page, data)
 
-        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder':
-            entities_dict[x] = make_cone(page, data)
+        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle':
+            entities_dict[x] = make_circular(page, data)
 
         elif data['2'] == 'a-sphere':
             entities_dict[x] = make_sphere(page, x, data)
@@ -364,7 +364,7 @@ def make_box(page, data):
     outstr += close_entity(data)
     return outstr
 
-def make_cone(page, data):
+def make_circular(page, data):
     outstr = start_entity_wrapper(page, data)
     outstr += start_entity(data)
     outstr += entity_geometry(data)
@@ -374,60 +374,9 @@ def make_cone(page, data):
     outstr += close_entity(data)
     return outstr
 
-def make_circle(page, data):
+def make_curvedimage(page, data):
     outstr = start_entity_wrapper(page, data)
     outstr += start_entity(data)
-    outstr += entity_geometry(data)
-    outstr += entity_material(data)
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_cylinder(page, x, data):#TODO delete this function
-    outstr = f'<a-entity id="cylinder-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-cylinder id="cylinder-{x}" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    if float(data['43']) < 0:
-        outstr += 'rotation="180 0 0">\n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['OPEN-ENDED']!='false':
-            outstr += 'open-ended: true;'
-        if data['RADIUS-TOP']!='0':
-            outstr += f'radius-top: {data["RADIUS-TOP"]};'
-        if data['SEGMENTS-RADIAL']!='36':
-            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
-        if data['THETA-LENGTH']!='360':
-            outstr += f'theta-length: {data["THETA-LENGTH"]};'
-        if data['THETA-START']!='0':
-            outstr += f'theta-start: {data["THETA-START"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-cylinder>\n</a-entity>\n'
-    return outstr
-
-def make_curvedimage(x, data):
-    outstr = f'<a-entity id="curvedimage-{x}-ent" \n'
-    outstr += 'shadow="receive: false; cast: false" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-curvedimage id="curvedimage-{x}" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    if float(data['43']) < 0:
-        outstr += 'rotation="180 0 0">\n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     try:
         if data['THETA-LENGTH']!='270':
             outstr += f'theta-length="{data["THETA-LENGTH"]}" '
@@ -438,7 +387,7 @@ def make_curvedimage(x, data):
     outstr += f'src="#{data["8"]}">\n'
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-curvedimage>\n</a-entity>\n'
+    outstr += close_entity(data)
     return outstr
 
 def make_sphere(page, x, data):
@@ -629,7 +578,7 @@ def start_entity(data):
     else:
         outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     if float(data['43']) < 0:
-        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder':
+        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-curvedimage':
             outstr += 'rotation="180 0 0">\n'
 
     return outstr
@@ -647,7 +596,6 @@ def entity_geometry(data):
     for attribute in attributes:
         try:
             if data[attribute]:
-                print('passed ' + data['2'] + attribute + data[attribute])
                 outstr += f'{attribute.lower()}: {data[attribute]};'
         except:
             pass
