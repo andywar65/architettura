@@ -338,7 +338,7 @@ def make_html(page, collection):
             entities_dict[x] = make_link(page, x, data)
 
         elif data['2'] == 'a-block':
-            entities_dict[x] = make_block(page, x, data)
+            entities_dict[x] = make_block(page, data)
 
     return entities_dict
 
@@ -493,12 +493,8 @@ def make_light(page, x, data):
     outstr += '</a-entity>\n'#close light entity
     return outstr
 
-def make_block(page, x, data):
-    outstr = f'<a-entity id="block-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+def make_block(page, data):
+    outstr = start_entity_wrapper(page, data)
 
     try:
         if data['TYPE'] == 't01':
