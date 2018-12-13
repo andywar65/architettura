@@ -311,16 +311,13 @@ def make_html(page, collection):
             entities_dict[x] = make_triangle(page, x, data)
 
         elif data['2'] == 'a-box':
-            entities_dict[x] = make_box(page, x, data)
-
-        elif data['2'] == 'a-cylinder':
-            entities_dict[x] = make_cylinder(page, x, data)
+            entities_dict[x] = make_box(page, data)
 
         elif data['2'] == 'a-curvedimage':
             entities_dict[x] = make_curvedimage(x, data)
 
-        elif data['2'] == 'a-cone':
-            entities_dict[x] = make_cone(page, x, data)
+        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder':
+            entities_dict[x] = make_cone(page, data)
 
         elif data['2'] == 'a-sphere':
             entities_dict[x] = make_sphere(page, x, data)
@@ -358,7 +355,7 @@ def make_triangle(page, x, data):
     outstr += '">\n</a-triangle> \n'
     return outstr
 
-def make_box(page, x, data):
+def make_box(page, data):
     outstr = start_entity_wrapper(page, data)
     outstr += start_entity(data)
     outstr += entity_material(data)
@@ -367,38 +364,14 @@ def make_box(page, x, data):
     outstr += close_entity(data)
     return outstr
 
-def make_cone(page, x, data):
-    outstr = f'<a-entity id="cone-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-cone id="cone-{x}" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    if float(data['43']) < 0:
-        outstr += 'rotation="180 0 0">\n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['OPEN-ENDED']!='false':
-            outstr += 'open-ended: true;'
-        if data['RADIUS-TOP']!='0':
-            outstr += f'radius-top: {data["RADIUS-TOP"]};'
-        if data['SEGMENTS-RADIAL']!='36':
-            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
-        if data['THETA-LENGTH']!='360':
-            outstr += f'theta-length: {data["THETA-LENGTH"]};'
-        if data['THETA-START']!='0':
-            outstr += f'theta-start: {data["THETA-START"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
+def make_cone(page, data):
+    outstr = start_entity_wrapper(page, data)
+    outstr += start_entity(data)
+    outstr += entity_geometry(data)
+    outstr += entity_material(data)
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-cone>\n</a-entity>\n'
+    outstr += close_entity(data)
     return outstr
 
 def make_circle(page, x, data):
@@ -430,7 +403,7 @@ def make_circle(page, x, data):
     outstr += '</a-circle>\n</a-entity>\n'
     return outstr
 
-def make_cylinder(page, x, data):
+def make_cylinder(page, x, data):#TODO delete this function
     outstr = f'<a-entity id="cylinder-{x}-ent" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -669,6 +642,27 @@ def start_entity(data):
     else:
         outstr += f'position="0 {data["43"]/2} 0" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    if float(data['43']) < 0:
+        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder':
+            outstr += 'rotation="180 0 0">\n'
+    return outstr
+
+def entity_geometry(data):
+    outstr = 'geometry="'
+    try:
+        if data['OPEN-ENDED']!='false':
+            outstr += 'open-ended: true;'
+        if data['RADIUS-TOP']!='0':
+            outstr += f'radius-top: {data["RADIUS-TOP"]};'
+        if data['SEGMENTS-RADIAL']!='36':
+            outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
+        if data['THETA-LENGTH']!='360':
+            outstr += f'theta-length: {data["THETA-LENGTH"]};'
+        if data['THETA-START']!='0':
+            outstr += f'theta-start: {data["THETA-START"]};'
+        outstr += '" \n'
+    except KeyError:
+        outstr += '" \n'
     return outstr
 
 def entity_material(data):
