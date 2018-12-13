@@ -359,20 +359,12 @@ def make_triangle(page, x, data):
     return outstr
 
 def make_box(page, x, data):
-    outstr = f'<a-entity id="box-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-box id="box-{x}" \n'
-    outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
+    outstr = start_entity_wrapper(page, data)
+    outstr += start_entity(data)
+    outstr += entity_material(data)
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-box>\n</a-entity>\n'
+    outstr += close_entity(data)
     return outstr
 
 def make_cone(page, x, data):
@@ -657,6 +649,36 @@ def make_block(page, x, data):
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-entity>\n'
+    return outstr
+
+def start_entity_wrapper(page, data):
+    outstr = f'<a-entity id="{data["2"]}-{data["num"]}-ent" \n'
+    if page.shadows:
+        if data['2'] == 'a-curvedimage':
+            outstr += 'shadow="receive: false; cast: false" \n'
+        else:
+            outstr += 'shadow="receive: true; cast: true" \n'
+    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    return outstr
+
+def start_entity(data):
+    outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}-ent" \n'
+    if data['2'] == 'a-box':
+        outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
+    else:
+        outstr += f'position="0 {data["43"]/2} 0" \n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
+    return outstr
+
+def entity_material(data):
+    outstr = f'material="src: #{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    return outstr
+
+def close_entity(data):
+    outstr = f'</{data["2"]}>\n</a-entity>\n'
     return outstr
 
 def is_repeat(repeat, rx, ry):
