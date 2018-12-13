@@ -326,7 +326,7 @@ def make_html(page, collection):
             entities_dict[x] = make_circle(page, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
-            entities_dict[x] = make_plane(page, x, data)
+            entities_dict[x] = make_plane(page, data)
 
         elif data['2'] == 'a-light':
             entities_dict[x] = make_light(page, x, data)
@@ -390,22 +390,16 @@ def make_curvedimage(page, data):
     outstr += close_entity(data)
     return outstr
 
-def make_plane(page, x, data):
-    outstr = f'<a-entity id="plane-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-plane id="plane-{x}" \n'
+def make_plane(page, data):
+    outstr = start_entity_wrapper(page, data)
+    outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
     if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
         outstr += f'position="0 {data["43"]/2} 0" \n'
         outstr += 'look-at="#camera-foot" \n'
     else:#insertion is at corner
         outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
     outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
+    outstr += entity_material(data)
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-plane>\n</a-entity>\n'
@@ -530,7 +524,7 @@ def start_entity_wrapper(page, data):
     return outstr
 
 def start_entity(data):
-    outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}-ent" \n'
+    outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}" \n'
     if data['2'] == 'a-box':
         outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
     elif data['2'] == 'a-circle':
