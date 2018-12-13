@@ -652,17 +652,30 @@ def entity_geometry(data):
     try:
         if data['OPEN-ENDED']!='false':
             outstr += 'open-ended: true;'
+    except:
+        pass
+    try:
         if data['RADIUS-TOP']!='0':
             outstr += f'radius-top: {data["RADIUS-TOP"]};'
+    except:
+        pass
+    try:
         if data['SEGMENTS-RADIAL']!='36':
             outstr += f'segments-radial: {data["SEGMENTS-RADIAL"]};'
+    except:
+        pass
+    try:
         if data['THETA-LENGTH']!='360':
             outstr += f'theta-length: {data["THETA-LENGTH"]};'
+    except:
+        pass
+    try:
         if data['THETA-START']!='0':
             outstr += f'theta-start: {data["THETA-START"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
+    except:
+        pass
+            
+    outstr += '" \n'
     return outstr
 
 def entity_material(data):
