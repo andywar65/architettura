@@ -316,7 +316,7 @@ def make_html(page, collection):
         elif data['2'] == 'a-curvedimage':
             entities_dict[x] = make_curvedimage(page, data)
 
-        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle':
+        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
             entities_dict[x] = make_circular(page, data)
 
         elif data['2'] == 'a-sphere':
@@ -388,42 +388,6 @@ def make_curvedimage(page, data):
     if data['animation']:
         outstr += is_animation(data)
     outstr += close_entity(data)
-    return outstr
-
-def make_sphere(page, x, data):
-    outstr = f'<a-entity id="sphere-{x}-ent" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
-    outstr += f'<a-sphere id="sphere-{x}" \n'
-    outstr += f'position="0 {data["43"]} 0" \n'
-    if float(data['43']) < 0:
-        outstr += 'rotation="180 0 0">\n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    outstr += 'geometry="'
-    try:
-        if data['PHI-LENGTH']!='360':
-            outstr += f'phi-length: {data["PHI-LENGTH"]};'
-        if data['PHI-START']!='0':
-            outstr += f'phi-start: {data["PHI-START"]};'
-        if data['SEGMENTS-HEIGHT']!='18':
-            outstr += f'segments-height: {data["SEGMENTS-HEIGHT"]};'
-        if data['SEGMENTS-WIDTH']!='36':
-            outstr += f'segments-width: {data["SEGMENTS-WIDTH"]};'
-        if data['THETA-LENGTH']!='180':
-            outstr += f'theta-length: {data["THETA-LENGTH"]};'
-        if data['THETA-START']!='0':
-            outstr += f'theta-start: {data["THETA-START"]};'
-        outstr += '" \n'
-    except KeyError:
-        outstr += '" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-sphere>\n</a-entity>\n'
     return outstr
 
 def make_plane(page, x, data):
@@ -571,6 +535,8 @@ def start_entity(data):
         outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
     elif data['2'] == 'a-circle':
         pass
+    elif data['2'] == 'a-sphere':
+        outstr += f'position="0 {data["43"]} 0" \n'
     else:
         outstr += f'position="0 {data["43"]/2} 0" \n'
     if data['2'] == 'a-circle':
@@ -578,7 +544,7 @@ def start_entity(data):
     else:
         outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
     if float(data['43']) < 0:
-        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-curvedimage':
+        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-curvedimage' or data['2'] == 'a-sphere':
             outstr += 'rotation="180 0 0">\n'
 
     return outstr
