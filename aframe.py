@@ -308,7 +308,7 @@ def make_html(page, collection):
     for x, data in collection.items():
 
         if data['2'] == '3dface':
-            entities_dict[x] = make_triangle(page, x, data)
+            entities_dict[x] = make_triangle(page, data)
 
         elif data['2'] == 'a-box':
             entities_dict[x] = make_box(page, data)
@@ -319,31 +319,25 @@ def make_html(page, collection):
         elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
             entities_dict[x] = make_circular(page, data)
 
-        elif data['2'] == 'a-sphere':
-            entities_dict[x] = make_sphere(page, x, data)
-
-        elif data['2'] == 'a-circle':
-            entities_dict[x] = make_circle(page, data)
-
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
             entities_dict[x] = make_plane(page, data)
 
         elif data['2'] == 'a-light':
-            entities_dict[x] = make_light(page, x, data)
+            entities_dict[x] = make_light(page, data)
 
         elif data['2'] == 'a-text':
-            entities_dict[x] = make_text(x, data)
+            entities_dict[x] = make_text(data)
 
         elif data['2'] == 'a-link':
-            entities_dict[x] = make_link(page, x, data)
+            entities_dict[x] = make_link(page, data)
 
         elif data['2'] == 'a-block':
             entities_dict[x] = make_block(page, data)
 
     return entities_dict
 
-def make_triangle(page, x, data):
-    outstr = f'<a-triangle id="triangle-{x}" \n'
+def make_triangle(page, data):
+    outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
     outstr += f'geometry="vertexA:{data["10"]} {data["30"]} {data["20"]}; \n'
@@ -405,8 +399,8 @@ def make_plane(page, data):
     outstr += '</a-plane>\n</a-entity>\n'
     return outstr
 
-def make_text(x, data):
-    outstr = f'<a-entity id="text-{x}" \n'
+def make_text(data):
+    outstr = f'<a-entity id="a-text-{data["num"]}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
     outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["color"]}; '
@@ -417,8 +411,8 @@ def make_text(x, data):
     outstr += '</a-entity>\n'
     return outstr
 
-def make_link(page, x, data):
-    outstr = f'<a-link id="link-{x}" \n'
+def make_link(page, data):
+    outstr = f'<a-link id="a-link-{data["num"]}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
     outstr += f'scale="{data["41"]} {data["43"]} {data["42"]}"\n'
@@ -450,38 +444,27 @@ def make_link(page, x, data):
     except:
         return ''
 
-def make_light(page, x, data):
-    outstr = f'<a-entity id="light-{x}" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
+def make_light(page, data):
+    outstr = start_entity_wrapper(page, data)
+
     try:
-        if data['TYPE'] == 'ambient':
-            outstr += f'light="type: ambient; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-            outstr += '">\n'
-        elif data['TYPE'] == 'point':
-            outstr += f'light="type: point; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-            outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
+        outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+        if data['TYPE'] != 'ambient':
             if page.shadows:
                 outstr += 'castShadow: true; '
-            outstr += '"> \n'
-        elif data['TYPE'] == 'spot':
-            outstr += f'light="type: spot; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+        if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
             outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
+        if data['TYPE'] == 'spot':
             outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
-            if page.shadows:
-                outstr += 'castShadow: true; '
-            outstr += f'target: #light-{x}-target;"> \n'
-            outstr += f'<a-entity id="light-{x}-target" position="0 -1 0"> </a-entity> \n'
-        else:#defaults to directional
-            outstr += f'light="type: directional; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-            if page.shadows:
-                outstr += 'castShadow: true; '
+        if data['TYPE'] == 'directional':
             outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
             outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
             outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
             outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
-            outstr += f'target: #light-{x}-target;"> \n'
-            outstr += f'<a-entity id="light-{x}-target" position="0 -1 0"> </a-entity> \n'
+        if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
+            outstr += make_light_target(data)
+        else:
+            outstr += '">\n'
     except KeyError:#default if no light type is set
         outstr += 'light="type: point; intensity: 0.75; distance: 50; decay: 2; '
         if page.shadows:
@@ -491,6 +474,11 @@ def make_light(page, x, data):
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-entity>\n'#close light entity
+    return outstr
+
+def make_light_target(data):
+    outstr = f'target: #light-{data["num"]}-target;"> \n'
+    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
     return outstr
 
 def make_block(page, data):
@@ -513,10 +501,14 @@ def start_entity_wrapper(page, data):
     if page.shadows:
         if data['2'] == 'a-curvedimage':
             outstr += 'shadow="receive: false; cast: false" \n'
+        elif data['2'] == 'a-light':
+            pass
         else:
             outstr += 'shadow="receive: true; cast: true" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}">\n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
+    if data['2'] != 'a-light':
+        outstr += '>\n'
     return outstr
 
 def start_entity(data):
