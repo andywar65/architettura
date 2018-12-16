@@ -510,9 +510,11 @@ def start_entity_wrapper(page, data):
             outstr += 'shadow="receive: true; cast: true" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
-    if data['2'] != 'a-light':
+    if data['2'] == 'a-light' or data['2'] == 'a-block':
+        return outstr
+    else:
         outstr += '>\n'
-    return outstr
+        return outstr
 
 def start_entity(data):
     outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}" \n'
