@@ -262,7 +262,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         if component_pool:
                             component = component_pool[0]
                             data['color'] = component[1]
-                            data['8'] = layer_material + '-' + component[0]
+                            data['8'] = data['MATERIAL'] + '-' + component[0]
                             data['repeat'] = component[2]
                             data['pool'] = component_pool
 
@@ -487,6 +487,9 @@ def make_block(page, data):
     try:
         if data['TYPE'] == 't01':
             outstr += blocks.make_table_01(data)
+
+        elif data['TYPE'] == 'stalker':
+            outstr += blocks.make_stalker(page, data)
         #other elifs here
     except:
         outstr += blocks.make_table_01(data)
