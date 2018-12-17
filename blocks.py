@@ -1,14 +1,20 @@
+"""Collection of functions for writing HTML of blocks.
+
+Functions are referenced from architettura.aframe.make_block, a-block CAD blocks
+have TYPE attribute that are essentially block names. Block appearance is
+determined by MATERIAL attribute (multiple components may be used depending on
+TYPE), other features depend on PARAM attributes.
+"""
+
 from math import fabs
 
-"""
-Table 01, default block (t01)
-
-A simple table with four legs. Gets dimensions from block scaling, except for
-leg diameter (5cm). Gets top material from first component and leg material
-from third component.
-"""
-
 def make_table_01(data):
+    """Table 01, default block (t01)
+
+    A simple table with four legs. Gets dimensions from block scaling, except for
+    leg diameter (5cm). Gets top material from first component and leg material
+    from third component.
+    """
     try:
         component_pool = data['pool']
         component = component_pool[2]#gets third component for legs
@@ -48,15 +54,21 @@ def make_table_01(data):
 
     return outstr
 
-"""
-Stalker, a look-out image with eventual balloon text and link.
-
-Stalker always looks towards camera. Plane dimension is set by block X and Z
-scaling. Image is set by material, text is on PARAM1, link tree is on PARAM2
-(allowed values: parent, child, next, previous).
-"""
+def close_leg(data):
+    #repetitive task in making tables
+    outstr = 'radius="0.025" \n'
+    outstr += f'height="{data["leg"]}" \n'
+    outstr += f'material="src: #{data["leg_image"]}; color: {data["leg_color"]} '
+    outstr += '"></a-cylinder>\n'
+    return outstr
 
 def make_stalker(page, data):
+    """Stalker, a look-at image with eventual balloon text and link.
+
+    Stalker always looks towards camera. Plane dimension is set by block X and Z
+    scaling. Image is set by MATERIAL, text is on PARAM1, link tree is on PARAM2
+    (allowed values: parent, child, next, previous).
+    """
     outstr = 'look-at="#camera-foot"> \n'#blocks need to close wrapper
     outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
     outstr += f'position="0 {data["43"]/2} 0" \n'
@@ -103,19 +115,13 @@ def make_stalker(page, data):
         outstr += '</a-link>\n'
     return outstr
 
-def close_leg(data):
-        outstr = 'radius="0.025" \n'
-        outstr += f'height="{data["leg"]}" \n'
-        outstr += f'material="src: #{data["leg_image"]}; color: {data["leg_color"]} '
-        outstr += '"></a-cylinder>\n'
-        return outstr
-
-    #returns positive/negative scaling
 def unit(nounit):
+    #returns positive/negative scaling
     unit = fabs(nounit)/nounit
     return unit
 
 def is_repeat(repeat, rx, ry):
+    #returns repeat attribute for images
     if repeat:
         output = f'; repeat:{fabs(rx)} {fabs(ry)}'
         return output
@@ -123,6 +129,7 @@ def is_repeat(repeat, rx, ry):
         return ';'
 
 def entity_material(data):
+    #returns entity material
     outstr = f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
