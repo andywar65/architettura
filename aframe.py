@@ -5,6 +5,10 @@ from django.conf import settings
 from architettura import blocks
 
 def get_layer_list(page):
+    """Gets layer list from DXF file.
+
+    Skips some default layers. Returns a list.
+    """
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
 
@@ -14,7 +18,7 @@ def get_layer_list(page):
     while value !='ENTITIES':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
-        if value == 'AcDbLayerTableRecord':#dict of layer names and colors
+        if value == 'AcDbLayerTableRecord':#list of layer names
             key = dxf_f.readline().strip()
             layer_name = dxf_f.readline().strip()
             if layer_name == 'Defpoints' or layer_name == 'vectors' or layer_name == 'meshes' or layer_name == 'frustum' or layer_name == '3D':
@@ -30,6 +34,11 @@ def get_layer_list(page):
     return layer_list
 
 def get_entity_material(page):
+    """Gets material dictionary from DXF file.
+
+    Scans file to see if entities have MATERIAL attribute and collects material
+    name into a dictionary, so no name will be repeated.
+    """
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
 
@@ -67,6 +76,13 @@ def get_entity_material(page):
     return material_dict
 
 def parse_dxf(page, material_dict, layer_dict):
+    """Collects entities from DXF file.
+
+    This function does too many things and maybe should be cut down. Scans
+    file for 3Dfaces and blocks. Assigns values to each entity, including
+    geometric and appearance values plus functional attributes. Returns a
+    nested dictionary.
+    """
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
 
@@ -382,6 +398,12 @@ def door_tilted_case(data, data2):
     return data2
 
 def reference_animations(collection):
+    """Compares animation blocks against all other blocks.
+
+    Controls if animation block shares insertion point with other blocks.
+    Animation attributes will be appended to selected block. Returns nested
+    dictionary.
+    """
     collection2 = collection.copy()
     for x, data in collection.items():
         if data['2'] == 'a-animation':
