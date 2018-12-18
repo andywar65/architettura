@@ -428,7 +428,7 @@ def make_html(page, collection):
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
-        elif data['2'] == 'a-block':
+        elif data['2'] == 'a-block' or data['2'] == 'a-door':
             entities_dict[x] = make_block(page, data)
 
     return entities_dict
@@ -587,6 +587,9 @@ def make_block(page, data):
 
         elif data['TYPE'] == 'stalker':
             outstr += blocks.make_stalker(page, data)
+
+        elif data['2'] == 'a-door':
+            outstr += blocks.make_door(data)
         #other elifs here
     except:
         outstr += blocks.make_table_01(data)

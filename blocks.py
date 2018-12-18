@@ -115,6 +115,128 @@ def make_stalker(page, data):
         outstr += '</a-link>\n'
     return outstr
 
+def make_door(data):
+    """Door default block.
+
+    A simple framed door. Gets dimensions from block scaling, except for frame
+    dimension. TYPE sets door features. If set to 'ghost' panel will not be
+    rendered. SLIDING and DOUBLE are boolean. Gets panel material from first
+    component and frame material from third component.
+    """
+    try:
+        component_pool = data['pool']
+        component = component_pool[2]#gets third component for frame
+        data['frame_color'] = component[1]
+        data['frame_image'] = data['MATERIAL'] + '-' + component[0]
+    except:
+        data['frame_color'] = data['color']
+        data['frame_image'] = data['8']
+
+    outstr = '> \n'#blocks need to close wrapper
+
+    #left frame
+    outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
+    outstr += f'position="{-0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
+    outstr += 'rotation="0 0 90" \n'
+    outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
+    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    outstr += '</a-box>\n'
+    #right frame
+    outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
+    outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
+    outstr += 'rotation="0 0 90" \n'
+    outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
+    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    outstr += '</a-box>\n'
+    #top frame
+    outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
+    outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
+    outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
+    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    outstr += '</a-box>\n'
+
+    if data["TYPE"] == 'ghost':
+        return outstr
+    else:
+        if eval(data["SLIDING"]):
+            if eval(data["DOUBLE"]):
+                #animated slide 1
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide-1"> \n'
+                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-(data["41"])/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part 1
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
+                outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
+                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                #animated slide 2
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide-2" \n'
+                outstr += f'position="{data["41"]} 0 0"> \n'
+                outstr += f'<a-animation attribute="position" from="{data["41"]} 0 0" to="{(data["41"])*3/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part 2
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
+                outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
+                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                return outstr
+            else:#single
+                #animated slide
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide"> \n'
+                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-data["41"]} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
+                outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
+                outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                return outstr
+        else:#hinged
+            if eval(data["DOUBLE"]):
+                #animated hinge 1
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge-1"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part 1
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
+                outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
+                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                #animated hinge 2
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge-2" '
+                outstr += f'position="{data["41"]} 0 0"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part 2
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
+                outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
+                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                return outstr
+            else:#single
+                #animated hinge
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                #moving part
+                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
+                outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
+                outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
+                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+                outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += '"></a-box>\n'
+                outstr += '</a-entity>\n'
+                return outstr
+
 def unit(nounit):
     #returns positive/negative scaling
     unit = fabs(nounit)/nounit
