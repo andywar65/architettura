@@ -179,6 +179,7 @@ class ScenePage(Page):
         material_dict = self.prepare_material_dict()
         layer_dict = self.prepare_layer_dict()
         collection = aframe.parse_dxf(self, material_dict, layer_dict)
+        collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
         entities_dict = aframe.make_html(self, collection)
         return entities_dict

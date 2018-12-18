@@ -1,8 +1,8 @@
 import os
 from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
-from architettura import blocks
-
 from django.conf import settings
+
+from architettura import blocks
 
 def get_layer_list(page):
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
@@ -283,6 +283,103 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
     return collection
+
+def reference_openings(collection):
+    """Compares each door entity with each wall.
+
+    Has two helper functions, straight case and tilted case, but latter has not
+    been implemented yet. Returns modified entity collection.
+    """
+    collection2 = collection.copy()
+    for x, data in collection.items():
+        if data['2'] == 'a-door':
+            collection[x] = data
+            for x2, data2 in collection2.items():
+                if data2['2'] == 'a-wall':
+                    if data['210']==0 and data['220']==0 and data2['210']==0 and data2['220']==0:
+                        data2 = door_straight_case(data, data2)
+                    else:
+                        data2 = door_tilted_case(data, data2)
+                    collection[x2] = data2
+
+    return collection
+
+def door_straight_case(data, data2):
+    """Cheks if door bounding box is inside wall bounding box.
+
+    Works if both blocks are not rotated on X and Y axis and if insertion point
+    is on the same plane. Returns modified wall data.
+    """
+    if data['30']==data2['30'] and data['43']>0 and data2['43']>0:
+        rotd = round(data['50'], 0)
+        rotw = round(data2['50'], 0)
+        if rotd==rotw-180 or rotd-180==rotw:
+            backwards = -1
+        else:
+            backwards = 1
+        if rotd == rotw or backwards == -1:
+            #translation
+            xt = data['10']-data2['10']
+            zt = data['20']-data2['20']
+            #rotation
+            alfa = radians(data2['50'])
+            xd = round(xt*cos(alfa)-zt*sin(alfa), 4)
+            zd = round(xt*sin(alfa)+zt*cos(alfa), 4)
+            xde = xd + round(data['41'], 4)*backwards
+            zde = zd + round(data['42'], 4)
+            #wall bounding box
+            if data2['41'] > 0:
+                xmaxw = round(data2['41'], 4)
+                xminw = 0
+            else:
+                xmaxw = 0
+                xminw = round(data2['41'], 4)
+            if data2['42'] > 0:
+                zmaxw = 0
+                zminw = -round(data2['42'], 4)
+            else:
+                zmaxw = -round(data2['42'], 4)
+                zminw = 0
+            #door bounding box
+            if xde > xd:
+                xmaxd = xde
+                xmind = xd
+            else:
+                xmaxd = xd
+                xmind = xde
+            if zde > zd:
+                zmaxd = zde * ( - backwards)
+                zmind = zd * ( - backwards)
+            else:
+                zmaxd = zd * ( - backwards)
+                zmind = zde * ( - backwards)
+            #door inclusion
+            if xmaxw >= xmaxd and xminw <= xmind and zmaxw >= zmaxd and zminw <= zmind:
+                data2['door'] = data['num']
+                data2['2'] = 'a-openwall'
+                if data['43']>data2['43']:
+                    data2['door_height'] = data2['43']
+                else:
+                    data2['door_height'] = data['43']
+                if data2['41']>0:
+                    data2['door_off_1'] = xmind
+                    data2['door_off_2'] = xmaxd
+                else:
+                    data2['door_off_1'] = xmaxd - xmaxw
+                    data2['door_off_2'] = xmind - xmaxw
+
+    return data2
+
+def door_tilted_case(data, data2):
+    """Not working yet.
+    """
+    d210 = round(data['210']*fabs(data['41'])/data['41'], 4)
+    d220 = round(data['220']*fabs(data['42'])/data['42'], 4)
+    d50 = round(data['50']*fabs(data['43'])/data['43'], 4)
+    w210 = round(data2['210']*fabs(data2['41'])/data2['41'], 4)
+    w220 = round(data2['220']*fabs(data2['42'])/data2['42'], 4)
+    w50 = round(data2['50']*fabs(data2['43'])/data2['43'], 4)
+    return data2
 
 def reference_animations(collection):
     collection2 = collection.copy()
