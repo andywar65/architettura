@@ -78,19 +78,19 @@ def make_stalker(page, data):
     outstr += entity_material(data)
     outstr += '</a-plane>\n'
     if data['PARAM1']:
-        outstr += f'<a-plane id="a-text-{data["num"]}" \n'
+        outstr += f'<a-plane id="stalker-balloon-{data["num"]}" \n'
         outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0.01" \n'
         outstr += f'width="{fabs(data["41"])}" height="{fabs(data["41"])/2}" \n'
         outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
         outstr += f'value: {data["PARAM1"]}; wrap-count: {data["41"]*9}; '
         outstr += '">\n</a-plane>\n'
-        outstr += f'<a-triangle id="triangle-{data["num"]}" \n'
+        outstr += f'<a-triangle id="stalker-triangle-{data["num"]}" \n'
         outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.01; \n'
         outstr += f'vertexB:0 {data["43"]-.05} 0.01; \n'
         outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.01"> \n'
         outstr += '</a-triangle> \n'
     if data['PARAM2']:
-        outstr += f'<a-link id="a-link-{data["num"]}" \n'
+        outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
         outstr += f'position="{data["41"]*.7} {data["43"]*.25} 0.02" \n'
         outstr += f'scale="{data["41"]*.25} {data["41"]*.25}"\n'
         if data['PARAM2'] == 'parent':
@@ -257,7 +257,28 @@ def make_slab(data):
         data['floor_image'] = data['8']
         data['floor_repeat'] = data['repeat']
 
-    outstr = '> \n'#blocks need to close wrapper
+    #floor
+    outstr = f'<a-plane id="{data["2"]}-{data["num"]}-floor" \n'
+    outstr += f'position="{data["41"]/2} 0 {-data["42"]/2}" \n'
+    if data["43"] < 0:
+        outstr += 'rotation="90 0 0" \n'
+    else:
+        outstr += 'rotation="-90 0 0" \n'
+    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["42"])}" \n'
+    outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
+    outstr += is_repeat(data["floor_repeat"], data["41"], data["42"])
+    outstr += '"></a-plane>\n'
+    #ceiling
+    outstr += f'<a-plane id="{data["2"]}-{data["num"]}-ceiling" \n'
+    outstr += f'position="{data["41"]/2} {-data["43"]} {-data["42"]/2}" \n'
+    if data["43"] < 0:
+        outstr += 'rotation="-90 0 0" \n'
+    else:
+        outstr += 'rotation="90 0 0" \n'
+    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["42"])}" \n'
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["42"])
+    outstr += '"></a-plane>\n'
 
     return outstr
 
