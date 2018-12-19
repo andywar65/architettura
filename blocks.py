@@ -258,7 +258,31 @@ def make_slab(data):
         data['floor_repeat'] = data['repeat']
 
     outstr = '> \n'#blocks need to close wrapper
-    
+
+    return outstr
+
+def make_wall(data):
+    """Wall default BIM block.
+
+    A vertical partition. Gets dimensions from block scaling, tiling and
+    skirting height from respective attributes. TYPE sets partition type
+    (TODO). Gets two differente materials for front and back surface, and
+    respectively first component for wall, second for tiling and third for
+    skirting. If associated to a door, becomes a-openwall
+    """
+    try:
+        component_pool = data['pool']
+        component = component_pool[2]#gets third component for floor
+        data['floor_color'] = component[1]
+        data['floor_image'] = data['MATERIAL'] + '-' + component[0]
+        data['floor_repeat'] = component[2]
+    except:
+        data['floor_color'] = data['color']
+        data['floor_image'] = data['8']
+        data['floor_repeat'] = data['repeat']
+
+    outstr = '> \n'#blocks need to close wrapper
+
     return outstr
 
 def unit(nounit):
