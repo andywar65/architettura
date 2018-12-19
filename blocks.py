@@ -1,9 +1,11 @@
 """Collection of functions for writing HTML of blocks.
 
 Functions are referenced from architettura.aframe.make_block, a-block CAD blocks
-have TYPE attribute that are essentially block names. Block appearance is
+have TYPE attribute that are essentially block names except for BIM blocks,
+that use TYPE attribute for setting 'partition type'. Block appearance is
 determined by MATERIAL attribute (multiple components may be used depending on
-TYPE), other features depend on PARAM attributes.
+TYPE), other features depend on PARAM attributes. Some blocks may have
+parameters of their own.
 """
 
 from math import fabs
@@ -116,7 +118,7 @@ def make_stalker(page, data):
     return outstr
 
 def make_door(data):
-    """Door default block.
+    """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
     dimension. TYPE sets door features. If set to 'ghost' panel will not be
@@ -236,6 +238,28 @@ def make_door(data):
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
+
+def make_slab(data):
+    """Slab default BIM block.
+
+    An horizontal partition. Gets dimensions from block scaling. TYPE sets
+    partition type (TODO). Gets ceiling material from first component and
+    floor material from third component.
+    """
+    try:
+        component_pool = data['pool']
+        component = component_pool[2]#gets third component for floor
+        data['floor_color'] = component[1]
+        data['floor_image'] = data['MATERIAL'] + '-' + component[0]
+        data['floor_repeat'] = component[2]
+    except:
+        data['floor_color'] = data['color']
+        data['floor_image'] = data['8']
+        data['floor_repeat'] = data['repeat']
+
+    outstr = '> \n'#blocks need to close wrapper
+    
+    return outstr
 
 def unit(nounit):
     #returns positive/negative scaling
