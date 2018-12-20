@@ -258,27 +258,19 @@ def make_slab(data):
         data['floor_repeat'] = data['repeat']
 
     #floor
-    outstr = f'<a-plane id="{data["2"]}-{data["num"]}-floor" \n'
-    outstr += f'position="{data["41"]/2} 0 {-data["42"]/2}" \n'
-    if data["43"] < 0:
-        outstr += 'rotation="90 0 0" \n'
-    else:
-        outstr += 'rotation="-90 0 0" \n'
-    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["42"])}" \n'
+    outstr = f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
+    outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
+    outstr += f'scale="{fabs(data["41"])} 0.01 {fabs(data["42"])}" \n'
     outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
     outstr += is_repeat(data["floor_repeat"], data["41"], data["42"])
-    outstr += '"></a-plane>\n'
+    outstr += '"></a-box>\n'
     #ceiling
-    outstr += f'<a-plane id="{data["2"]}-{data["num"]}-ceiling" \n'
-    outstr += f'position="{data["41"]/2} {-data["43"]} {-data["42"]/2}" \n'
-    if data["43"] < 0:
-        outstr += 'rotation="-90 0 0" \n'
-    else:
-        outstr += 'rotation="90 0 0" \n'
-    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["42"])}" \n'
+    outstr += f'<a-box id="{data["2"]}-{data["num"]}-ceiling" \n'
+    outstr += f'position="{data["41"]/2} {-data["43"]/2-0.005*unit(data["43"])} {-data["42"]/2}" \n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])-0.01} {fabs(data["42"])}" \n'
     outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
     outstr += is_repeat(data["repeat"], data["41"], data["42"])
-    outstr += '"></a-plane>\n'
+    outstr += '"></a-box>\n'
 
     return outstr
 
