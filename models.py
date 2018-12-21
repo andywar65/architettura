@@ -82,8 +82,9 @@ class ScenePage(Page):
         help_text="Vertical movement of camera?",)
     double_face = models.BooleanField(default=False,
         help_text="Planes are visible on both sides?",)
-    #ar = models.BooleanField(default=False, help_text="Is it Augmented Reality?",)
 
+    background = models.CharField(max_length=250, blank=True, null=True,
+        help_text="Accepts hex (#ffffff) or HTML color, overrides Equirectangular",)
     equirectangular_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -119,6 +120,7 @@ class ScenePage(Page):
         ], heading="VR settings", classname="collapsible"
         ),
         MultiFieldPanel([
+            FieldPanel('background'),
             ImageChooserPanel('equirectangular_image'),
             FieldPanel('ambient_light_intensity'),
             FieldPanel('ambient_light_color'),

@@ -281,20 +281,18 @@ def make_wall(data):
     skirting height from respective attributes. TYPE sets partition type
     (TODO). Gets two differente materials for front and back surface, and
     respectively first component for wall, second for tiling and third for
-    skirting. If associated to a door, becomes a-openwall
+    skirting.
     """
-    try:
-        component_pool = data['pool']
-        component = component_pool[2]#gets third component for floor
-        data['floor_color'] = component[1]
-        data['floor_image'] = data['MATERIAL'] + '-' + component[0]
-        data['floor_repeat'] = component[2]
-    except:
-        data['floor_color'] = data['color']
-        data['floor_image'] = data['8']
-        data['floor_repeat'] = data['repeat']
+    data = prepare_wall_values(data)
 
-    outstr = '> \n'#blocks need to close wrapper
+    return outstr
+
+def make_openwall(data):
+    """Openwall default BIM block.
+
+    Same as Wall but with hole for door.
+    """
+    data = prepare_wall_values(data)
 
     return outstr
 
@@ -317,3 +315,25 @@ def entity_material(data):
     outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     return outstr
+
+def prepare_wall_values(data):
+    values = (
+        ('pool', '1', 'tile', 'MATERIAL'),
+        ('pool', '2', 'skirt', 'MATERIAL'),
+        ('pool2', '1', 'tile2', 'MATERIAL2'),
+        ('pool2', '2', 'skirt2', 'MATERIAL2'),
+    )
+    for v in values:
+        try:
+            component_pool = data[v[0]]
+            component = component_pool[v[1]]
+            data[v[2]+'_color'] = component[1]
+            data[v[2]+'_image'] = data[v[3]] + '-' + component[0]
+            data[v[2]+'_repeat'] = component[2]
+
+        except:
+            data[v[2]+'_color'] = data['color']
+            data[v[2]+'_image'] = data['8']
+            data[v[2]+'_repeat'] = data['repeat']
+
+    return data

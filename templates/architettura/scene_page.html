@@ -13,7 +13,13 @@
   <h1 id="scene-title">{{ page.title }}</h1>
   <p id="scene-author">By: {{ page.author }}</p>
   <p id="scene-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
-  <a-scene style="width: 100%; height: 768px" embedded>
+
+    {% if page.background %}
+      <a-scene style="width: 100%; height: 768px" background="color: {{ page.background }}" embedded>
+    {% else %}
+      <a-scene style="width: 100%; height: 768px" embedded>
+    {% endif %}
+
     <a-asset>
       <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
       <img id="sky" src="{{ page.get_sky_path }}">
@@ -41,7 +47,11 @@
     {% with ambient_light=page.get_ambient_light %}
       <a-entity light="type: hemisphere; {{ ambient_light }}"></a-entity>
     {% endwith %}
-    <a-sky src="#sky"></a-sky>
+    {% if page.background %}
+    {% else %}
+      <a-sky src="#sky"></a-sky>
+    {% endif %}
+
       <a-entity id="camera-ent">
 				{% with fly_camera=page.fly_camera %}
           <a-camera id="camera" wasd-controls="fly: {{ fly_camera|lower }}">

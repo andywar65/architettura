@@ -617,6 +617,12 @@ def make_block(page, data):
 
         elif data['2'] == 'a-slab':
             outstr += blocks.make_slab(data)
+
+        elif data['2'] == 'a-wall':
+            outstr += blocks.make_wall(data)
+
+        elif data['2'] == 'a-openwall':
+            outstr += blocks.make_openwall(data)
         #other elifs here
     except:
         outstr += blocks.make_table_01(data)
