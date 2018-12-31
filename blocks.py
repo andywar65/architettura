@@ -363,6 +363,83 @@ def make_openwall(data):
     Same as Wall but with hole for door.
     """
     data = prepare_wall_values(data)
+    wall_h = wall2_h = fabs(data['43'])
+    tile_h = fabs(float(data['TILING']))
+    skirt_h = fabs(float(data['SKIRTING']))
+    tile2_h = fabs(float(data['TILING2']))
+    skirt2_h = fabs(float(data['SKIRTING2']))
+    door_h = data['door_height']
+    if tile_h > wall_h:
+        tile_h = wall_h
+    if skirt_h > wall_h:
+        skirt_h = wall_h
+    if skirt_h < door_h:
+        skirt_h = door_h
+    if skirt_h > tile_h:
+        tile_h = skirt_h
+    if tile2_h > wall2_h:
+        tile2_h = wall2_h
+    if skirt2_h > wall2_h:
+        skirt2_h = wall2_h
+    if skirt2_h < door_h:
+        skirt2_h = door_h
+    if skirt2_h > tile2_h:
+        tile2_h = skirt2_h
+    wall_h = wall_h - tile_h
+    tile_h = tile_h - skirt_h
+    skirt_h = skirt_h - door_h
+    wall2_h = wall2_h - tile2_h
+    tile2_h = tile2_h - skirt2_h
+    skirt2_h = skirt2_h - door_h
+    outstr = ''
+    #internal skirting
+    if skirt_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-skirt" \n'
+        outstr += f'position="{data["41"]/2} {skirt_h/2*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {skirt_h} {fabs(data["42"])-0.01}" \n'
+        outstr += f'material="src: #{data["skirt_image"]}; color: {data["skirt_color"]}'
+        outstr += is_repeat(data["skirt_repeat"], data["41"], skirt_h)
+        outstr += '"></a-box>\n'
+    #internal tiling
+    if tile_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-tile" \n'
+        outstr += f'position="{data["41"]/2} {(tile_h/2+skirt_h)*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {tile_h} {fabs(data["42"])-0.01}" \n'
+        outstr += f'material="src: #{data["tile_image"]}; color: {data["tile_color"]}'
+        outstr += is_repeat(data["tile_repeat"], data["41"], tile_h)
+        outstr += '"></a-box>\n'
+    #internal wall
+    if wall_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-wall" \n'
+        outstr += f'position="{data["41"]/2} {(wall_h/2+tile_h+skirt_h)*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {wall_h} {fabs(data["42"])-0.01}" \n'
+        outstr += f'material="src: #{data["wall_image"]}; color: {data["wall_color"]}'
+        outstr += is_repeat(data["wall_repeat"], data["41"], wall_h)
+        outstr += '"></a-box>\n'
+    #external skirting
+    if skirt2_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-skirt" \n'
+        outstr += f'position="{data["41"]/2} {skirt2_h/2*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {skirt2_h} 0.01" \n'
+        outstr += f'material="src: #{data["skirt2_image"]}; color: {data["skirt2_color"]}'
+        outstr += is_repeat(data["skirt2_repeat"], data["41"], skirt2_h)
+        outstr += '"></a-box>\n'
+    #external tiling
+    if tile2_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-tile" \n'
+        outstr += f'position="{data["41"]/2} {(tile2_h/2+skirt2_h)*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {tile2_h} 0.01" \n'
+        outstr += f'material="src: #{data["tile2_image"]}; color: {data["tile2_color"]}'
+        outstr += is_repeat(data["tile2_repeat"], data["41"], tile2_h)
+        outstr += '"></a-box>\n'
+    #external wall
+    if wall2_h:
+        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-wall" \n'
+        outstr += f'position="{data["41"]/2} {(wall2_h/2+tile2_h+skirt2_h)*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
+        outstr += f'scale="{fabs(data["41"])} {wall2_h} 0.01" \n'
+        outstr += f'material="src: #{data["wall2_image"]}; color: {data["wall2_color"]}'
+        outstr += is_repeat(data["wall2_repeat"], data["41"], wall2_h)
+        outstr += '"></a-box>\n'
 
     return outstr
 

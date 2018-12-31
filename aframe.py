@@ -622,7 +622,28 @@ def make_block(page, data):
             outstr += blocks.make_wall(data)
 
         elif data['2'] == 'a-openwall':
-            outstr += blocks.make_openwall(data)
+            #make left wall
+            data2 = data.copy()
+            data2['41'] = data2['door_off_1']
+            data2['2'] = 'a-openwall-left'
+            outstr += blocks.make_wall(data2)
+            #make part above door
+            data2 = data.copy()
+            data2['41'] = data2['door_off_2'] - data2['door_off_1']
+            data2['2'] = 'a-openwall-above'
+            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
+            outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
+            outstr += blocks.make_openwall(data2)
+            outstr += '</a-entity> \n'
+            #make right wall
+            data2 = data.copy()
+            data2['41'] = data2['41'] - data2['door_off_2']
+            data2['2'] = 'a-openwall-right'
+            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
+            outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
+            outstr += blocks.make_wall(data2)
+            outstr += '</a-entity> \n'
+
         #other elifs here
     except:
         outstr += blocks.make_table_01(data)
