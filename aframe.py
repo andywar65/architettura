@@ -273,16 +273,22 @@ def parse_dxf(page, material_dict, layer_dict):
                             data['color'] = component[1]
                             data['8'] = layer_material + '-' + component[0]
                             data['repeat'] = component[2]
-                    if data['MATERIAL']:
-                        component_pool = material_dict[data['MATERIAL']]
-                        if component_pool:
-                            component = component_pool[0]
-                            data['color'] = component[1]
-                            data['8'] = data['MATERIAL'] + '-' + component[0]
-                            data['repeat'] = component[2]
-                            data['pool'] = component_pool
-                    if data['2'] == 'a-wall' and data['MATERIAL2']:
-                        data['pool2'] = material_dict[data['MATERIAL2']]
+                    try:
+                        if data['MATERIAL']:
+                            component_pool = material_dict[data['MATERIAL']]
+                            if component_pool:
+                                component = component_pool[0]
+                                data['color'] = component[1]
+                                data['8'] = data['MATERIAL'] + '-' + component[0]
+                                data['repeat'] = component[2]
+                                data['pool'] = component_pool
+                    except:
+                        pass
+                    try:
+                        if data['2'] == 'a-wall' and data['MATERIAL2']:
+                            data['pool2'] = material_dict[data['MATERIAL2']]
+                    except:
+                        pass
 
                     data['num'] = x
                     collection[x] = data
