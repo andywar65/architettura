@@ -316,54 +316,22 @@ def make_wall(data):
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
     outstr = ''
-    #internal skirting
-    if skirt_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-skirt" \n'
-        outstr += f'position="{data["41"]/2} {skirt_h/2*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {skirt_h} {fabs(data["42"])-0.01}" \n'
-        outstr += f'material="src: #{data["skirt_image"]}; color: {data["skirt_color"]}'
-        outstr += is_repeat(data["skirt_repeat"], data["41"], skirt_h)
-        outstr += '"></a-box>\n'
-    #internal tiling
-    if tile_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-tile" \n'
-        outstr += f'position="{data["41"]/2} {(tile_h/2+skirt_h)*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {tile_h} {fabs(data["42"])-0.01}" \n'
-        outstr += f'material="src: #{data["tile_image"]}; color: {data["tile_color"]}'
-        outstr += is_repeat(data["tile_repeat"], data["41"], tile_h)
-        outstr += '"></a-box>\n'
-    #internal wall
-    if wall_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-int-wall" \n'
-        outstr += f'position="{data["41"]/2} {(wall_h/2+tile_h+skirt_h)*unit(data["43"])} {-data["42"]/2+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {wall_h} {fabs(data["42"])-0.01}" \n'
-        outstr += f'material="src: #{data["wall_image"]}; color: {data["wall_color"]}'
-        outstr += is_repeat(data["wall_repeat"], data["41"], wall_h)
-        outstr += '"></a-box>\n'
-    #external skirting
-    if skirt2_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-skirt" \n'
-        outstr += f'position="{data["41"]/2} {skirt2_h/2*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {skirt2_h} 0.01" \n'
-        outstr += f'material="src: #{data["skirt2_image"]}; color: {data["skirt2_color"]}'
-        outstr += is_repeat(data["skirt2_repeat"], data["41"], skirt2_h)
-        outstr += '"></a-box>\n'
-    #external tiling
-    if tile2_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-tile" \n'
-        outstr += f'position="{data["41"]/2} {(tile2_h/2+skirt2_h)*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {tile2_h} 0.01" \n'
-        outstr += f'material="src: #{data["tile2_image"]}; color: {data["tile2_color"]}'
-        outstr += is_repeat(data["tile2_repeat"], data["41"], tile2_h)
-        outstr += '"></a-box>\n'
-    #external wall
-    if wall2_h:
-        outstr += f'<a-box id="{data["2"]}-{data["num"]}-ext-wall" \n'
-        outstr += f'position="{data["41"]/2} {(wall2_h/2+tile2_h+skirt2_h)*unit(data["43"])} {-data["42"]+0.005*unit(data["42"])}" \n'
-        outstr += f'scale="{fabs(data["41"])} {wall2_h} 0.01" \n'
-        outstr += f'material="src: #{data["wall2_image"]}; color: {data["wall2_color"]}'
-        outstr += is_repeat(data["wall2_repeat"], data["41"], wall2_h)
-        outstr += '"></a-box>\n'
+    values = (
+        (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
+        (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
+        (wall_h, 'int-wall', wall_h/2+tile_h+skirt_h, data["42"]/2, fabs(data["42"]), 'wall'),
+        (skirt2_h, 'ext-skirt', skirt2_h/2, data["42"], 0.02, 'skirt2'),
+        (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, data["42"], 0.02, 'tile2'),
+        (wall2_h, 'ext-wall', wall2_h/2+tile2_h+skirt2_h, data["42"], 0.02, 'wall2'),
+    )
+    for v in values:
+        if v[0]:
+            outstr += f'<a-box id="{data["2"]}-{data["num"]}-{v[1]}" \n'
+            outstr += f'position="{data["41"]/2} {v[2]*unit(data["43"])} {-v[3]+0.005*unit(data["42"])}" \n'
+            outstr += f'scale="{fabs(data["41"])} {v[0]} {v[4]-0.01}" \n'
+            outstr += f'material="src: #{data[v[5]+"_image"]}; color: {data[v[5]+"_color"]}'
+            outstr += is_repeat(data[v[5]+"_repeat"], data["41"], v[0])
+            outstr += '"></a-box>\n'
 
     return outstr
 
