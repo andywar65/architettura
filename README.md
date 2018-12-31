@@ -53,10 +53,12 @@ Animation standard block animates the blocks that have same insertion point in C
 
 `Blocks` are a parametric assembly of primitives. In CAD you just have a bounding box with an insertion point, but setting the `TYPE` attribute leads to different results. There will be a list of block types (default is t01 = simple table). `MATERIAL` attribute defines block appearance, other `PARAMETERS` define functionalities peculiar to each block.
 
-BIM standard blocks are recognized as real life building elements. By now we have `Slab` and `Door` BIM entities. If you put a Door inside a `Wall`, you get a `Openwall` (TODO).
+BIM (Building Information Management) standard blocks are recognized as real life building elements. By now we have `Wall`, `Slab` and `Door` BIM entities. If you put a Door inside a `Wall`, you get a `Openwall`.
+
+In a Wall block you can define it's `TYPE` to set the partition type (physical characteristics, TODO) and `MATERIALs` for interior and exterior surfaces. A single material can describe three stripes of the same surface. In Slabs a single material describes ceiling and floor patterns.
 
 Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `TYPE` attribute to `ghost`, door panel is not rendered. If a door panel is clicked, an animation is triggered.
 
 ### Next improvements
 
-Complete a-wall block.
+Complete a-tree block.
