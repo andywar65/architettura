@@ -633,7 +633,7 @@ def make_block(page, data):
             data2['2'] = 'a-openwall-above'
             outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
             outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
-            outstr += blocks.make_openwall(data2)
+            outstr += blocks.make_wall(data2)
             outstr += '</a-entity> \n'
             #make right wall
             data2 = data.copy()
