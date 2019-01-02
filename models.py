@@ -2,7 +2,6 @@ import os
 from architettura import aframe
 
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
 
 from modelcluster.fields import ParentalKey
@@ -130,13 +129,6 @@ class ScenePage(Page):
         InlinePanel('layers', label="Layers",),
     ]
 
-    def get_sky_path(self):
-        if self.equirectangular_image:
-            return os.path.join(settings.MEDIA_URL, 'original_images',
-                self.equirectangular_image.filename)
-        else:
-            return os.path.join(settings.STATIC_URL, 'architettura/images/target.png')
-
     def add_new_layers(self):
         layer_list = aframe.get_layer_list(self)
         for layer in layer_list:
@@ -169,8 +161,7 @@ class ScenePage(Page):
                     for component in components:
                         try:
                             if component.image:
-                                image_dict[m.title + '-' + component.name] = os.path.join(settings.MEDIA_URL,
-                                    'original_images', component.image.filename)
+                                image_dict[m.title + '-' + component.name] = component.image
                         except:
                             pass
                 except:
@@ -329,8 +320,7 @@ class ArScenePage(Page):
                     for component in components:
                         try:
                             if component.image:
-                                image_dict[m.title + '-' + component.name] = os.path.join(settings.MEDIA_URL,
-                                    'original_images', component.image.filename)
+                                image_dict[m.title + '-' + component.name] = component.image
                         except:
                             pass
                 except:

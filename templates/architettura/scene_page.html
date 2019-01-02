@@ -22,16 +22,27 @@
 
     <a-asset>
       <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
-      <img id="sky" src="{{ page.get_sky_path }}">
-        {% with nl=page.add_new_layers %}
-        {% endwith %}
-        {% with materials=page.get_material_assets %}
-          {% if materials %}
-            {% for name, path in materials.items %}
-              <img id="{{ name }}" src="{{ path }}">
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+
+      {% with eq_image=page.equirectangular_image %}
+			 {% if eq_image %}
+			  {% image eq_image original as temp_image %}
+			   <img id="sky" src="{{ temp_image.url }}">
+  		  {% else %}
+  		   <img id="sky" src="{% static 'architettura/images/target.png' %}">
+			 {% endif %}
+			{% endwith %}
+
+      {% with nl=page.add_new_layers %}
+      {% endwith %}
+
+      {% with materials=page.get_material_assets %}
+        {% if materials %}
+          {% for name, component in materials.items %}
+          {% image component original as temp_image %}
+            <img id="{{ name }}" src="{{ temp_image.url }}">
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
     </a-asset>
     <a-entity id="dxf-ent"
             position="0 0 0"
