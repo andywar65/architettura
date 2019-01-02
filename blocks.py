@@ -134,7 +134,7 @@ def make_door(data):
         data['frame_color'] = data['color']
         data['frame_image'] = data['8']
 
-    outstr = '> \n'#blocks need to close wrapper
+    outstr = ''#blocks need to close wrapper
 
     #left frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'

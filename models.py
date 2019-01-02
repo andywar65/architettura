@@ -93,7 +93,7 @@ class ScenePage(Page):
         related_name = '+',
         help_text="Landscape surrounding your project",
         )
-    ambient_light_intensity = models.FloatField(default="1",
+    ambient_light_intensity = models.FloatField(default="0.5",
         help_text="Range 1 to 0",)
     ambient_light_color = models.CharField(max_length=250, default="white",
         help_text="Accepts hex (#ffffff) or HTML color",)
