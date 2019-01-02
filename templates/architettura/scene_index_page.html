@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags navigation_tags wagtailimages_tags %}
+
+{% block content %}
+  {% include "base/include/header-index.html" %}
+    <div class="container">
+
+        <div class="row row-eq-height scene-list">
+            {% if posts %}
+                {% for scene in posts %}
+                    <li class="col-xs-12 col-sm-6 col-md-3 scene-list-item">
+                        <a href="{% pageurl scene %}">
+                            <div class="image">
+                                {% image scene.image fill-850x450-c50 as image %}
+                                <img src="{{ image.url }}" width="{{ image.width }}" height="{{ image.height }}" alt="{{ image.alt }}" class="" />
+                            </div>
+                            <div class="text">
+                                <h2 class="scene-list-title">{{ scene.title }}</h2>
+                                <p>{{ scene.introduction|truncatewords:15 }}</p>
+                            </div>
+                            <div class="small footer">
+                                {% if scene.date_published %}
+                                    {{ scene.date_published }} by
+                                {% endif %}
+                                {% if scene.author %}
+                                    {{ author }}
+                                {% endif %}
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12">
+                    <p>Sorry, there are no VR projects to list.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

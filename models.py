@@ -368,3 +368,30 @@ class ArScenePage(Page):
             pass
 
         return material_dict
+
+class SceneIndexPage(Page):
+    introduction = models.TextField(
+        help_text='Text to describe the page',
+        blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('introduction', classname="full"),
+    ]
+
+    # Speficies that only ScenePage objects can live under this index page
+    subpage_types = ['ScenePage']
+
+    # Defines a method to access the children of the page (e.g. ScenePage
+    # objects).
+    def children(self):
+        return self.get_children().specific().live()
+
+    # Overrides the context to list all child items, that are live, by the
+    # date that they were published
+    # http://docs.wagtail.io/en/latest/getting_started/tutorial.html#overriding-context
+    def get_context(self, request):
+        context = super(SceneIndexPage, self).get_context(request)
+        context['posts'] = ScenePage.objects.descendant_of(
+            self).live().order_by(
+            '-first_published_at')
+        return context
