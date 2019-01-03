@@ -5,10 +5,10 @@
   {% include "base/include/header-index.html" %}
     <div class="container">
 
-        <div class="row row-eq-height scene-list">
+        <div class="row row-eq-height blog-list">
             {% if posts %}
                 {% for scene in posts %}
-                    <li class="col-xs-12 col-sm-6 col-md-3 scene-list-item">
+                    <li class="col-xs-12 col-sm-6 col-md-3 blog-list-item">
                         <a href="{% pageurl scene %}">
                             <div class="image">
                                 {% image scene.image fill-850x450-c50 as image %}
