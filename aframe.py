@@ -618,6 +618,9 @@ def make_block(page, data):
         elif data['TYPE'] == 'stalker':
             outstr += blocks.make_stalker(page, data)
 
+        elif data['TYPE'] == 'object':
+            outstr += blocks.make_object(data)
+
         elif data['2'] == 'a-door':
             outstr += blocks.make_door(data)
 

@@ -378,3 +378,17 @@ def prepare_wall_values(data):
             data[v[2]+'_repeat'] = data['repeat']
 
     return data
+
+def make_object(data):
+    """Object block
+
+    Block loads a Object Model (Wavefront) along with it's *.mtl file. MATERIAL
+    must be equal to *.obj and *.mtl filename. Files must share same filename
+    and must be loaded in the media/document folder.
+    """
+    outstr = ''
+    outstr += f'<a-entity obj-model="obj: #{data["MATERIAL"]}-obj; \n'
+    outstr += f' mtl: #{data["MATERIAL"]}-mtl" \n'
+    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
+    outstr += '</a-entity>'
+    return outstr
