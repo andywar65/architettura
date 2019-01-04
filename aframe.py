@@ -66,12 +66,9 @@ def get_object_dict(page):
                 if value == 'TYPE' and attr_value == 'object':
                     flag = 'object'
         elif flag == 'object':#stores values for attributes within object block
-            print(flag)
             if key == '1':#attribute value
-                print('attribute value = ' + value)
                 attr_value = value
             elif key == '2':#attribute key
-                print('attribute key = ' + value)
                 if value == 'MATERIAL':
                     object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
                 flag = False
