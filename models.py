@@ -168,6 +168,10 @@ class ScenePage(Page):
                     pass
         return image_dict
 
+    def get_object_assets(self):
+        object_dict = aframe.get_object_dict(self)
+        return object_dict
+
     def get_entities(self):
         material_dict = self.prepare_material_dict()
         layer_dict = self.prepare_layer_dict()

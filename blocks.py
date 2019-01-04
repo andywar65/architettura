@@ -386,8 +386,9 @@ def make_object(data):
     must be equal to *.obj and *.mtl filename. Files must share same filename
     and must be loaded in the media/document folder.
     """
-    outstr = ''
-    outstr += f'<a-entity obj-model="obj: #{data["MATERIAL"]}-obj; \n'
+    outstr = '> \n'
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
+    outstr += f'obj-model="obj: #{data["MATERIAL"]}-obj; \n'
     outstr += f' mtl: #{data["MATERIAL"]}-mtl" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
     outstr += '</a-entity>'

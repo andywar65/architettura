@@ -33,6 +33,57 @@ def get_layer_list(page):
     dxf_f.close()
     return layer_list
 
+def get_object_dict(page):
+    """Gets material (filename) of object blocks from DXF file.
+
+    Scans file to see if object entities have MATERIAL attribute and collects
+    material names into a dictionary, so no name will be repeated.
+    """
+    path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
+    dxf_f = open(path_to_dxf, encoding = 'utf-8')
+
+    object_dict = {}
+    value = 'dummy'
+    flag = False
+    attr_value = ''
+
+    while value !='ENTITIES':#skip up to ENTITIES section
+        key = dxf_f.readline().strip()
+        value = dxf_f.readline().strip()
+        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
+            return collection
+
+    while value !='ENDSEC':
+        key = dxf_f.readline().strip()
+        value = dxf_f.readline().strip()
+        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
+            return object_dict
+
+        if flag == 'attrib':#stores values for attributes within block
+            if key == '1':#attribute value
+                attr_value = value
+            elif key == '2':#attribute key
+                if value == 'TYPE' and attr_value == 'object':
+                    flag = 'object'
+        elif flag == 'object':#stores values for attributes within object block
+            print(flag)
+            if key == '1':#attribute value
+                print('attribute value = ' + value)
+                attr_value = value
+            elif key == '2':#attribute key
+                print('attribute key = ' + value)
+                if value == 'MATERIAL':
+                    object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
+                flag = False
+        if key == '0' and flag != 'object':
+
+            if value == 'ATTRIB':#start attribute
+                flag = 'attrib'
+
+    dxf_f.close()
+
+    return object_dict
+
 def get_entity_material(page):
     """Gets material dictionary from DXF file.
 

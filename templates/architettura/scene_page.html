@@ -43,6 +43,16 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
+
+      {% with object_dict=page.get_object_assets %}
+        {% if object_dict %}
+          {% for name, path in object_dict.items %}
+            <a-asset-item id="{{ name }}-obj" src="{{ path }}/{{ name }}.obj"></a-asset-item>
+            <a-asset-item id="{{ name }}-mtl" src="{{ path }}/{{ name }}.mtl"></a-asset-item>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
     </a-asset>
     <a-entity id="dxf-ent"
             position="0 0 0"
