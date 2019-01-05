@@ -34,9 +34,9 @@ def get_layer_list(page):
     return layer_list
 
 def get_object_dict(page):
-    """Gets material (filename) of object blocks from DXF file.
+    """Gets MTL (filename) of object blocks from DXF file.
 
-    Scans file to see if object entities have MATERIAL attribute and collects
+    Scans file to see if object entities have PARAM1 attribute and collects
     material names into a dictionary, so no name will be repeated.
     """
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
@@ -71,7 +71,7 @@ def get_object_dict(page):
             elif key == '2':#attribute key
                 if value == 'PARAM1':
                     object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
-                flag = False
+                    flag = False
         if key == '0' and flag != 'object':
 
             if value == 'ATTRIB':#start attribute
