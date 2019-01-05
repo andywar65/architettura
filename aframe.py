@@ -465,8 +465,11 @@ def reference_animations(collection):
         if data['2'] == 'a-animation':
             collection[x] = data
             for x2, data2 in collection2.items():
-                if data2['2'] != '3dface' or data2['2'] != 'a-door':
-                    if data['10']==data2['10'] and data['20']==data2['20'] and data['30']==data2['30']:
+                if data2['2'] != '3dface':
+                    dx = data['10']-data2['10']
+                    dy = data['20']-data2['20']
+                    dz = data['20']-data2['20']
+                    if dx < 0.01 and dy < 0.01 and dz < 0.01:
                         data2['animation'] = True
                         data2['ATTRIBUTE'] = data['ATTRIBUTE']
                         data2['FROM'] = data['FROM']

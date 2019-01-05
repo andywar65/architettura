@@ -390,7 +390,6 @@ def make_object(data):
     outstr = ''
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
-    print('Material= '+data['MATERIAL'])
     if data['MATERIAL']:
         outstr += f'" material="src: #{data["8"]}; color: {data["color"]}" \n'
     else:
