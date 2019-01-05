@@ -382,14 +382,15 @@ def prepare_wall_values(data):
 def make_object(data):
     """Object block
 
-    Block loads a Object Model (Wavefront) along with it's *.mtl file. MATERIAL
-    must be equal to *.obj and *.mtl filename. Files must share same filename
-    and must be loaded in the media/document folder.
+    Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
+    must be equal to *.obj and *.mtl filename (use lowercase extension). Files
+    must share same filename and must be loaded in the media/document folder.
+    TODO, MATERIAL alternative to MTL if missing.
     """
     outstr = ''
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
-    outstr += f'obj-model="obj: #{data["MATERIAL"]}-obj; \n'
-    outstr += f' mtl: #{data["MATERIAL"]}-mtl" \n'
+    outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
+    outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
     outstr += '</a-entity>'
     return outstr

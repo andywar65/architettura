@@ -63,13 +63,13 @@ def get_object_dict(page):
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
-                if value == 'TYPE' and attr_value == 'object':
+                if value == 'TYPE' and attr_value == 'obj-mtl':
                     flag = 'object'
         elif flag == 'object':#stores values for attributes within object block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
-                if value == 'MATERIAL':
+                if value == 'PARAM1':
                     object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
                 flag = False
         if key == '0' and flag != 'object':
@@ -670,7 +670,7 @@ def make_block(page, data):
         elif data['TYPE'] == 'stalker':
             outstr += blocks.make_stalker(page, data)
 
-        elif data['TYPE'] == 'object':
+        elif data['TYPE'] == 'obj-mtl':
             outstr += animation_wrapper(data)
             outstr += blocks.make_object(data)
 
