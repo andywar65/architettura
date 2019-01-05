@@ -26,7 +26,7 @@ def make_table_01(data):
         data['leg_color'] = data['color']
         data['leg_image'] = data['8']
 
-    outstr = '> \n'#blocks need to close wrapper
+    outstr = ''#blocks need to close wrapper
     #table top
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
@@ -386,7 +386,7 @@ def make_object(data):
     must be equal to *.obj and *.mtl filename. Files must share same filename
     and must be loaded in the media/document folder.
     """
-    outstr = '> \n'
+    outstr = ''
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["MATERIAL"]}-obj; \n'
     outstr += f' mtl: #{data["MATERIAL"]}-mtl" \n'

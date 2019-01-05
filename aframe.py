@@ -506,6 +506,9 @@ def make_html(page, collection):
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
+        elif data['2'] == 'a-animation':
+            pass
+
         else:
             entities_dict[x] = make_block(page, data)
 
@@ -661,24 +664,30 @@ def make_block(page, data):
 
     try:
         if data['TYPE'] == 't01':
+            outstr += animation_wrapper(data)
             outstr += blocks.make_table_01(data)
 
         elif data['TYPE'] == 'stalker':
             outstr += blocks.make_stalker(page, data)
 
         elif data['TYPE'] == 'object':
+            outstr += animation_wrapper(data)
             outstr += blocks.make_object(data)
 
         elif data['2'] == 'a-door':
+            outstr += animation_wrapper(data)
             outstr += blocks.make_door(data)
 
         elif data['2'] == 'a-slab':
+            outstr += animation_wrapper(data)
             outstr += blocks.make_slab(data)
 
         elif data['2'] == 'a-wall':
+            outstr += animation_wrapper(data)
             outstr += blocks.make_wall(data)
 
         elif data['2'] == 'a-openwall':
+            outstr += animation_wrapper(data)
             #make left wall
             data2 = data.copy()
             data2['41'] = data2['door_off_1']
@@ -703,10 +712,11 @@ def make_block(page, data):
 
         #other elifs here
     except:
+        outstr += animation_wrapper(data)
         outstr += blocks.make_table_01(data)
 
     if data['animation']:
-        outstr += is_animation(data)
+        outstr += '</a-entity>\n'
     outstr += '</a-entity>\n'
     return outstr
 
@@ -721,11 +731,20 @@ def start_entity_wrapper(page, data):
             outstr += 'shadow="receive: true; cast: true" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
-    if data['2'] == 'a-light' or data['2'] == 'a-block':
+    if data['2'] == 'a-light':
+        return outstr
+    elif data['2'] == 'a-block' and data['TYPE'] == 'stalker':
         return outstr
     else:
         outstr += '>\n'
         return outstr
+
+def animation_wrapper(data):
+    outstr = ''
+    if data['animation']:
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
+        outstr += is_animation(data)
+    return outstr
 
 def start_entity(data):
     outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}" \n'
