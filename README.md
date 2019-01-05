@@ -56,7 +56,8 @@ Animation standard block animates the blocks that have same insertion point in C
 ### Blocks and BIM standard blocks
 
 `Blocks` are a parametric assembly of primitives. In CAD you just have a bounding box with an insertion point, but setting the `TYPE` attribute leads to different results. There will be a list of block types (default is t01 = simple table). `MATERIAL` attribute defines block appearance, other `PARAMETERS` define functionalities peculiar to each block.
-You can load a Wavefront OBJ file setting block `TYPE` to `obj-mtl` and `PARAM1` to the OBJ filename. OBJ and MTL must have same filename and must be loaded to media/documents with lowercase extension. 
+
+You can load a Wavefront OBJ file setting block `TYPE` to `obj-mtl` and `PARAM1` to the OBJ filename. OBJ and MTL must have same filename and must be loaded to media/documents with lowercase extension. If set, `MATERIAL` attribute overrides MTL.
 
 BIM (Building Information Management) standard blocks are recognized as real life building elements. By now we have `Wall`, `Slab` and `Door` BIM entities. If you put a Door inside a `Wall`, you get a `Openwall`.
 

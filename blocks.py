@@ -385,12 +385,16 @@ def make_object(data):
     Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
     must be equal to *.obj and *.mtl filename (use lowercase extension). Files
     must share same filename and must be loaded in the media/document folder.
-    TODO, MATERIAL alternative to MTL if missing.
+    If set, MATERIAL attribute is alternative to MTL.
     """
     outstr = ''
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
-    outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
+    print('Material= '+data['MATERIAL'])
+    if data['MATERIAL']:
+        outstr += f'" material="src: #{data["8"]}; color: {data["color"]}" \n'
+    else:
+        outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
     outstr += '</a-entity>'
     return outstr
