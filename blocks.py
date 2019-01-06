@@ -68,8 +68,8 @@ def make_stalker(page, data):
     """Stalker, a look-at image with eventual balloon text and link.
 
     Stalker always looks towards camera. Plane dimension is set by block X and Z
-    scaling. Image is set by MATERIAL, text is on PARAM1, link tree is on PARAM2
-    (allowed values: parent, child, next, previous).
+    scaling. Image is set by MATERIAL, text is on PARAM1 (sorry, no è, à, etc.),
+    link tree is on PARAM2 (allowed values: parent, child, next, previous).
     """
     outstr = 'look-at="#camera-foot"> \n'#blocks need to close wrapper
     outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
@@ -78,12 +78,15 @@ def make_stalker(page, data):
     outstr += entity_material(data)
     outstr += '</a-plane>\n'
     if data['PARAM1']:
-        outstr += f'<a-plane id="stalker-balloon-{data["num"]}" \n'
-        outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0.01" \n'
-        outstr += f'width="{fabs(data["41"])}" height="{fabs(data["41"])/2}" \n'
+        outstr += f'<a-entity id="stalker-{data["num"]}-balloon-ent" \n'
+        outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0" \n'
         outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {data["PARAM1"]}; wrap-count: {data["41"]*9}; '
-        outstr += '">\n</a-plane>\n'
+        outstr += f'value: {data["PARAM1"]}; wrap-count: {len(data['PARAM1'])/4};"> \n'
+        outstr += f'<a-cylinder id="stalker-{data["num"]}-balloon" \n'
+        outstr += f'position="0 0 -0.01" \n'
+        outstr += f'rotation="90 0 0" \n'
+        outstr += f'scale="{fabs(data["41"])/1.5} 0 {fabs(data["41"])/3}"> \n'
+        outstr += '</a-cylinder></a-entity>\n'
         outstr += f'<a-triangle id="stalker-triangle-{data["num"]}" \n'
         outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.01; \n'
         outstr += f'vertexB:0 {data["43"]-.05} 0.01; \n'
