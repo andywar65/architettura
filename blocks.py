@@ -81,7 +81,7 @@ def make_stalker(page, data):
         outstr += f'<a-entity id="stalker-{data["num"]}-balloon-ent" \n'
         outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0" \n'
         outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {data["PARAM1"]}; wrap-count: {len(data['PARAM1'])/4};"> \n'
+        outstr += f'value: {data["PARAM1"]}; wrap-count: {len(data["PARAM1"])/4};"> \n'
         outstr += f'<a-cylinder id="stalker-{data["num"]}-balloon" \n'
         outstr += f'position="0 0 -0.01" \n'
         outstr += f'rotation="90 0 0" \n'
