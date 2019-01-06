@@ -385,6 +385,7 @@ def make_object(data):
     Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
     must be equal to *.obj and *.mtl filename (use lowercase extension). Files
     must share same filename and must be loaded in the media/document folder.
+    If PARAM2 is set to 'noscale', object will not be scaled.
     If set, MATERIAL attribute is alternative to MTL.
     """
     outstr = ''
@@ -394,6 +395,9 @@ def make_object(data):
         outstr += f'" material="src: #{data["8"]}; color: {data["color"]}" \n'
     else:
         outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
+    if data['PARAM2'] == 'noscale':
+        outstr += 'scale="1 1 1"> \n'
+    else:
+        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
     outstr += '</a-entity>'
     return outstr
