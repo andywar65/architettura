@@ -68,7 +68,7 @@ def make_stalker(page, data):
     """Stalker, a look-at image with eventual balloon text and link.
 
     Stalker always looks towards camera. Plane dimension is set by block X and Z
-    scaling. Image is set by MATERIAL, text is on PARAM1 (sorry, no è, à, etc.),
+    scaling. Image is set by MATERIAL, text is on PARAM1 (sorry, no è, à, ; etc.),
     link tree is on PARAM2 (allowed values: parent, child, next, previous).
     """
     outstr = 'look-at="#camera-foot"> \n'#blocks need to close wrapper
@@ -100,31 +100,32 @@ def make_stalker(page, data):
         outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.01"> \n'
         outstr += '</a-triangle> \n'
     if data['PARAM2']:
-        outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
-        outstr += f'position="{data["41"]*.7} {data["43"]*.25} 0.02" \n'
-        outstr += f'scale="{data["41"]*.25} {data["41"]*.25}"\n'
-        if data['PARAM2'] == 'parent':
-            target = page.get_parent()
-        elif data['PARAM2'] == 'child':
-            target = page.get_first_child()
-        elif data['PARAM2'] == 'previous' or data['tree'] == 'prev':
-            target = page.get_prev_sibling()
-        else:#we default to next sibling
-            target = page.get_next_sibling()
         try:
-            if target:
-                outstr += f'href="{target.url}"\n'
-                outstr += f'title="{target.title}" on="click"\n'
-                try:
-                    eq_image = target.specific.equirectangular_image
-                    if eq_image:
-                        outstr += f'image="{eq_image.file.url}"'
-                except:
-                    outstr += 'image="#default-sky"'
+            outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
+            outstr += f'position="{data["41"]*.7} {data["43"]*.25} 0.02" \n'
+            outstr += f'scale="{data["41"]*.25} {data["41"]*.25}"\n'
+            if data['PARAM2'] == 'parent':
+                target = page.get_parent()
+            elif data['PARAM2'] == 'child':
+                target = page.get_first_child()
+            elif data['PARAM2'] == 'previous' or data['tree'] == 'prev':
+                target = page.get_prev_sibling()
+            else:#we default to next sibling
+                target = page.get_next_sibling()
+
+            outstr += f'href="{target.url}"\n'
+            outstr += f'title="{target.title}" on="click"\n'
+            try:
+                eq_image = target.specific.equirectangular_image
+                if eq_image:
+                    outstr += f'image="{eq_image.file.url}"'
+            except:
+                outstr += 'image="#default-sky"'
+            outstr += '>\n'
+            outstr += '</a-link>\n'
         except:
             pass
-        outstr += '>\n'
-        outstr += '</a-link>\n'
+
     return outstr
 
 def make_door(data):
