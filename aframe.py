@@ -170,6 +170,18 @@ def parse_dxf(page, material_dict, layer_dict):
             elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
                 data[key] = float(value)
 
+        elif flag == 'line':#stores values for lines
+            if key == '8':#layer name
+                data[key] = value
+            elif key == '10' or key == '11':#X position
+                data[key] = float(value)
+            elif key == '20' or key == '21':#mirror Y position
+                data[key] = -float(value)
+            elif key == '30' or key == '31':#Z position
+                data[key] = float(value)
+            elif key == '62':#color
+                data['color'] = cad2hex(value)
+
         elif flag == 'block':#stores values for blocks
             if key == '2':#block name
                 data[key] = value
@@ -300,6 +312,25 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     flag = False
 
+            elif flag == 'line':#close 3D face
+                data['2'] = 'line'
+                #is material set in layer?
+                layer = layer_dict[data['8']]
+                invisible = layer[1]
+                if invisible:
+                    flag = False
+                else:
+                    if data['color']:
+                        pass
+                    else:
+                        layer_material = layer[0]
+                        data['color'] = layer_color[data['8']]
+
+                    data['num'] = x
+                    collection[x] = data
+
+                    flag = False
+
             elif value == 'ATTRIB':#start attribute within block
                 attr_value = ''
                 flag = 'attrib'
@@ -352,6 +383,11 @@ def parse_dxf(page, material_dict, layer_dict):
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '', 'animation': False}#default values
                 flag = 'block'
+                x += 1
+
+            elif value == 'LINE':#start line
+                data = {'color': '',}#default values
+                flag = 'line'
                 x += 1
 
     return collection
@@ -488,6 +524,9 @@ def make_html(page, collection):
         if data['2'] == '3dface':
             entities_dict[x] = make_triangle(page, data)
 
+        elif data['2'] == 'line':
+            entities_dict[x] = make_line(data)
+
         elif data['2'] == 'a-box':
             entities_dict[x] = make_box(page, data)
 
@@ -528,6 +567,14 @@ def make_triangle(page, data):
     if page.double_face:
         outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
+    return outstr
+
+def make_line(data):
+    outstr = f'<a-entity id="line-{data["num"]}" \n'
+    outstr += f'line="start:{data["10"]} {data["30"]} {data["20"]}; \n'
+    outstr += f'end:{data["11"]} {data["31"]} {data["21"]}; \n'
+    outstr += f'color: {data["color"]};"> \n'
+    outstr += '</a-entity> \n'
     return outstr
 
 def make_box(page, data):
