@@ -79,12 +79,12 @@ def make_stalker(page, data):
     outstr += '</a-plane>\n'
     if data['PARAM1']:
         length = len(data['PARAM1'])
-        if length <= 10:
-            wrapcount = length
-        elif length <= 40:
+        if length <= 8:
+            wrapcount = length+1
+        elif length <= 30:
             wrapcount = 10
         else:
-            wrapcount = length/4
+            wrapcount = length/3
         outstr += f'<a-entity id="stalker-{data["num"]}-balloon-ent" \n'
         outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0" \n'
         outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
@@ -95,20 +95,20 @@ def make_stalker(page, data):
         outstr += f'scale="{fabs(data["41"])/1.5} 0 {fabs(data["41"])/3}"> \n'
         outstr += '</a-cylinder></a-entity>\n'
         outstr += f'<a-triangle id="stalker-triangle-{data["num"]}" \n'
-        outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.01; \n'
-        outstr += f'vertexB:0 {data["43"]-.05} 0.01; \n'
-        outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.01"> \n'
+        outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.0005; \n'
+        outstr += f'vertexB:0 {data["43"]-.05} 0.0005; \n'
+        outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.0005"> \n'
         outstr += '</a-triangle> \n'
     if data['PARAM2']:
         try:
             outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
-            outstr += f'position="{data["41"]*.7} {data["43"]*.25} 0.02" \n'
-            outstr += f'scale="{data["41"]*.25} {data["41"]*.25}"\n'
+            outstr += f'position="{data["41"]*.7} {data["43"]*.5} 0.02" \n'
+            outstr += f'scale="{data["41"]*.35} {data["41"]*.35}"\n'
             if data['PARAM2'] == 'parent':
                 target = page.get_parent()
             elif data['PARAM2'] == 'child':
                 target = page.get_first_child()
-            elif data['PARAM2'] == 'previous' or data['tree'] == 'prev':
+            elif data['PARAM2'] == 'previous' or data['PARAM2'] == 'prev':
                 target = page.get_prev_sibling()
             else:#we default to next sibling
                 target = page.get_next_sibling()
