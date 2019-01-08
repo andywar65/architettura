@@ -179,6 +179,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 data[key] = -float(value)
             elif key == '30' or key == '31':#Z position
                 data[key] = float(value)
+            elif key == '39':#thickness
+                data[key] = float(value)
             elif key == '62':#color
                 data['color'] = cad2hex(value)
 
@@ -312,24 +314,52 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     flag = False
 
-            elif flag == 'line':#close 3D face
-                data['2'] = 'line'
-                #is material set in layer?
-                layer = layer_dict[data['8']]
-                invisible = layer[1]
-                if invisible:
-                    flag = False
-                else:
-                    if data['color']:
-                        pass
+            elif flag == 'line':#close line
+                if data['39']:#if thickness transform in a-plane, works if on X-Y plane
+                    dx = data['10']-data['11']
+                    dy = data['20']-data['21']
+                    data['2'] = 'a-plane'
+                    data['43'] = data['39']
+                    data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+                    data['50'] = 180-degrees(atan2(dy, dx))
+                    data['repeat'] = data['animation'] = False
+                    data['MATERIAL'] = ''
+                    data['210'] = data['220'] = 0
+                    layer = layer_dict[data['8']]
+                    invisible = layer[1]
+                    if invisible:
+                        flag = False
                     else:
                         layer_material = layer[0]
                         data['color'] = layer_color[data['8']]
+                        data['8'] = 'default'
+                        if layer_material != 'default':
+                            component_pool = material_dict[layer_material]
+                            if component_pool:
+                                component = component_pool[0]
+                                data['color'] = component[1]
+                                data['8'] = layer_material + '-' + component[0]
 
-                    data['num'] = x
-                    collection[x] = data
+                        data['num'] = x
+                        collection[x] = data
+                else:
+                    data['2'] = 'line'
+                    #is material set in layer?
+                    layer = layer_dict[data['8']]
+                    invisible = layer[1]
+                    if invisible:
+                        flag = False
+                    else:
+                        if data['color']:
+                            pass
+                        else:
+                            layer_material = layer[0]
+                            data['color'] = layer_color[data['8']]
 
-                    flag = False
+                        data['num'] = x
+                        collection[x] = data
+
+                        flag = False
 
             elif value == 'ATTRIB':#start attribute within block
                 attr_value = ''
@@ -386,7 +416,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
             elif value == 'LINE':#start line
-                data = {'color': '',}#default values
+                data = {'color': '', '39': 0,}#default values
                 flag = 'line'
                 x += 1
 
