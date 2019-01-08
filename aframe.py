@@ -651,7 +651,11 @@ def make_plane(page, data):
     else:#insertion is at corner
         outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
     outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    outstr += entity_material(data)
+    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    if page.double_face:
+        outstr += 'side: double; '
+    outstr += '">\n'
     if data['animation']:
         outstr += is_animation(data)
     outstr += '</a-plane>\n</a-entity>\n'
