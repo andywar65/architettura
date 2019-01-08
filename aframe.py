@@ -758,6 +758,10 @@ def make_block(page, data):
             outstr += animation_wrapper(data)
             outstr += blocks.make_object(data)
 
+        elif data['TYPE'] == 'tree':
+            outstr += animation_wrapper(data)
+            outstr += blocks.make_tree(data)
+
         elif data['2'] == 'a-door':
             outstr += animation_wrapper(data)
             outstr += blocks.make_door(data)

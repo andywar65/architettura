@@ -17,14 +17,10 @@ def make_table_01(data):
     leg diameter (5cm). Gets top material from first component and leg material
     from third component.
     """
-    try:
-        component_pool = data['pool']
-        component = component_pool[2]#gets third component for legs
-        data['leg_color'] = component[1]
-        data['leg_image'] = data['MATERIAL'] + '-' + component[0]
-    except:
-        data['leg_color'] = data['color']
-        data['leg_image'] = data['8']
+    values = (
+        ('pool', 2, 'leg', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
 
     outstr = ''#blocks need to close wrapper
     #table top
@@ -136,14 +132,10 @@ def make_door(data):
     rendered. SLIDING and DOUBLE are boolean. Gets panel material from first
     component and frame material from third component.
     """
-    try:
-        component_pool = data['pool']
-        component = component_pool[2]#gets third component for frame
-        data['frame_color'] = component[1]
-        data['frame_image'] = data['MATERIAL'] + '-' + component[0]
-    except:
-        data['frame_color'] = data['color']
-        data['frame_image'] = data['8']
+    values = (
+        ('pool', 2, 'frame', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
 
     outstr = ''#blocks need to close wrapper
 
@@ -257,16 +249,10 @@ def make_slab(data):
     partition type (TODO). Gets ceiling material from first component and
     floor material from third component.
     """
-    try:
-        component_pool = data['pool']
-        component = component_pool[2]#gets third component for floor
-        data['floor_color'] = component[1]
-        data['floor_image'] = data['MATERIAL'] + '-' + component[0]
-        data['floor_repeat'] = component[2]
-    except:
-        data['floor_color'] = data['color']
-        data['floor_image'] = data['8']
-        data['floor_repeat'] = data['repeat']
+    values = (
+        ('pool', 2, 'floor', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
 
     #floor
     outstr = f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
@@ -294,7 +280,15 @@ def make_wall(data):
     respectively first component for wall, second for tiling and third for
     skirting.
     """
-    data = prepare_wall_values(data)
+    values = (
+        ('pool', 0, 'wall', 'MATERIAL'),
+        ('pool', 1, 'tile', 'MATERIAL'),
+        ('pool', 2, 'skirt', 'MATERIAL'),
+        ('pool2', 0, 'wall2', 'MATERIAL2'),
+        ('pool2', 1, 'tile2', 'MATERIAL2'),
+        ('pool2', 2, 'skirt2', 'MATERIAL2'),
+    )
+    data = prepare_material_values(values, data)
     wall_h = wall2_h = fabs(data['43'])
     tile_h = fabs(float(data['TILING']))
     skirt_h = fabs(float(data['SKIRTING']))
@@ -366,15 +360,8 @@ def entity_material(data):
     outstr += '">\n'
     return outstr
 
-def prepare_wall_values(data):
-    values = (
-        ('pool', 0, 'wall', 'MATERIAL'),
-        ('pool', 1, 'tile', 'MATERIAL'),
-        ('pool', 2, 'skirt', 'MATERIAL'),
-        ('pool2', 0, 'wall2', 'MATERIAL2'),
-        ('pool2', 1, 'tile2', 'MATERIAL2'),
-        ('pool2', 2, 'skirt2', 'MATERIAL2'),
-    )
+def prepare_material_values(values, data):
+
     for v in values:
         try:
             component_pool = data[v[0]]
@@ -411,4 +398,55 @@ def make_object(data):
     else:
         outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
     outstr += '</a-entity>'
+    return outstr
+
+def make_tree(data):
+    """Tree block
+
+    TODO. Gets dimensions from block scaling. Gets trunk material from first
+    component, branch from second and leaves from third.
+    """
+    values = (
+        ('pool', 0, 'trunk', 'MATERIAL'),
+        ('pool', 1, 'branch', 'MATERIAL'),
+        ('pool', 2, 'leaf', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
+    outstr = ''
+    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
+    outstr += f'position="0 0 0" \n'
+    outstr += f'rotation="0 0 0"> \n'
+    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
+    outstr += f'position="0 {data["43"]/4} 0" \n'
+    outstr += f'geometry="height: {data["43"]/2}; radius-bottom: {data["43"]/12}; radius-top: {data["43"]/14};" \n'
+    outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
+    outstr += is_repeat(data["trunk_repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    outstr += '</a-cone> \n'#close trunk
+
+    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-01-ent" \n'
+    outstr += f'position="0 {data["43"]/2} 0" \n'
+    outstr += f'rotation="45 0 0"> \n'
+    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-01" \n'
+    outstr += f'position="0 {data["43"]/8} 0" \n'
+    outstr += f'geometry="height: {data["43"]/4}; radius-bottom: {data["43"]/20}; radius-top: {data["43"]/25};" \n'
+    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
+    outstr += is_repeat(data["branch_repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    outstr += '</a-cone> \n'#close branch 01
+    outstr += '</a-entity> \n'#close branch 01 entity
+
+    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-10-ent" \n'
+    outstr += f'position="0 {data["43"]/2} 0" \n'
+    outstr += f'rotation="-45 0 0"> \n'
+    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-10" \n'
+    outstr += f'position="0 {data["43"]/8} 0" \n'
+    outstr += f'geometry="height: {data["43"]/4}; radius-bottom: {data["43"]/20}; radius-top: {data["43"]/25};" \n'
+    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
+    outstr += is_repeat(data["branch_repeat"], data["41"], data["43"])
+    outstr += '">\n'
+    outstr += '</a-cone> \n'#close branch 10
+    outstr += '</a-entity> \n'#close branch 01 entity
+
+    outstr += '</a-entity> \n'#close trunk entity
     return outstr
