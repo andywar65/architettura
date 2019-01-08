@@ -35,6 +35,10 @@ Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that mak
 
 When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs.
 
+### Lines
+
+Lines are very simple entities. In CAD you can assign line color, otherwise it inherits layer color. If line has `thickness`, it is transformed into a plane (see Standard blocks). In this case line must be on X-Y plane or parallel.
+
 ### Standard blocks
 
 Standard blocks may be found in `static/architettura/samples/standard-blocks.dxf` bundled within the app: box, cylinder, cone, sphere, circle, plane, look-at, text, links, curvedimage and lights. These mimic entities of the A-Frame library, with unit dimensions. Insert the block and scale it to the desired width, length and height. You can rotate it along all axis (previous limitations solved thanks to [Marilena Vendittelli](http://www.dis.uniroma1.it/~venditt/)). You can explode some of the standard blocks without affecting geometry: they will degrade to a series of 3D faces.
