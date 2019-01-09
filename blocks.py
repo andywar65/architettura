@@ -9,6 +9,7 @@ parameters of their own.
 """
 
 from math import fabs
+from random import random, gauss
 
 def make_table_01(data):
     """Table 01, default block (t01)
@@ -412,41 +413,93 @@ def make_tree(data):
         ('pool', 2, 'leaf', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
+    ht = 0.7172 * data['43']
+    lt = ht * gauss(1, .1)
+    l0 = 0.7172 * lt * gauss(1, .1)
+    l00 = 0.7172 * l0 * gauss(1, .1)
+    l000 = 0.7172 * l00 * gauss(1, .1)
+    l001 = 0.7172 * l00 * gauss(1, .1)
+    l01 = 0.7172 * l0 * gauss(1, .1)
+    l010 = 0.7172 * l01 * gauss(1, .1)
+    l011 = 0.7172 * l01 * gauss(1, .1)
+    l1 = 0.7172 * lt * gauss(1, .1)
+    l10 = 0.7172 * l1 * gauss(1, .1)
+    l100 = 0.7172 * l10 * gauss(1, .1)
+    l101 = 0.7172 * l10 * gauss(1, .1)
+    l11 = 0.7172 * l1 * gauss(1, .1)
+    l110 = 0.7172 * l11 * gauss(1, .1)
+    l111 = 0.7172 * l11 * gauss(1, .1)
     outstr = ''
     outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
-    outstr += f'rotation="0 0 0"> \n'
+    outstr += f'rotation="{gauss(0, 5)} {random()*360} 0"> \n'
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
-    outstr += f'position="0 {data["43"]/4} 0" \n'
-    outstr += f'geometry="height: {data["43"]/2}; radius-bottom: {data["43"]/12}; radius-top: {data["43"]/14};" \n'
+    outstr += f'position="0 {lt/2} 0" \n'
+    outstr += f'geometry="height: {lt}; radius-bottom: {lt/12}; radius-top: {lt/14};" \n'
     outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
-    outstr += is_repeat(data["trunk_repeat"], data["41"], data["43"])
+    outstr += is_repeat(data["trunk_repeat"], data["41"], lt)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
 
-    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-01-ent" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    outstr += f'rotation="45 0 0"> \n'
-    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-01" \n'
-    outstr += f'position="0 {data["43"]/8} 0" \n'
-    outstr += f'geometry="height: {data["43"]/4}; radius-bottom: {data["43"]/20}; radius-top: {data["43"]/25};" \n'
-    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
-    outstr += is_repeat(data["branch_repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    outstr += '</a-cone> \n'#close branch 01
-    outstr += '</a-entity> \n'#close branch 01 entity
+    outstr += make_branch('0', l0, lt, 45, data)
+    outstr += make_branch('00', l00, l0, 45, data)
+    outstr += make_branch('000', l000, l00, 45, data)
+    outstr += make_leaves('000', l000, data)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('001', l001, l00, -45, data)
+    outstr += make_leaves('001', l001, data)
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += make_branch('01', l01, l0, -45, data)
+    outstr += make_branch('010', l010, l01, 45, data)
+    outstr += make_leaves('010', l010, data)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('011', l011, l01, -45, data)
+    outstr += make_leaves('011', l011, data)
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += make_branch('1', l1, lt, -45, data)
+    outstr += make_branch('10', l10, l1, 45, data)
+    outstr += make_branch('100', l100, l10, 45, data)
+    outstr += make_leaves('100', l100, data)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('101', l101, l10, -45, data)
+    outstr += make_leaves('101', l101, data)
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += make_branch('11', l11, l1, -45, data)
+    outstr += make_branch('110', l110, l11, 45, data)
+    outstr += make_leaves('110', l110, data)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('111', l111, l11, -45, data)
+    outstr += make_leaves('111', l111, data)
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
 
-    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-10-ent" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    outstr += f'rotation="-45 0 0"> \n'
-    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-10" \n'
-    outstr += f'position="0 {data["43"]/8} 0" \n'
-    outstr += f'geometry="height: {data["43"]/4}; radius-bottom: {data["43"]/20}; radius-top: {data["43"]/25};" \n'
-    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
-    outstr += is_repeat(data["branch_repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    outstr += '</a-cone> \n'#close branch 10
-    outstr += '</a-entity> \n'#close branch 01 entity
+    outstr += '</a-entity> \n'
+    return outstr
 
-    outstr += '</a-entity> \n'#close trunk entity
+def make_branch(branch, lb, lp, angle, data):
+    outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-{branch}-ent" \n'
+    outstr += f'position="0 {lp*.95} 0" \n'
+    outstr += f'rotation="{gauss(angle, 10)} {random()*360} 0"> \n'
+    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-{branch}" \n'
+    outstr += f'position="0 {lb/2} 0" \n'
+    outstr += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
+    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
+    outstr += is_repeat(data["branch_repeat"], data["41"], lb)
+    outstr += '">\n'
+    outstr += '</a-cone> \n'#close branch
+    return outstr
+
+def make_leaves(branch, lb, data):
+    outstr = f'<a-icosahedron id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
+    outstr += f'position="0 {lb} 0" \n'
+    outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
+    outstr += f'material="src: #{data["leaf_image"]}; color: {data["leaf_color"]}'
+    outstr += is_repeat(data["leaf_repeat"], lb, lb)
+    outstr += 'side: back;">\n'
+    outstr += '</a-icosahedron> \n'#close branch
     return outstr
