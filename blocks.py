@@ -413,7 +413,7 @@ def make_tree(data):
         ('pool', 2, 'leaf', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
-    ht = 0.7172 * data['43']
+    ht = 0.7172 * data['43'] * gauss(1, .1)
     lt = ht * gauss(1, .1)
     l0 = 0.7172 * lt * gauss(1, .1)
     l00 = 0.7172 * l0 * gauss(1, .1)
@@ -429,50 +429,53 @@ def make_tree(data):
     l11 = 0.7172 * l1 * gauss(1, .1)
     l110 = 0.7172 * l11 * gauss(1, .1)
     l111 = 0.7172 * l11 * gauss(1, .1)
-    outstr = ''
-    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
+    ang = gauss(0, 5)
+    rot = random()*360
+    outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
-    outstr += f'rotation="{gauss(0, 5)} {random()*360} 0"> \n'
+    outstr += f'rotation="{ang} {rot} 0"> \n'
+    #outstr += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '
+    #outstr += f'to="{ang*gauss(1, .1)} {rot} 0" dur="{int(5000*gauss(1, .5))}" repeat="indefinite" direction="alternate"></a-animation>'
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
     outstr += f'position="0 {lt/2} 0" \n'
-    outstr += f'geometry="height: {lt}; radius-bottom: {lt/12}; radius-top: {lt/14};" \n'
+    outstr += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
     outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
     outstr += is_repeat(data["trunk_repeat"], data["41"], lt)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
-
-    outstr += make_branch('0', l0, lt, 45, data)
-    outstr += make_branch('00', l00, l0, 45, data)
-    outstr += make_branch('000', l000, l00, 45, data)
+    osc = 30 * gauss(1, .1)
+    outstr += make_branch('0', l0, lt, osc, data)
+    outstr += make_branch('00', l00, l0, osc, data)
+    outstr += make_branch('000', l000, l00, osc, data)
     outstr += make_leaves('000', l000, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('001', l001, l00, -45, data)
+    outstr += make_branch('001', l001, l00, -osc, data)
     outstr += make_leaves('001', l001, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('01', l01, l0, -45, data)
-    outstr += make_branch('010', l010, l01, 45, data)
+    outstr += make_branch('01', l01, l0, -osc, data)
+    outstr += make_branch('010', l010, l01, osc, data)
     outstr += make_leaves('010', l010, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('011', l011, l01, -45, data)
+    outstr += make_branch('011', l011, l01, -osc, data)
     outstr += make_leaves('011', l011, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('1', l1, lt, -45, data)
-    outstr += make_branch('10', l10, l1, 45, data)
-    outstr += make_branch('100', l100, l10, 45, data)
+    outstr += make_branch('1', l1, lt, -osc, data)
+    outstr += make_branch('10', l10, l1, osc, data)
+    outstr += make_branch('100', l100, l10, osc, data)
     outstr += make_leaves('100', l100, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('101', l101, l10, -45, data)
+    outstr += make_branch('101', l101, l10, -osc, data)
     outstr += make_leaves('101', l101, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('11', l11, l1, -45, data)
-    outstr += make_branch('110', l110, l11, 45, data)
+    outstr += make_branch('11', l11, l1, -osc, data)
+    outstr += make_branch('110', l110, l11, osc, data)
     outstr += make_leaves('110', l110, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('111', l111, l11, -45, data)
+    outstr += make_branch('111', l111, l11, -osc, data)
     outstr += make_leaves('111', l111, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
@@ -482,9 +485,11 @@ def make_tree(data):
     return outstr
 
 def make_branch(branch, lb, lp, angle, data):
+    ang = gauss(angle, 10)
+    rot = random()*360
     outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-{branch}-ent" \n'
-    outstr += f'position="0 {lp*.95} 0" \n'
-    outstr += f'rotation="{gauss(angle, 10)} {random()*360} 0"> \n'
+    outstr += f'position="0 {lp*.95-lp*fabs(gauss(0, .2))} 0" \n'
+    outstr += f'rotation="{ang} {rot} 0"> \n'
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-{branch}" \n'
     outstr += f'position="0 {lb/2} 0" \n'
     outstr += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
