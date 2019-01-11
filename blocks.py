@@ -444,38 +444,45 @@ def make_tree(data):
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
     osc = 30 * gauss(1, .1)
-    outstr += make_branch('0', l0, lt, osc, data)
-    outstr += make_branch('00', l00, l0, osc, data)
-    outstr += make_branch('000', l000, l00, osc, data)
+    rot0 = random()*360
+    rot00 = random()*360
+    rot000 = random()*360
+    rot010 = random()*360
+    rot10 = random()*360
+    rot100 = random()*360
+    rot110 = random()*360
+    outstr += make_branch('0', l0, lt, osc, rot0, data)
+    outstr += make_branch('00', l00, l0, osc, rot00, data)
+    outstr += make_branch('000', l000, l00, osc, rot000, data)
     outstr += make_leaves('000', l000, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('001', l001, l00, -osc, data)
+    outstr += make_branch('001', l001, l00, -osc, 180-rot000, data)
     outstr += make_leaves('001', l001, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('01', l01, l0, -osc, data)
-    outstr += make_branch('010', l010, l01, osc, data)
+    outstr += make_branch('01', l01, l0, -osc, 180-rot00, data)
+    outstr += make_branch('010', l010, l01, osc, rot010, data)
     outstr += make_leaves('010', l010, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('011', l011, l01, -osc, data)
+    outstr += make_branch('011', l011, l01, -osc, 180-rot010, data)
     outstr += make_leaves('011', l011, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('1', l1, lt, -osc, data)
-    outstr += make_branch('10', l10, l1, osc, data)
-    outstr += make_branch('100', l100, l10, osc, data)
+    outstr += make_branch('1', l1, lt, -osc, 180-rot0, data)
+    outstr += make_branch('10', l10, l1, osc, rot10, data)
+    outstr += make_branch('100', l100, l10, osc, rot100, data)
     outstr += make_leaves('100', l100, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('101', l101, l10, -osc, data)
+    outstr += make_branch('101', l101, l10, -osc, 180-rot100, data)
     outstr += make_leaves('101', l101, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('11', l11, l1, -osc, data)
-    outstr += make_branch('110', l110, l11, osc, data)
+    outstr += make_branch('11', l11, l1, -osc, 180-rot10, data)
+    outstr += make_branch('110', l110, l11, osc, rot110, data)
     outstr += make_leaves('110', l110, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('111', l111, l11, -osc, data)
+    outstr += make_branch('111', l111, l11, -osc, 180-rot110, data)
     outstr += make_leaves('111', l111, data)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
@@ -484,9 +491,9 @@ def make_tree(data):
     outstr += '</a-entity> \n'
     return outstr
 
-def make_branch(branch, lb, lp, angle, data):
+def make_branch(branch, lb, lp, angle, rotx, data):
     ang = gauss(angle, 10)
-    rot = random()*360
+    rot = gauss(rotx, 20)
     outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-{branch}-ent" \n'
     outstr += f'position="0 {lp*.95-lp*fabs(gauss(0, .2))} 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
