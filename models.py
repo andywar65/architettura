@@ -265,6 +265,9 @@ class DigkomPage(Page):
     def fly_camera(self):
         return self.scene.fly_camera
 
+    def equirectangular_image(self):
+        return self.scene.equirectangular_image
+
     def add_new_layers(self):
         add_new_layers_ext(self.scene)
         return
