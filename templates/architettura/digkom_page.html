@@ -1,0 +1,85 @@
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<title>{{ page.title }}</title>
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.8.2.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-look-at-component.min.js' %}"></script>
+</head>
+<body style='margin : 0px; overflow: hidden;'>
+  {% if page.background %}
+    <a-scene background="color: {{ page.background }}" embedded>
+  {% else %}
+    <a-scene embedded>
+  {% endif %}
+
+  <a-asset>
+    <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
+
+    {% with eq_image=page.equirectangular_image %}
+     {% if eq_image %}
+      {% image eq_image original as temp_image %}
+       <img id="sky" src="{{ temp_image.url }}">
+      {% else %}
+       <img id="sky" src="{% static 'architettura/images/target.png' %}">
+     {% endif %}
+    {% endwith %}
+
+    {% with nl=page.add_new_layers %}
+    {% endwith %}
+
+    {% with materials=page.get_material_assets %}
+      {% if materials %}
+        {% for name, component in materials.items %}
+        {% image component original as temp_image %}
+          <img id="{{ name }}" src="{{ temp_image.url }}">
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% with object_dict=page.get_object_assets %}
+      {% if object_dict %}
+        {% for name, path in object_dict.items %}
+          <a-asset-item id="{{ name }}-obj" src="{{ path }}/{{ name }}.obj"></a-asset-item>
+          <a-asset-item id="{{ name }}-mtl" src="{{ path }}/{{ name }}.mtl"></a-asset-item>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+  </a-asset>
+  <a-entity id="dxf-ent"
+          position="0 0 0"
+          rotation="0 0 0">
+    {% with entities=page.get_entities %}
+     {% if entities %}
+      {% for key, value in entities.items %}
+      {{ value|safe }}
+      {% endfor %}
+     {% endif %}
+    {% endwith %}
+  </a-entity>
+  {% with ambient_light=page.get_ambient_light %}
+    <a-entity light="type: hemisphere; {{ ambient_light }}"></a-entity>
+  {% endwith %}
+  {% if page.background %}
+  {% else %}
+    <a-sky src="#sky"></a-sky>
+  {% endif %}
+
+    <a-entity id="camera-ent">
+      {% with fly_camera=page.fly_camera %}
+        <a-camera id="camera" wasd-controls="fly: {{ fly_camera|lower }}">
+      {% endwith %}
+          <a-light type="point" distance="10"></a-light>
+          <a-entity position="0 -1.6 0" id="camera-foot"></a-entity>
+          <a-cursor color="#2E3A87"></a-cursor>
+        </a-camera>
+    </a-entity>
+</a-scene>
+</body>
+</html>
