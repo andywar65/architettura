@@ -130,96 +130,20 @@ class ScenePage(Page):
     ]
 
     def add_new_layers(self):
-        layer_list = aframe.get_layer_list(self)
-        for layer in layer_list:
-            try:
-                a = ScenePageLayer.objects.get(page_id=self.id, name=layer)
-            except:
-                b = ScenePageLayer(page_id=self.id, name=layer)
-                b.save()
-
+        add_new_layers_ext(self)
         return
 
     def get_material_assets(self):
-        material_dict = aframe.get_entity_material(self)
-        try:
-            layers = ScenePageLayer.objects.filter(page_id=self.id)
-            for layer in layers:
-                try:
-                    m = MaterialPage.objects.get(id=layer.material_id)
-                    material_dict[m.title] = 'dummy'
-                except:
-                    pass
-        except:
-            pass
-        image_dict = {}
-        if material_dict:
-            for material, dummy in material_dict.items():
-                try:
-                    m = MaterialPage.objects.get(title=material)
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    for component in components:
-                        try:
-                            if component.image:
-                                image_dict[m.title + '-' + component.name] = component.image
-                        except:
-                            pass
-                except:
-                    pass
-        return image_dict
+        return get_material_assets_ext(self)
 
     def get_object_assets(self):
-        object_dict = aframe.get_object_dict(self)
-        return object_dict
+        return get_object_assets_ext(self)
 
     def get_entities(self):
-        material_dict = self.prepare_material_dict()
-        layer_dict = self.prepare_layer_dict()
-        collection = aframe.parse_dxf(self, material_dict, layer_dict)
-        collection = aframe.reference_openings(collection)
-        collection = aframe.reference_animations(collection)
-        entities_dict = aframe.make_html(self, collection)
-        return entities_dict
-
-    def prepare_layer_dict(self):
-        layer_dict = {}
-        try:
-            layers = ScenePageLayer.objects.filter(page_id=self.id)
-            if layers:
-                for layer in layers:
-                    try:
-                        m = MaterialPage.objects.get(id=layer.material_id)
-                        layer_dict[layer.name] = (m.title, layer.invisible)
-                    except:
-                        layer_dict[layer.name] = ('default', layer.invisible)
-        except:
-            pass
-
-        return layer_dict
-
-    def prepare_material_dict(self):
-        material_dict = {}
-        try:
-            materials = MaterialPage.objects.all()
-            if materials:
-                for m in materials:
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    x=0
-                    component_dict = {}
-                    for component in components:
-                        component_dict[x] = (component.name, component.color, component.pattern)
-                        x += 1
-                    material_dict[m.title] = component_dict
-        except:
-            pass
-
-        return material_dict
+        return get_entities_ext(self)
 
     def get_ambient_light(self):
-        ambient_light = f'color: {self.ambient_light_color}; '
-        ambient_light += f'groundColor: {self.hemispheric_color}; '
-        ambient_light += f'intensity: {self.ambient_light_intensity}; '
-        return ambient_light
+        return get_ambient_light_ext(self)
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
@@ -293,85 +217,14 @@ class ArScenePage(Page):
     ]
 
     def add_new_layers(self):
-        layer_list = aframe.get_layer_list(self.scene)
-        for layer in layer_list:
-            try:
-                a = ScenePageLayer.objects.get(page_id=self.scene.id, name=layer)
-            except:
-                b = ScenePageLayer(page_id=self.scene.id, name=layer)
-                b.save()
-
+        add_new_layers_ext(self.scene)
         return
 
     def get_material_assets(self):
-        material_dict = aframe.get_entity_material(self.scene)
-        try:
-            layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
-            for layer in layers:
-                try:
-                    m = MaterialPage.objects.get(id=layer.material_id)
-                    material_dict[m.title] = 'dummy'
-                except:
-                    pass
-        except:
-            pass
-        image_dict = {}
-        if material_dict:
-            for material, dummy in material_dict.items():
-                try:
-                    m = MaterialPage.objects.get(title=material)
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    for component in components:
-                        try:
-                            if component.image:
-                                image_dict[m.title + '-' + component.name] = component.image
-                        except:
-                            pass
-                except:
-                    pass
-        return image_dict
+        return get_material_assets_ext(self.scene)
 
     def get_entities(self):
-        material_dict = self.prepare_material_dict()
-        layer_dict = self.prepare_layer_dict()
-        collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
-        collection = aframe.reference_animations(collection)
-        entities_dict = aframe.make_html(self.scene, collection)
-        return entities_dict
-
-    def prepare_layer_dict(self):
-        layer_dict = {}
-        try:
-            layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
-            if layers:
-                for layer in layers:
-                    try:
-                        m = MaterialPage.objects.get(id=layer.material_id)
-                        layer_dict[layer.name] = (m.title, layer.invisible)
-                    except:
-                        layer_dict[layer.name] = ('default', layer.invisible)
-        except:
-            pass
-
-        return layer_dict
-
-    def prepare_material_dict(self):
-        material_dict = {}
-        try:
-            materials = MaterialPage.objects.all()
-            if materials:
-                for m in materials:
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    x=0
-                    component_dict = {}
-                    for component in components:
-                        component_dict[x] = (component.name, component.color, component.pattern)
-                        x += 1
-                    material_dict[m.title] = component_dict
-        except:
-            pass
-
-        return material_dict
+        return get_entities_ext(self.scene)
 
 class SceneIndexPage(Page):
     introduction = models.TextField(
@@ -399,3 +252,95 @@ class SceneIndexPage(Page):
             self).live().order_by(
             '-first_published_at')
         return context
+
+def add_new_layers_ext(page_obj):
+    layer_list = aframe.get_layer_list(page_obj)
+    for layer in layer_list:
+        try:
+            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=layer)
+        except:
+            b = ScenePageLayer(page_id=page_obj.id, name=layer)
+            b.save()
+
+    return
+
+def get_material_assets_ext(page_obj):
+    material_dict = aframe.get_entity_material(page_obj)
+    try:
+        layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
+        for layer in layers:
+            try:
+                m = MaterialPage.objects.get(id=layer.material_id)
+                material_dict[m.title] = 'dummy'
+            except:
+                pass
+    except:
+        pass
+    image_dict = {}
+    if material_dict:
+        for material, dummy in material_dict.items():
+            try:
+                m = MaterialPage.objects.get(title=material)
+                components = MaterialPageComponent.objects.filter(page_id=m.id)
+                for component in components:
+                    try:
+                        if component.image:
+                            image_dict[m.title + '-' + component.name] = component.image
+                    except:
+                        pass
+            except:
+                pass
+    return image_dict
+
+def get_object_assets_ext(page_obj):
+    object_dict = aframe.get_object_dict(page_obj)
+    return object_dict
+
+def get_entities_ext(page_obj):
+    material_dict = prepare_material_dict()
+    layer_dict = prepare_layer_dict(page_obj)
+    collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
+    collection = aframe.reference_openings(collection)
+    collection = aframe.reference_animations(collection)
+    entities_dict = aframe.make_html(page_obj, collection)
+    return entities_dict
+
+def prepare_material_dict():
+    material_dict = {}
+    try:
+        materials = MaterialPage.objects.all()
+        if materials:
+            for m in materials:
+                components = MaterialPageComponent.objects.filter(page_id=m.id)
+                x=0
+                component_dict = {}
+                for component in components:
+                    component_dict[x] = (component.name, component.color, component.pattern)
+                    x += 1
+                material_dict[m.title] = component_dict
+    except:
+        pass
+
+    return material_dict
+
+def prepare_layer_dict(page_obj):
+    layer_dict = {}
+    try:
+        layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
+        if layers:
+            for layer in layers:
+                try:
+                    m = MaterialPage.objects.get(id=layer.material_id)
+                    layer_dict[layer.name] = (m.title, layer.invisible)
+                except:
+                    layer_dict[layer.name] = ('default', layer.invisible)
+    except:
+        pass
+
+    return layer_dict
+
+def get_ambient_light_ext(page_obj):
+    ambient_light = f'color: {page_obj.ambient_light_color}; '
+    ambient_light += f'groundColor: {page_obj.hemispheric_color}; '
+    ambient_light += f'intensity: {page_obj.ambient_light_intensity}; '
+    return ambient_light
