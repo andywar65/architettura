@@ -12,11 +12,11 @@
   <script type="text/javascript" src="{% static 'architettura/js/aframe-look-at-component.min.js' %}"></script>
 </head>
 <body style='margin : 0px; overflow: hidden;'>
+    <a-scene style="width: 100%; height: 768px"
   {% if page.background %}
-    <a-scene style="width: 100%; height: 768px" background="color: {{ page.background }}" embedded>
-  {% else %}
-    <a-scene style="width: 100%; height: 768px" embedded>
+    background="color: {{ page.background }}"
   {% endif %}
+    embedded>
 
   <a-asset>
     <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
