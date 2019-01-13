@@ -259,6 +259,12 @@ class DigkomPage(Page):
         FieldPanel('scene'),
     ]
 
+    def background(self):
+        return self.scene.background
+
+    def fly_camera(self):
+        return self.scene.fly_camera
+
     def add_new_layers(self):
         add_new_layers_ext(self.scene)
         return

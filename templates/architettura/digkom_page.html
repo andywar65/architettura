@@ -13,9 +13,9 @@
 </head>
 <body style='margin : 0px; overflow: hidden;'>
   {% if page.background %}
-    <a-scene background="color: {{ page.background }}" embedded>
+    <a-scene style="width: 100%; height: 768px" background="color: {{ page.background }}" embedded>
   {% else %}
-    <a-scene embedded>
+    <a-scene style="width: 100%; height: 768px" embedded>
   {% endif %}
 
   <a-asset>
