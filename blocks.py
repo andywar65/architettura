@@ -507,11 +507,11 @@ def make_branch(branch, lb, lp, angle, rotx, data):
     return outstr
 
 def make_leaves(branch, lb, data):
-    outstr = f'<a-icosahedron id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
+    outstr = f'<a-sphere id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
     outstr += f'position="0 {lb} 0" \n'
     outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
     outstr += f'material="src: #{data["leaf_image"]}; color: {data["leaf_color"]}'
     outstr += is_repeat(data["leaf_repeat"], lb, lb)
     outstr += 'side: back;">\n'
-    outstr += '</a-icosahedron> \n'#close branch
+    outstr += '</a-sphere> \n'#close branch
     return outstr
