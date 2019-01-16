@@ -9,6 +9,7 @@
 <head>
 <title>{{ page.title }}</title>
   <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.8.2.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-extras.controls.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'architettura/js/aframe-look-at-component.min.js' %}"></script>
 </head>
 <body style='margin : 0px; overflow: hidden;'>
@@ -71,9 +72,9 @@
     <a-sky src="#sky"></a-sky>
   {% endif %}
 
-    <a-entity id="camera-ent">
+    <a-entity id="camera-ent" movement-controls="controls: checkpoint" checkpoint-controls="mode: animate">
       {% with fly_camera=page.fly_camera %}
-        <a-camera id="camera" wasd-controls="fly: {{ fly_camera|lower }}">
+        <a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="fly: {{ fly_camera|lower }}">
       {% endwith %}
           <a-light type="point" distance="10"></a-light>
           <a-entity position="0 -1.6 0" id="camera-foot"></a-entity>
