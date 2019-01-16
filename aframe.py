@@ -520,30 +520,33 @@ def door_tilted_case(data, data2):
     return data2
 
 def reference_animations(collection):
-    """Compares animation blocks against all other blocks.
+    """Assigns animations and checkpoints.
 
-    Controls if animation block shares insertion point with other blocks.
-    Animation attributes will be appended to selected block. Returns nested
-    dictionary.
+    Controls if animation / checkpoint block shares insertion point with other
+    blocks. Animation / checkpoint attributes will be appended to selected
+    block. Returns nested dictionary.
     """
     collection2 = collection.copy()
     for x, data in collection.items():
-        if data['2'] == 'a-animation':
-            collection[x] = data
+        if data['2'] == 'a-animation' or data['2'] == 'checkpoint':
+            collection[x] = data#needless? TEST
             for x2, data2 in collection2.items():
-                if data2['2'] != '3dface':
+                if data2['2'] != '3dface':#can't you animate a 3dface?
                     dx = data['10']-data2['10']
                     dy = data['20']-data2['20']
                     dz = data['20']-data2['20']
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
-                        data2['animation'] = True
-                        data2['ATTRIBUTE'] = data['ATTRIBUTE']
-                        data2['FROM'] = data['FROM']
-                        data2['TO'] = data['TO']
-                        data2['BEGIN'] = data['BEGIN']
-                        data2['DIRECTION'] = data['DIRECTION']
-                        data2['REPEAT'] = data['REPEAT']
-                        data2['DURATION'] = data['DURATION']
+                        if data['2'] == 'checkpoint':
+                            data2['checkpoint'] = True
+                        elif data['2'] == 'a-animation':
+                            data2['animation'] = True
+                            data2['ATTRIBUTE'] = data['ATTRIBUTE']
+                            data2['FROM'] = data['FROM']
+                            data2['TO'] = data['TO']
+                            data2['BEGIN'] = data['BEGIN']
+                            data2['DIRECTION'] = data['DIRECTION']
+                            data2['REPEAT'] = data['REPEAT']
+                            data2['DURATION'] = data['DURATION']
                         collection[x2] = data2
     return collection
 
