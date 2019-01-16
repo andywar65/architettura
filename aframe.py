@@ -904,7 +904,7 @@ def is_animation(data):
     outstr += f'begin="{data["BEGIN"]}"\n'
     outstr += f'direction="{data["DIRECTION"]}"\n'
     outstr += f'repeat="{data["REPEAT"]}"\n'
-    outstr += f'duration="{data["DURATION"]}"\n'
+    outstr += f'dur="{data["DURATION"]}"\n'
     outstr += '></a-animation>\n'
     return outstr
 
