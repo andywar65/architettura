@@ -530,12 +530,11 @@ def reference_animations(collection):
     collection2 = collection.copy()
     for x, data in collection.items():
         if data['2'] == 'a-animation' or data['2'] == 'checkpoint':
-            collection[x] = data#needless? TEST
             for x2, data2 in collection2.items():
-                if data2['2'] != '3dface':#can't you animate a 3dface?
-                    dx = data['10']-data2['10']
-                    dy = data['20']-data2['20']
-                    dz = data['20']-data2['20']
+                if x != x2:
+                    dx = fabs(data['10']-data2['10'])
+                    dy = fabs(data['20']-data2['20'])
+                    dz = fabs(data['30']-data2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
                         if data['2'] == 'checkpoint':
                             data2['checkpoint'] = True
@@ -582,7 +581,7 @@ def make_html(page, collection):
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
-        elif data['2'] == 'a-animation':
+        elif data['2'] == 'a-animation' or data['2'] == 'checkpoint':
             pass
 
         else:
