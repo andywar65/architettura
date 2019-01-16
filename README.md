@@ -45,17 +45,19 @@ Standard blocks may be found in `static/architettura/samples/standard-blocks.dxf
 
 Standard blocks come with attributes that affect their geometry. In CAD, attributes are prompted when inserting a block, and can be modified in the Property window. To understand how attributes affect geometry, refer to [A-Frame Documentation](https://aframe.io/docs/0.8.0/primitives/a-box.html) .
 
-Light standard block has a `TYPE` attribute which can be set to ambient, directional, point and spot. Directional light is best suited for shadowing. Scale light block to modify shadow camera frustum. Refer to [A-Frame Light Component Documentation](https://aframe.io/docs/0.8.0/components/light.html) for further details.
+`Light` standard block has a `TYPE` attribute which can be set to ambient, directional, point and spot. Directional light is best suited for shadowing. Scale light block to modify shadow camera frustum. Refer to [A-Frame Light Component Documentation](https://aframe.io/docs/0.8.0/components/light.html) for further details.
 
-Look-at standard block is a plane that always faces the camera.
+`Look-at` standard block is a plane that always faces the camera.
 
-Text standard block is a text centered in a bounding plane. The attributes control alignment, content and wrap count, which is the number of letters that fill the width of the bounding plane.
+`Text` standard block is a text centered in a bounding plane. The attributes control alignment, content and wrap count, which is the number of letters that fill the width of the bounding plane.
 
-Link standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link.
+`Link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link.
 
-Curvedimage standard block is an open cylinder where you can project panoramic images.
+`Curvedimage` standard block is an open cylinder where you can project panoramic images.
 
-Animation standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes.
+`Animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes.
+
+`Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further).
 
 ### Blocks and BIM standard blocks
 
@@ -69,6 +71,6 @@ In a Wall block you can define it's `TYPE` to set the partition type (physical c
 
 Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `TYPE` attribute to `ghost`, door panel is not rendered. If a door panel is clicked, an animation is triggered.
 
-### Next improvements
+### digitalkOmiX mode
 
-Complete a-tree block.
+In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `checkpoint block` in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
