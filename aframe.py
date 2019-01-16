@@ -322,7 +322,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     data['43'] = data['39']
                     data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
                     data['50'] = 180-degrees(atan2(dy, dx))
-                    data['repeat'] = data['animation'] = False
+                    data['repeat'] = data['animation'] = data['checkpoint'] = False
                     data['MATERIAL'] = ''
                     data['210'] = data['220'] = 0
                     layer = layer_dict[data['8']]
@@ -411,7 +411,8 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '', 'animation': False}#default values
+                 '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '',
+                 'animation': False, 'checkpoint': False}#default values
                 flag = 'block'
                 x += 1
 
@@ -813,6 +814,8 @@ def make_block(page, data):
 
 def start_entity_wrapper(page, data):
     outstr = f'<a-entity id="{data["2"]}-{data["num"]}-ent" \n'
+    if data['checkpoint']:
+        outstr += 'checkpoint \n'
     if page.shadows:
         if data['2'] == 'a-curvedimage':
             outstr += 'shadow="receive: false; cast: false" \n'
