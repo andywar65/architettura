@@ -31,9 +31,15 @@ Okay, now publish and go to the frontend to see how your model behaves.
 The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, you have to press and drag the mouse. To move around press the `W-A-S-D` keys. On some mobiles you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
 Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that makes you inspect and modify the entities of the model. Modifications can be saved to HTML files.
 
+### digitalkOmiX mode
+
+In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `checkpoint block` in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
+
 ### Nesting Pages
 
 When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs.
+
+##Entities
 
 ### Lines
 
@@ -70,7 +76,3 @@ BIM (Building Information Management) standard blocks are recognized as real lif
 In a Wall block you can define it's `TYPE` to set the partition type (physical characteristics, TODO) and `MATERIALs` for interior and exterior surfaces. A single material can describe three stripes of the same surface. In Slabs a single material describes ceiling and floor patterns.
 
 Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `TYPE` attribute to `ghost`, door panel is not rendered. If a door panel is clicked, an animation is triggered.
-
-### digitalkOmiX mode
-
-In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `checkpoint block` in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.

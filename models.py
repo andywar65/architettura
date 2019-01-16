@@ -262,9 +262,6 @@ class DigkomPage(Page):
     def background(self):
         return self.scene.background
 
-    def fly_camera(self):
-        return self.scene.fly_camera
-
     def equirectangular_image(self):
         return self.scene.equirectangular_image
 
