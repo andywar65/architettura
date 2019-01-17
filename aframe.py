@@ -550,9 +550,12 @@ def reference_animations(collection):
                         collection[x2] = data2
     return collection
 
-def make_html(page, collection, digkom):
+def make_html(page, collection, mode):
     entities_dict = {}
-    no_camera = True
+    if mode == 'ar':
+        no_camera = False
+    else:
+        no_camera = True
     for x, data in collection.items():
 
         if data['2'] == '3dface':
@@ -584,7 +587,7 @@ def make_html(page, collection, digkom):
 
         elif data['2'] == 'a-camera' and no_camera:
             no_camera = False
-            entities_dict[x] = make_camera(page, data, digkom)
+            entities_dict[x] = make_camera(page, data, mode)
 
         elif data['2'] == 'a-animation' or data['2'] == 'checkpoint':
             pass
@@ -595,7 +598,7 @@ def make_html(page, collection, digkom):
     if no_camera:
         x += 1
         data["10"] = data["30"] = data["20"] = 0
-        entities_dict[x] = make_camera(page, data, digkom)
+        entities_dict[x] = make_camera(page, data, mode)
 
     return entities_dict
 
@@ -821,9 +824,9 @@ def make_block(page, data):
     outstr += '</a-entity>\n'
     return outstr
 
-def make_camera(page, data, digkom):
+def make_camera(page, data, mode):
     outstr = ''
-    if digkom:
+    if mode == 'digkom':
         outstr += f'<a-entity id="camera-ent" position="{data["10"]} {data["30"]} {data["20"]}" \n'
         outstr += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         outstr += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" \n>'

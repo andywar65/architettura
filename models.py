@@ -140,8 +140,8 @@ class ScenePage(Page):
         return get_object_assets_ext(self)
 
     def get_entities(self):
-        digkom = False
-        return get_entities_ext(self, digkom)
+        mode = 'scene'
+        return get_entities_ext(self, mode)
 
     def get_ambient_light(self):
         return get_ambient_light_ext(self)
@@ -225,7 +225,8 @@ class ArScenePage(Page):
         return get_material_assets_ext(self.scene)
 
     def get_entities(self):
-        return get_entities_ext(self.scene)
+        mode = 'ar'
+        return get_entities_ext(self.scene, mode)
 
 class DigkomPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
@@ -277,8 +278,8 @@ class DigkomPage(Page):
         return get_object_assets_ext(self.scene)
 
     def get_entities(self):
-        digkom = True
-        return get_entities_ext(self.scene, digkom)
+        mode = 'digkom'
+        return get_entities_ext(self.scene, mode)
 
     def get_ambient_light(self):
         return get_ambient_light_ext(self.scene)
@@ -353,13 +354,13 @@ def get_object_assets_ext(page_obj):
     object_dict = aframe.get_object_dict(page_obj)
     return object_dict
 
-def get_entities_ext(page_obj, digkom):
+def get_entities_ext(page_obj, mode):
     material_dict = prepare_material_dict()
     layer_dict = prepare_layer_dict(page_obj)
     collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
     collection = aframe.reference_openings(collection)
     collection = aframe.reference_animations(collection)
-    entities_dict = aframe.make_html(page_obj, collection, digkom)
+    entities_dict = aframe.make_html(page_obj, collection, mode)
     return entities_dict
 
 def prepare_material_dict():
