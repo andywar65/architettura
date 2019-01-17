@@ -39,7 +39,7 @@ In this mode interaction has a different behaviour: keyboard movements are disab
 
 When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs.
 
-##Entities
+## Entities
 
 ### Lines
 
