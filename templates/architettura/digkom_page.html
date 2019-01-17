@@ -53,9 +53,7 @@
     {% endwith %}
 
   </a-asset>
-  <a-entity id="dxf-ent"
-          position="0 0 0"
-          rotation="0 0 0">
+
     {% with entities=page.get_entities %}
      {% if entities %}
       {% for key, value in entities.items %}
@@ -63,7 +61,7 @@
       {% endfor %}
      {% endif %}
     {% endwith %}
-  </a-entity>
+  
   {% with ambient_light=page.get_ambient_light %}
     <a-entity light="type: hemisphere; {{ ambient_light }}"></a-entity>
   {% endwith %}
@@ -71,7 +69,7 @@
   {% else %}
     <a-sky src="#sky"></a-sky>
   {% endif %}
-  
+
 </a-scene>
 </body>
 </html>

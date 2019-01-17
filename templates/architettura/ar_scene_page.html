@@ -27,9 +27,7 @@
           {% endif %}
         {% endwith %}
     </a-asset>
-    <a-entity id="dxf-ent"
-            position="0 0 0"
-            rotation="0 0 0">
+
 			{% with entities=page.get_entities %}
 			 {% if entities %}
 				{% for key, value in entities.items %}
@@ -37,7 +35,7 @@
 				{% endfor %}
 			 {% endif %}
 			{% endwith %}
-    </a-entity>
+  
     <a-marker-camera preset='kanji'></a-marker-camera>
   </a-scene>
 </body>
