@@ -598,6 +598,7 @@ def make_html(page, collection, mode):
     if no_camera:
         x += 1
         data["10"] = data["30"] = data["20"] = 0
+        data["210"] = data["50"] = data["220"] = 0
         entities_dict[x] = make_camera(page, data, mode)
 
     return entities_dict
@@ -825,20 +826,20 @@ def make_block(page, data):
     return outstr
 
 def make_camera(page, data, mode):
-    outstr = ''
+    outstr = f'<a-entity id="camera-ent" position="{data["10"]} {data["30"]} {data["20"]}" \n'
+    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
     if mode == 'digkom':
-        outstr += f'<a-entity id="camera-ent" position="{data["10"]} {data["30"]} {data["20"]}" \n'
         outstr += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         outstr += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" \n>'
-        outstr += '<a-light type="point" distance="10"></a-light> \n'
-        outstr += '<a-entity position="0 -1.6 0" id="camera-foot"></a-entity> \n'
-        outstr += '<a-cursor color="black"></a-cursor></a-camera></a-entity> \n'
+        outstr += '<a-cursor color="black"></a-cursor> \n'
     else:
-        outstr += f'<a-entity id="camera-ent" position="{data["10"]} {data["30"]} {data["20"]}"> \n'
+        outstr += '> \n'
         outstr += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }">'
-        outstr += '<a-light type="point" distance="10"></a-light> \n'
-        outstr += '<a-entity position="0 -1.6 0" id="camera-foot"></a-entity> \n'
-        outstr += '<a-cursor color="#2E3A87"></a-cursor></a-camera></a-entity> \n'
+        outstr += '<a-cursor color="#2E3A87"></a-cursor> \n'
+
+    outstr += '<a-light type="point" distance="10"></a-light> \n'
+    outstr += '<a-entity position="0 -1.6 0" id="camera-foot"></a-entity> \n'
+    outstr += '</a-camera></a-entity> \n'
     return outstr
 
 def start_entity_wrapper(page, data):

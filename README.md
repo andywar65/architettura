@@ -51,19 +51,21 @@ Standard blocks may be found in `static/architettura/samples/standard-blocks.dxf
 
 Standard blocks come with attributes that affect their geometry. In CAD, attributes are prompted when inserting a block, and can be modified in the Property window. To understand how attributes affect geometry, refer to [A-Frame Documentation](https://aframe.io/docs/0.8.0/primitives/a-box.html) .
 
-`Light` standard block has a `TYPE` attribute which can be set to ambient, directional, point and spot. Directional light is best suited for shadowing. Scale light block to modify shadow camera frustum. Refer to [A-Frame Light Component Documentation](https://aframe.io/docs/0.8.0/components/light.html) for further details.
+`a-light` standard block has a `TYPE` attribute which can be set to ambient, directional, point and spot. Directional light is best suited for shadowing. Scale light block to modify shadow camera frustum. Refer to [A-Frame Light Component Documentation](https://aframe.io/docs/0.8.0/components/light.html) for further details.
 
 `Look-at` standard block is a plane that always faces the camera.
 
-`Text` standard block is a text centered in a bounding plane. The attributes control alignment, content and wrap count, which is the number of letters that fill the width of the bounding plane.
+`a-text` standard block is a text centered in a bounding plane. The attributes control alignment, content and wrap count, which is the number of letters that fill the width of the bounding plane.
 
-`Link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link.
+`a-camera` standard block lets you choose the position of the camera. Only first camera will be rendered, if no camera is found a standard one will be placed at (0, 0, 0).
 
-`Curvedimage` standard block is an open cylinder where you can project panoramic images.
+`a-link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link.
 
-`Animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes.
+`a-curvedimage` standard block is an open cylinder where you can project panoramic images.
 
-`Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further).
+`a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes.
+
+`Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the components.
 
 ### Blocks and BIM standard blocks
 
