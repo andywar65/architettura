@@ -501,11 +501,11 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2458502.594571528
+2458502.632744271
   9
 $TDUUPDATE
  40
-2458502.552904861
+2458502.591077604
   9
 $TDINDWG
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-2C9E
+2CD8
   9
 $SURFTAB1
  70
@@ -1127,7 +1127,7 @@ ObjectDBX Classes
  90
         0
  91
-        9
+        7
 280
      0
 281
@@ -1175,7 +1175,7 @@ ObjectDBX Classes
  90
         0
  91
-        6
+        4
 280
      0
 281
@@ -1191,7 +1191,7 @@ ObjectDBX Classes
  90
      4095
  91
-        9
+        7
 280
      0
 281
@@ -1207,7 +1207,7 @@ ObjectDBX Classes
  90
      1153
  91
-        9
+        7
 280
      0
 281
@@ -1223,7 +1223,7 @@ ObjectDBX Classes
  90
      1153
  91
-        9
+        7
 280
      0
 281
@@ -1239,7 +1239,7 @@ ObjectDBX Classes
  90
      4095
  91
-        9
+        7
 280
      0
 281
@@ -1255,7 +1255,7 @@ SCENEOE
  90
      1153
  91
-        9
+        7
 280
      0
 281
@@ -1271,7 +1271,7 @@ ObjectDBX Classes
  90
      1152
  91
-        6
+        4
 280
      0
 281
@@ -1287,7 +1287,7 @@ ACDB_MLEADERSTYLE_CLASS
  90
      4095
  91
-        9
+        7
 280
      0
 281
@@ -1303,7 +1303,7 @@ ObjectDBX Classes
  90
      1025
  91
-        6
+        4
 280
      0
 281
@@ -1319,7 +1319,7 @@ ObjectDBX Classes
  90
      1025
  91
-        6
+        4
 280
      0
 281
@@ -1335,7 +1335,7 @@ ObjectDBX Classes
  90
         0
  91
-        5
+        4
 280
      0
 281
@@ -1413,9 +1413,9 @@ AcDbViewportTableRecord
  21
 1.0
  12
-0.07132885664778
+0.0713288566478
  22
--4.79928093201439
+-4.7992809320144
  13
 0.0
  23
@@ -1429,17 +1429,17 @@ AcDbViewportTableRecord
  25
 10.0
  16
--0.9999999999999999
+-1.000000000000002
  26
--0.9999999999999994
+-0.9999999999999993
  36
-0.9999999999999997
+1.0
  17
 2.62072030957261
  27
-0.86847922683876
+0.86847922683877
  37
--1.06279085132803
+-1.06279085132802
  40
 26.74025076683992
  41
@@ -2528,8 +2528,6 @@ a-animation
 {BLKREFS
 331
 2241
-331
-0
 102
 }
  70
@@ -2555,7 +2553,9 @@ a-block
 102
 {BLKREFS
 331
-2BF9
+0
+331
+2CBE
 102
 }
  70
@@ -2678,8 +2678,6 @@ a-camera
 0
 102
 {BLKREFS
-331
-0
 331
 2C96
 102
@@ -22261,7 +22259,7 @@ Multipurpose block. Specify TYPE and MATERIAL
   0
 LWPOLYLINE
   5
-2BE9
+2CAE
 330
 22E6
 100
@@ -22277,6 +22275,8 @@ AcDbPolyline
  70
      0
  43
+0.0
+ 38
 0.0
  10
 -0.00004165473606
@@ -22307,7 +22307,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2BEA
+2CAF
 330
 22E6
 100
@@ -22355,7 +22355,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2BEB
+2CB0
 330
 22E6
 100
@@ -22403,7 +22403,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2BEC
+2CB1
 330
 22E6
 100
@@ -22437,7 +22437,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2BED
+2CB2
 330
 22E6
 100
@@ -22473,7 +22473,7 @@ AcDbPolyline
   0
 LINE
   5
-2BEE
+2CB3
 330
 22E6
 100
@@ -22497,7 +22497,7 @@ AcDbLine
   0
 LINE
   5
-2BEF
+2CB4
 330
 22E6
 100
@@ -22521,7 +22521,7 @@ AcDbLine
   0
 LINE
   5
-2BF0
+2CB5
 330
 22E6
 100
@@ -22545,7 +22545,7 @@ AcDbLine
   0
 LINE
   5
-2BF1
+2CB6
 330
 22E6
 100
@@ -22569,7 +22569,7 @@ AcDbLine
   0
 ATTDEF
   5
-2BF2
+2CB7
 330
 22E6
 100
@@ -22579,29 +22579,125 @@ AcDbEntity
 100
 AcDbText
  10
--0.36631160793325
+0.75578281503257
  20
--0.3801957123276
+-0.41106176326841
  30
 0.0
  40
 0.2
   1
-t01
+
 100
 AcDbAttributeDefinition
   3
-(t)able, (k)itchen, (b)ed...
+Refer to block documentation
   2
-TYPE
+PARAM2
  70
-     0
+     1
 280
      0
   0
 ATTDEF
   5
-2BF3
+2CB8
+330
+22E6
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.75578281503257
+ 20
+-0.71106176326841
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttributeDefinition
+  3
+Refer to block documentation
+  2
+PARAM3
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+2CB9
+330
+22E6
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.75578281503257
+ 20
+-1.01106176326841
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttributeDefinition
+  3
+Refer to block documentation
+  2
+PARAM4
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+2CBA
+330
+22E6
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.75578281503257
+ 20
+-1.31106176326841
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttributeDefinition
+  3
+Refer to block documentation
+  2
+PARAM5
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+2CBB
 330
 22E6
 100
@@ -22633,7 +22729,7 @@ MATERIAL
   0
 ATTDEF
   5
-2BF4
+2CBC
 330
 22E6
 100
@@ -22643,13 +22739,45 @@ AcDbEntity
 100
 AcDbText
  10
-0.75578281503257
+-0.36631160793325
  20
--0.41106176326841
+-0.33089431314424
  30
 0.0
  40
-0.2
+0.1
+  1
+t01
+100
+AcDbAttributeDefinition
+  3
+(t)able, (k)itchen, (b)ed...
+  2
+TYPE
+ 70
+     0
+280
+     0
+  0
+ATTDEF
+  5
+2CBD
+330
+22E6
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-0.36631160793325
+ 20
+-0.46722734665556
+ 30
+0.0
+ 40
+0.1
   1
 
 100
@@ -22659,135 +22787,7 @@ Refer to block documentation
   2
 PARAM1
  70
-     1
-280
      0
-  0
-ATTDEF
-  5
-2BF5
-330
-22E6
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.75578281503257
- 20
--0.71106176326841
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttributeDefinition
-  3
-Refer to block documentation
-  2
-PARAM2
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-2BF6
-330
-22E6
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.75578281503257
- 20
--1.01106176326841
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttributeDefinition
-  3
-Refer to block documentation
-  2
-PARAM3
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-2BF7
-330
-22E6
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.75578281503257
- 20
--1.31106176326841
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttributeDefinition
-  3
-Refer to block documentation
-  2
-PARAM4
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-2BF8
-330
-22E6
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.75578281503257
- 20
--1.61106176326841
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttributeDefinition
-  3
-Refer to block documentation
-  2
-PARAM5
- 70
-     1
 280
      0
   0
@@ -24767,8 +24767,6 @@ AcDbPolyline
  70
      0
  43
-0.0
- 38
 0.0
  10
 0.0
@@ -27323,248 +27321,6 @@ AcDbEntity
   0
 INSERT
   5
-2BF9
-330
-1F
-100
-AcDbEntity
-  8
-0
-100
-AcDbBlockReference
- 66
-     1
-  2
-a-block
- 10
--5.8177
- 20
-5.2871
- 30
-0.0
-  0
-ATTRIB
-  5
-2BFA
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--6.18401160793325
- 20
-4.9069042876724
- 30
-0.0
- 40
-0.2
-  1
-t01
-100
-AcDbAttribute
-  2
-TYPE
- 70
-     0
-280
-     0
-  0
-ATTRIB
-  5
-2BFB
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-5.17603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-MATERIAL
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-2BFC
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-4.87603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-PARAM1
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-2BFD
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-4.57603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-PARAM2
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-2BFE
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-4.27603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-PARAM3
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-2BFF
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-3.97603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-PARAM4
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-2C00
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
--5.06191718496743
- 20
-3.67603823673159
- 30
-0.0
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-PARAM5
- 70
-     1
-280
-     0
-  0
-SEQEND
-  5
-2C01
-330
-2BF9
-100
-AcDbEntity
-  8
-0
-  0
-INSERT
-  5
 2C36
 330
 1F
@@ -27645,6 +27401,248 @@ AcDbEntity
   8
 0
   0
+INSERT
+  5
+2CBE
+330
+1F
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockReference
+ 66
+     1
+  2
+a-block
+ 10
+-5.8177
+ 20
+5.2871
+ 30
+0.0
+  0
+ATTRIB
+  5
+2CBF
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-5.06191718496743
+ 20
+4.87603823673159
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+PARAM2
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+2CC0
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-5.06191718496743
+ 20
+4.57603823673159
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+PARAM3
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+2CC1
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-5.06191718496743
+ 20
+4.27603823673159
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+PARAM4
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+2CC2
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-5.06191718496743
+ 20
+3.97603823673159
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+PARAM5
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+2CC3
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-5.06191718496743
+ 20
+5.17603823673159
+ 30
+0.0
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+MATERIAL
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+2CC4
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-6.18401160793325
+ 20
+4.95620568685576
+ 30
+0.0
+ 40
+0.1
+  1
+t01
+100
+AcDbAttribute
+  2
+TYPE
+ 70
+     0
+280
+     0
+  0
+ATTRIB
+  5
+2CC5
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+-6.18401160793325
+ 20
+4.81987265334444
+ 30
+0.0
+ 40
+0.1
+  1
+
+100
+AcDbAttribute
+  2
+PARAM1
+ 70
+     0
+280
+     0
+  0
+SEQEND
+  5
+2CC6
+330
+2CBE
+100
+AcDbEntity
+  8
+0
+  0
 ENDSEC
   0
 SECTION
@@ -27719,7 +27717,7 @@ ACAD_VISUALSTYLE
   3
 ACDB_RECOMPOSE_DATA
 350
-2C9D
+2CD1
   3
 AcDbVariableDictionary
 350
@@ -28213,7 +28211,7 @@ X-Ray
   0
 XRECORD
   5
-2C9D
+2CD1
 102
 {ACAD_REACTORS
 330
@@ -28249,31 +28247,31 @@ AcDbDictionary
   3
 CANNOSCALE
 350
-2C07
+2CCC
   3
 CMLEADERSTYLE
 350
-2C0E
+2CD3
   3
 CTABLESTYLE
 350
-2C0D
+2CD2
   3
 CVIEWDETAILSTYLE
 350
-2C11
+2CD6
   3
 CVIEWSECTIONSTYLE
 350
-2C12
+2CD7
   3
 DWFFRAME
 350
-2C0F
+2CD4
   3
 XCLIPFRAME
 350
-2C10
+2CD5
   0
 DICTIONARY
   5
@@ -28367,45 +28365,77 @@ AcDbSortentsTable
   5
 2BE8
 331
-0
+2C36
   5
-2C7C
+2CAC
+331
+2C96
+  5
+2CAD
 331
 0
   5
-2C6B
+2C36
 331
 0
   5
-2C74
+2C96
 331
 0
   5
-2C75
+2C9E
 331
 0
   5
-2C76
+2C9F
 331
 0
   5
-2C77
+2CA0
 331
 0
   5
-2C78
+2CA1
 331
 0
   5
-2C79
+2CA2
 331
 0
   5
-2C7A
+2CA3
 331
 0
   5
-2C7B
+2CA4
+331
+0
+  5
+2CA5
+331
+0
+  5
+2CA6
+331
+0
+  5
+2CA7
+331
+0
+  5
+2CA8
+331
+0
+  5
+2CA9
+331
+0
+  5
+2CAA
+331
+0
+  5
+2CAB
   0
 DICTIONARY
   5
@@ -29343,7 +29373,7 @@ FA
 102
 {ACAD_XDICTIONARY
 360
-2C9B
+2CCF
 102
 }
 330
@@ -36347,7 +36377,7 @@ strokes_ogs.tif
   0
 DICTIONARYVAR
   5
-2C07
+2CCC
 102
 {ACAD_REACTORS
 330
@@ -36365,7 +36395,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-2C0E
+2CD3
 102
 {ACAD_REACTORS
 330
@@ -36383,7 +36413,7 @@ Standard
   0
 DICTIONARYVAR
   5
-2C0D
+2CD2
 102
 {ACAD_REACTORS
 330
@@ -36401,7 +36431,7 @@ Standard
   0
 DICTIONARYVAR
   5
-2C11
+2CD6
 102
 {ACAD_REACTORS
 330
@@ -36419,7 +36449,7 @@ Metric50
   0
 DICTIONARYVAR
   5
-2C12
+2CD7
 102
 {ACAD_REACTORS
 330
@@ -36437,7 +36467,7 @@ Metric50
   0
 DICTIONARYVAR
   5
-2C0F
+2CD4
 102
 {ACAD_REACTORS
 330
@@ -36455,7 +36485,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-2C10
+2CD5
 102
 {ACAD_REACTORS
 330
@@ -36517,7 +36547,7 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-2C99
+2CCD
   0
 DICTIONARY
   5
@@ -36549,11 +36579,11 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-2C9A
+2CCE
   0
 DICTIONARY
   5
-2C9B
+2CCF
 330
 FA
 100
@@ -36565,11 +36595,11 @@ AcDbDictionary
   3
 ACAD_ROUNDTRIP_2008_TABLESTYLE_CELLSTYLEMAP
 360
-2C9C
+2CD0
   0
 XRECORD
   5
-2C99
+2CCD
 102
 {ACAD_REACTORS
 330
@@ -37431,7 +37461,7 @@ A80000002601000013000000000000000000000000003A4E00005B436F6E74656E745F5479706573
   0
 XRECORD
   5
-2C9A
+2CCE
 102
 {ACAD_REACTORS
 330
@@ -37455,15 +37485,15 @@ FLAGS
   0
 CELLSTYLEMAP
   5
-2C9C
+2CD0
 102
 {ACAD_REACTORS
 330
-2C9B
+2CCF
 102
 }
 330
-2C9B
+2CCF
 100
 AcDbCellStyleMap
  90
