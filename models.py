@@ -112,7 +112,7 @@ class ScenePage(Page):
         ], heading="Presentation", classname="collapsible collapsed"),
         MultiFieldPanel([
             DocumentChooserPanel('dxf_file'),
-            #InlinePanel('cad_files', label="CAD file/s",),
+            InlinePanel('cad_files', label="Other CAD file/s",),
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
@@ -167,7 +167,7 @@ class ScenePageCadFile(Orderable):
         null=True,
         on_delete = models.SET_NULL,
         related_name = '+',
-        help_text="CAD file of your project",
+        help_text="Additional CAD files of your project",
         )
     x_position = models.FloatField(default="0",
         help_text="In meters, displacement with respect to axis origin",)

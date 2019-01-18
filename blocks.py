@@ -62,20 +62,36 @@ def close_leg(data):
     return outstr
 
 def make_stalker(page, data):
-    """Stalker, a look-at image with eventual balloon text and link.
+    """Stalker, a look-at image / object with eventual balloon text and link.
 
-    Stalker always looks towards camera. Plane dimension is set by block X and Z
-    scaling. Image is set by MATERIAL, text is on PARAM1 (sorry, no è, à, ; etc.),
-    link tree is on PARAM2 (allowed values: parent, child, next, previous).
+    Stalker always looks towards camera. Plane / object dimension is set by
+    block X and Z scaling. Image is set by MATERIAL, text is on PARAM3 (sorry,
+    no è, à, ; etc.), link tree is on PARAM4 (allowed values: parent, child,
+    next, previous). If using an object (obj-stalker), PARAM1 is the object file
+    name, if PARAM2 is noscale object won't be scaled.
     """
-    outstr = 'look-at="#camera-foot"> \n'#blocks need to close wrapper
-    outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
-    outstr += f'position="0 {data["43"]/2} 0" \n'
-    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    outstr += entity_material(data)
-    outstr += '</a-plane>\n'
-    if data['PARAM1']:
-        length = len(data['PARAM1'])
+    outstr = ''
+    if data['TYPE'] == 'obj-stalker':
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
+        outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
+        if data['MATERIAL']:
+            outstr += f'" material="src: #{data["8"]}; color: {data["color"]}" \n'
+        else:
+            outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
+        if data['PARAM2'] == 'noscale':
+            outstr += 'scale="1 1 1"> \n'
+        else:
+            outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
+        outstr += '</a-entity>'
+    else:
+        outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
+        outstr += f'position="0 {data["43"]/2} 0" \n'
+        outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
+        outstr += entity_material(data)
+        outstr += '</a-plane>\n'
+
+    if data['PARAM3']:
+        length = len(data['PARAM3'])
         if length <= 8:
             wrapcount = length+1
         elif length <= 30:
@@ -85,7 +101,7 @@ def make_stalker(page, data):
         outstr += f'<a-entity id="stalker-{data["num"]}-balloon-ent" \n'
         outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0" \n'
         outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {data["PARAM1"]}; wrap-count: {wrapcount};"> \n'
+        outstr += f'value: {data["PARAM3"]}; wrap-count: {wrapcount};"> \n'
         outstr += f'<a-cylinder id="stalker-{data["num"]}-balloon" \n'
         outstr += f'position="0 0 -0.01" \n'
         outstr += f'rotation="90 0 0" \n'
@@ -96,16 +112,16 @@ def make_stalker(page, data):
         outstr += f'vertexB:0 {data["43"]-.05} 0.0005; \n'
         outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.0005"> \n'
         outstr += '</a-triangle> \n'
-    if data['PARAM2']:
+    if data['PARAM4']:
         try:
             outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
             outstr += f'position="{data["41"]*.7} {data["43"]*.5} 0.02" \n'
             outstr += f'scale="{data["41"]*.35} {data["41"]*.35}"\n'
-            if data['PARAM2'] == 'parent':
+            if data['PARAM4'] == 'parent':
                 target = page.get_parent()
-            elif data['PARAM2'] == 'child':
+            elif data['PARAM4'] == 'child':
                 target = page.get_first_child()
-            elif data['PARAM2'] == 'previous' or data['PARAM2'] == 'prev':
+            elif data['PARAM4'] == 'previous' or data['PARAM4'] == 'prev':
                 target = page.get_prev_sibling()
             else:#we default to next sibling
                 target = page.get_next_sibling()

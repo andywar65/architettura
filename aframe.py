@@ -63,8 +63,9 @@ def get_object_dict(page):
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
-                if value == 'TYPE' and attr_value == 'obj-mtl':
-                    flag = 'object'
+                if value == 'TYPE':
+                    if attr_value == 'obj-mtl' or attr_value == 'obj-stalker':
+                        flag = 'object'
         elif flag == 'object':#stores values for attributes within object block
             if key == '1':#attribute value
                 attr_value = value
@@ -768,7 +769,7 @@ def make_block(page, data):
             outstr += animation_wrapper(data)
             outstr += blocks.make_table_01(data)
 
-        elif data['TYPE'] == 'stalker':
+        elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
             outstr += blocks.make_stalker(page, data)
 
         elif data['TYPE'] == 'obj-mtl':
@@ -857,11 +858,12 @@ def start_entity_wrapper(page, data):
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
     if data['2'] == 'a-light':
         return outstr
-    elif data['2'] == 'a-block' and data['TYPE'] == 'stalker':
-        return outstr
-    else:
-        outstr += '>\n'
-        return outstr
+    elif data['2'] == 'a-block':
+        if data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
+            outstr += 'look-at="#camera-foot"> \n'
+            return outstr
+    outstr += '>\n'
+    return outstr
 
 def animation_wrapper(data):
     outstr = ''
