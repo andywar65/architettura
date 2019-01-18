@@ -81,6 +81,9 @@ class ScenePage(Page):
         help_text="Vertical movement of camera?",)
     double_face = models.BooleanField(default=False,
         help_text="Planes are visible on both sides?",)
+    object_repository = models.URLField(
+        help_text="URL of external repository for OBJ files", blank=True, null=True
+        )
 
     background = models.CharField(max_length=250, blank=True, null=True,
         help_text="Accepts hex (#ffffff) or HTML color, overrides Equirectangular",)
@@ -116,6 +119,7 @@ class ScenePage(Page):
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
+            FieldPanel('object_repository'),
         ], heading="VR settings", classname="collapsible"
         ),
         MultiFieldPanel([
@@ -132,6 +136,9 @@ class ScenePage(Page):
     def add_new_layers(self):
         add_new_layers_ext(self)
         return
+
+    def get_object_repository(self):
+        return get_object_repository_ext(self)
 
     def get_material_assets(self):
         return get_material_assets_ext(self)
@@ -266,10 +273,6 @@ class DigkomPage(Page):
 
     def equirectangular_image(self):
         return self.scene.equirectangular_image
-
-    def add_new_layers(self):
-        add_new_layers_ext(self.scene)
-        return
 
     def get_material_assets(self):
         return get_material_assets_ext(self.scene)
