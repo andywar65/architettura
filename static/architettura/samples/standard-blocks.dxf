@@ -501,11 +501,11 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2458501.44643831
+2458502.594571528
   9
 $TDUUPDATE
  40
-2458501.404771644
+2458502.552904861
   9
 $TDINDWG
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-2C6B
+2C9E
   9
 $SURFTAB1
  70
@@ -1127,7 +1127,7 @@ ObjectDBX Classes
  90
         0
  91
-        7
+        9
 280
      0
 281
@@ -1175,7 +1175,7 @@ ObjectDBX Classes
  90
         0
  91
-        4
+        6
 280
      0
 281
@@ -1191,7 +1191,7 @@ ObjectDBX Classes
  90
      4095
  91
-        7
+        9
 280
      0
 281
@@ -1207,7 +1207,7 @@ ObjectDBX Classes
  90
      1153
  91
-        7
+        9
 280
      0
 281
@@ -1223,7 +1223,7 @@ ObjectDBX Classes
  90
      1153
  91
-        7
+        9
 280
      0
 281
@@ -1239,7 +1239,7 @@ ObjectDBX Classes
  90
      4095
  91
-        7
+        9
 280
      0
 281
@@ -1255,7 +1255,7 @@ SCENEOE
  90
      1153
  91
-        7
+        9
 280
      0
 281
@@ -1271,7 +1271,7 @@ ObjectDBX Classes
  90
      1152
  91
-        4
+        6
 280
      0
 281
@@ -1287,7 +1287,7 @@ ACDB_MLEADERSTYLE_CLASS
  90
      4095
  91
-        7
+        9
 280
      0
 281
@@ -1303,7 +1303,7 @@ ObjectDBX Classes
  90
      1025
  91
-        4
+        6
 280
      0
 281
@@ -1319,7 +1319,7 @@ ObjectDBX Classes
  90
      1025
  91
-        4
+        6
 280
      0
 281
@@ -1335,7 +1335,7 @@ ObjectDBX Classes
  90
         0
  91
-        4
+        5
 280
      0
 281
@@ -1413,7 +1413,7 @@ AcDbViewportTableRecord
  21
 1.0
  12
-0.07132885664777
+0.07132885664778
  22
 -4.79928093201439
  13
@@ -1429,17 +1429,17 @@ AcDbViewportTableRecord
  25
 10.0
  16
--1.0
+-0.9999999999999999
  26
--1.0
+-0.9999999999999994
  36
-1.0
+0.9999999999999997
  17
-2.62072030957262
+2.62072030957261
  27
-0.86847922683875
+0.86847922683876
  37
--1.06279085132802
+-1.06279085132803
  40
 26.74025076683992
  41
@@ -2528,6 +2528,8 @@ a-animation
 {BLKREFS
 331
 2241
+331
+0
 102
 }
  70
@@ -2632,8 +2634,6 @@ checkpoint
 {BLKREFS
 331
 2C36
-331
-0
 102
 }
  70
@@ -2679,7 +2679,9 @@ a-camera
 102
 {BLKREFS
 331
-2C65
+0
+331
+2C96
 102
 }
  70
@@ -2711,7 +2713,7 @@ AcDbBlockBegin
   2
 *Model_Space
  70
-     0
+     2
  10
 0.0
  20
@@ -24577,7 +24579,7 @@ AcDbBlockBegin
   2
 a-camera
  70
-     0
+     2
  10
 0.0
  20
@@ -24591,7 +24593,7 @@ a-camera
   0
 LWPOLYLINE
   5
-2C5A
+2C8C
 330
 2C59
 100
@@ -24631,7 +24633,7 @@ AcDbPolyline
   0
 CIRCLE
   5
-2C5B
+2C8D
 330
 2C59
 100
@@ -24657,7 +24659,7 @@ AcDbCircle
   0
 CIRCLE
   5
-2C5C
+2C8E
 330
 2C59
 100
@@ -24683,7 +24685,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-2C5D
+2C8F
 330
 2C59
 100
@@ -24719,7 +24721,7 @@ AcDbPolyline
   0
 LINE
   5
-2C5E
+2C90
 330
 2C59
 100
@@ -24749,7 +24751,7 @@ AcDbLine
   0
 LWPOLYLINE
   5
-2C5F
+2C91
 330
 2C59
 100
@@ -24797,7 +24799,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2C60
+2C92
 330
 2C59
 100
@@ -24843,7 +24845,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-2C61
+2C93
 330
 2C59
 100
@@ -24891,7 +24893,7 @@ AcDbPolyline
   0
 LINE
   5
-2C62
+2C94
 330
 2C59
 100
@@ -24918,6 +24920,38 @@ AcDbLine
 -6.123233995736766E-17
 230
 6.123233995736766E-17
+  0
+ATTDEF
+  5
+2C95
+330
+2C59
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.39400141061599
+ 20
+-0.02080373759163
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+1
+100
+AcDbAttributeDefinition
+  3
+Specifies camera light intensity
+  2
+LIGHT-INT
+ 70
+     1
+280
+     0
   0
 ENDBLK
   5
@@ -27551,7 +27585,7 @@ checkpoint
   0
 INSERT
   5
-2C65
+2C96
 330
 1F
 100
@@ -27560,6 +27594,8 @@ AcDbEntity
 0
 100
 AcDbBlockReference
+ 66
+     1
   2
 a-camera
  10
@@ -27568,6 +27604,46 @@ a-camera
 -2.0
  30
 0.0
+  0
+ATTRIB
+  5
+2C97
+330
+2C96
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+7.89400141061599
+ 20
+-2.02080373759163
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+1
+100
+AcDbAttribute
+  2
+LIGHT-INT
+ 70
+     1
+280
+     0
+  0
+SEQEND
+  5
+2C98
+330
+2C96
+100
+AcDbEntity
+  8
+0
   0
 ENDSEC
   0
@@ -27643,7 +27719,7 @@ ACAD_VISUALSTYLE
   3
 ACDB_RECOMPOSE_DATA
 350
-2C6A
+2C9D
   3
 AcDbVariableDictionary
 350
@@ -28137,7 +28213,7 @@ X-Ray
   0
 XRECORD
   5
-2C6A
+2C9D
 102
 {ACAD_REACTORS
 330
@@ -28290,6 +28366,46 @@ AcDbSortentsTable
 2BC9
   5
 2BE8
+331
+0
+  5
+2C7C
+331
+0
+  5
+2C6B
+331
+0
+  5
+2C74
+331
+0
+  5
+2C75
+331
+0
+  5
+2C76
+331
+0
+  5
+2C77
+331
+0
+  5
+2C78
+331
+0
+  5
+2C79
+331
+0
+  5
+2C7A
+331
+0
+  5
+2C7B
   0
 DICTIONARY
   5
@@ -29227,7 +29343,7 @@ FA
 102
 {ACAD_XDICTIONARY
 360
-2C68
+2C9B
 102
 }
 330
@@ -36401,7 +36517,7 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-2C66
+2C99
   0
 DICTIONARY
   5
@@ -36433,11 +36549,11 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-2C67
+2C9A
   0
 DICTIONARY
   5
-2C68
+2C9B
 330
 FA
 100
@@ -36449,11 +36565,11 @@ AcDbDictionary
   3
 ACAD_ROUNDTRIP_2008_TABLESTYLE_CELLSTYLEMAP
 360
-2C69
+2C9C
   0
 XRECORD
   5
-2C66
+2C99
 102
 {ACAD_REACTORS
 330
@@ -37315,7 +37431,7 @@ A80000002601000013000000000000000000000000003A4E00005B436F6E74656E745F5479706573
   0
 XRECORD
   5
-2C67
+2C9A
 102
 {ACAD_REACTORS
 330
@@ -37339,15 +37455,15 @@ FLAGS
   0
 CELLSTYLEMAP
   5
-2C69
+2C9C
 102
 {ACAD_REACTORS
 330
-2C68
+2C9B
 102
 }
 330
-2C68
+2C9B
 100
 AcDbCellStyleMap
  90

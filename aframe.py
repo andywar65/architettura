@@ -598,8 +598,10 @@ def make_html(page, collection, mode):
 
     if no_camera:
         x += 1
-        data["10"] = data["30"] = data["20"] = 0
-        data["210"] = data["50"] = data["220"] = 0
+        data = {
+        '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,
+        'LIGHT-INT': 1,
+        }
         entities_dict[x] = make_camera(page, data, mode)
 
     return entities_dict
@@ -838,7 +840,7 @@ def make_camera(page, data, mode):
         outstr += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }">'
         outstr += '<a-cursor color="#2E3A87"></a-cursor> \n'
 
-    outstr += '<a-light type="point" distance="10"></a-light> \n'
+    outstr += f'<a-light type="point" distance="10" intensity="{data["LIGHT-INT"]}"></a-light> \n'
     outstr += '<a-entity position="0 -1.6 0" id="camera-foot"></a-entity> \n'
     outstr += '</a-camera></a-entity> \n'
     return outstr
