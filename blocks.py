@@ -23,7 +23,7 @@ def make_table_01(data):
     )
     data = prepare_material_values(values, data)
 
-    outstr = ''#blocks need to close wrapper
+    outstr = '> \n'#blocks need to close wrapper
     #table top
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
@@ -70,7 +70,7 @@ def make_stalker(page, data):
     next, previous). If using an object (obj-stalker), PARAM1 is the object file
     name, if PARAM2 is noscale object won't be scaled.
     """
-    outstr = ''
+    outstr = 'look-at="#camera-foot"> \n'
     if data['TYPE'] == 'obj-stalker':
         outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
         outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
@@ -154,7 +154,7 @@ def make_door(data):
     )
     data = prepare_material_values(values, data)
 
-    outstr = ''#blocks need to close wrapper
+    outstr = '> \n'#blocks need to close wrapper
 
     #left frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
@@ -270,9 +270,9 @@ def make_slab(data):
         ('pool', 2, 'floor', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
-
+    outstr = '> \n'
     #floor
-    outstr = f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
+    outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
     outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])} 0.01 {fabs(data["42"])}" \n'
     outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
@@ -337,7 +337,7 @@ def make_wall(data):
     wall2_h = wall2_h - tile2_h
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
-    outstr = ''
+    outstr = '> \n'
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
@@ -403,7 +403,7 @@ def make_object(data):
     If PARAM2 is set to 'noscale', object will not be scaled.
     If set, MATERIAL attribute is alternative to MTL.
     """
-    outstr = ''
+    outstr = '> \n'
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
     if data['MATERIAL']:
@@ -447,7 +447,8 @@ def make_tree(data):
     l111 = 0.7172 * l11 * gauss(1, .1)
     ang = gauss(0, 5)
     rot = random()*360
-    outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
+    outstr = '> \n'
+    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
     #outstr += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '

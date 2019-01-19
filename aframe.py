@@ -632,6 +632,7 @@ def make_line(data):
 
 def make_box(page, data):
     outstr = start_entity_wrapper(page, data)
+    outstr += '> \n'
     outstr += start_entity(data)
     outstr += entity_material(data)
     if data['animation']:
@@ -641,6 +642,7 @@ def make_box(page, data):
 
 def make_circular(page, data):
     outstr = start_entity_wrapper(page, data)
+    outstr += '> \n'
     outstr += start_entity(data)
     outstr += entity_geometry(data)
     outstr += entity_material(data)
@@ -651,6 +653,7 @@ def make_circular(page, data):
 
 def make_curvedimage(page, data):
     outstr = start_entity_wrapper(page, data)
+    outstr += '> \n'
     outstr += start_entity(data)
     try:
         if data['THETA-LENGTH']!='270':
@@ -667,6 +670,7 @@ def make_curvedimage(page, data):
 
 def make_plane(page, data):
     outstr = start_entity_wrapper(page, data)
+    outstr += '> \n'
     outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
     if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
         outstr += f'position="0 {data["43"]/2} 0" \n'
@@ -681,7 +685,7 @@ def make_plane(page, data):
     outstr += '">\n'
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-plane>\n</a-entity>\n'
+    outstr += close_entity(data)
     return outstr
 
 def make_text(data):
@@ -731,6 +735,8 @@ def make_link(page, data):
 
 def make_light(page, data):
     outstr = start_entity_wrapper(page, data)
+    outstr += '> \n'
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
 
     try:
         outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
@@ -758,7 +764,7 @@ def make_light(page, data):
 
     if data['animation']:
         outstr += is_animation(data)
-    outstr += '</a-entity>\n'#close light entity
+    outstr += '</a-entity></a-entity>\n'#close light entity
     return outstr
 
 def make_light_target(data):
@@ -768,37 +774,35 @@ def make_light_target(data):
 
 def make_block(page, data):
     outstr = start_entity_wrapper(page, data)
-
     try:
         if data['TYPE'] == 't01':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_table_01(data)
+            outstr += animation_wrapper(data)
 
         elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
             outstr += blocks.make_stalker(page, data)
 
         elif data['TYPE'] == 'obj-mtl':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_object(data)
+            outstr += animation_wrapper(data)
 
         elif data['TYPE'] == 'tree':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_tree(data)
+            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-door':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_door(data)
+            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-slab':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_slab(data)
+            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-wall':
-            outstr += animation_wrapper(data)
             outstr += blocks.make_wall(data)
+            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-openwall':
-            outstr += animation_wrapper(data)
             #make left wall
             data2 = data.copy()
             data2['41'] = data2['door_off_1']
@@ -820,11 +824,12 @@ def make_block(page, data):
             outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
             outstr += blocks.make_wall(data2)
             outstr += '</a-entity> \n'
+            outstr += animation_wrapper(data)
 
         #other elifs here
     except:
-        outstr += animation_wrapper(data)
         outstr += blocks.make_table_01(data)
+        outstr += animation_wrapper(data)
 
     if data['animation']:
         outstr += '</a-entity>\n'
@@ -863,13 +868,7 @@ def start_entity_wrapper(page, data):
             outstr += 'shadow="receive: true; cast: true" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
-    if data['2'] == 'a-light':
-        return outstr
-    elif data['2'] == 'a-block':
-        if data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
-            outstr += 'look-at="#camera-foot"> \n'
-            return outstr
-    outstr += '>\n'
+
     return outstr
 
 def animation_wrapper(data):
