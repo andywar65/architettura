@@ -71,7 +71,10 @@ def get_object_dict(page):
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'PARAM1':
-                    object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
+                    if page.object_repository:
+                        object_dict[attr_value] = page.object_repository
+                    else:
+                        object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
                     flag = False
         if key == '0' and flag != 'object':
 
