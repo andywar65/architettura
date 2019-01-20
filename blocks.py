@@ -22,9 +22,7 @@ def make_table_01(data):
         ('pool', 2, 'leg', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
-
-    outstr = '> \n'#blocks need to close wrapper
-    outstr += animation_wrapper(data)
+    outstr = ''
     #table top
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
@@ -71,7 +69,7 @@ def make_stalker(page, data):
     next, previous). If using an object (obj-stalker), PARAM1 is the object file
     name, if PARAM2 is noscale object won't be scaled.
     """
-    outstr = 'look-at="#camera-foot"> \n'
+    outstr = ''
     if data['TYPE'] == 'obj-stalker':
         outstr += f'<a-entity id="stalker-{data["num"]}-object" \n'
         outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
@@ -155,9 +153,7 @@ def make_door(data):
     )
     data = prepare_material_values(values, data)
 
-    outstr = '> \n'#blocks need to close wrapper
-    outstr += animation_wrapper(data)
-
+    outstr = ''
     #left frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
     outstr += f'position="{-0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
@@ -272,8 +268,7 @@ def make_slab(data):
         ('pool', 2, 'floor', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
-    outstr = '> \n'
-    outstr += animation_wrapper(data)
+    outstr = ''
     #floor
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
     outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
@@ -406,8 +401,7 @@ def make_object(data):
     If PARAM2 is set to 'noscale', object will not be scaled.
     If set, MATERIAL attribute is alternative to MTL.
     """
-    outstr = '> \n'
-    outstr += animation_wrapper(data)
+    outstr = ''
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
     if data['MATERIAL']:
@@ -451,8 +445,7 @@ def make_tree(data):
     l111 = 0.7172 * l11 * gauss(1, .1)
     ang = gauss(0, 5)
     rot = random()*360
-    outstr = '> \n'
-    outstr += animation_wrapper(data)
+    outstr = ''
     outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
@@ -536,10 +529,4 @@ def make_leaves(branch, lb, data):
     outstr += is_repeat(data["leaf_repeat"], lb, lb)
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
-    return outstr
-
-def animation_wrapper(data):
-    outstr = ''
-    if data['animation']:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
     return outstr

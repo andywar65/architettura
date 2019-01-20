@@ -536,7 +536,7 @@ def reference_animations(collection):
         if data['2'] == 'a-animation' or data['2'] == 'checkpoint':
             for x2, data2 in collection2.items():
                 d = data2['2']
-                if x == x2 or d == 'a-wall' or d == 'a-openwall' or d == 'a-door':
+                if x == x2 or d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab':
                     pass
                 else:
                     dx = fabs(data['10']-data2['10'])
@@ -779,21 +779,30 @@ def make_block(page, data):
     outstr = start_entity_wrapper(page, data)
     try:
         if data['TYPE'] == 't01':
+            outstr += '> \n'
+            outstr += animation_wrapper(data)
             outstr += blocks.make_table_01(data)
 
         elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
+            outstr += 'look-at="#camera-foot"> \n'
             outstr += blocks.make_stalker(page, data)
 
         elif data['TYPE'] == 'obj-mtl':
+            outstr += '> \n'
+            outstr += animation_wrapper(data)
             outstr += blocks.make_object(data)
 
         elif data['TYPE'] == 'tree':
+            outstr += '> \n'
+            outstr += animation_wrapper(data)
             outstr += blocks.make_tree(data)
 
         elif data['2'] == 'a-door':
+            outstr += '> \n'
             outstr += blocks.make_door(data)
 
         elif data['2'] == 'a-slab':
+            outstr += '> \n'
             outstr += blocks.make_slab(data)
 
         elif data['2'] == 'a-wall':
@@ -826,6 +835,8 @@ def make_block(page, data):
 
         #other elifs here
     except:
+        outstr += '> \n'
+        outstr += animation_wrapper(data)
         outstr += blocks.make_table_01(data)
 
     if data['animation']:
@@ -867,6 +878,12 @@ def start_entity_wrapper(page, data):
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
 
+    return outstr
+
+def animation_wrapper(data):
+    outstr = ''
+    if data['animation']:
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
     return outstr
 
 def start_entity(data):
