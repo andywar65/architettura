@@ -31,6 +31,9 @@
      {% endif %}
     {% endwith %}
 
+    {% with nl=page.add_new_layers %}
+    {% endwith %}
+
     {% with materials=page.get_material_assets %}
       {% if materials %}
         {% for name, component in materials.items %}

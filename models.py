@@ -274,6 +274,10 @@ class DigkomPage(Page):
     def equirectangular_image(self):
         return self.scene.equirectangular_image
 
+    def add_new_layers(self):
+        add_new_layers_ext(self.scene)
+        return
+
     def get_material_assets(self):
         return get_material_assets_ext(self.scene)
 
