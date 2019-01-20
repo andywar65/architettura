@@ -144,7 +144,8 @@ class ScenePage(Page):
         return get_material_assets_ext(self)
 
     def get_object_assets(self):
-        return get_object_assets_ext(self)
+        object_dict = aframe.get_object_dict(self)
+        return object_dict
 
     def get_entities(self):
         mode = 'scene'
@@ -228,6 +229,10 @@ class ArScenePage(Page):
         add_new_layers_ext(self.scene)
         return
 
+    def get_object_assets(self):
+        object_dict = aframe.get_object_dict(self.scene)
+        return object_dict
+
     def get_material_assets(self):
         return get_material_assets_ext(self.scene)
 
@@ -282,7 +287,8 @@ class DigkomPage(Page):
         return get_material_assets_ext(self.scene)
 
     def get_object_assets(self):
-        return get_object_assets_ext(self.scene)
+        object_dict = aframe.get_object_dict(self.scene)
+        return object_dict
 
     def get_entities(self):
         mode = 'digkom'
@@ -356,10 +362,6 @@ def get_material_assets_ext(page_obj):
             except:
                 pass
     return image_dict
-
-def get_object_assets_ext(page_obj):
-    object_dict = aframe.get_object_dict(page_obj)
-    return object_dict
 
 def get_entities_ext(page_obj, mode):
     material_dict = prepare_material_dict()
