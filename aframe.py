@@ -535,7 +535,10 @@ def reference_animations(collection):
     for x, data in collection.items():
         if data['2'] == 'a-animation' or data['2'] == 'checkpoint':
             for x2, data2 in collection2.items():
-                if x != x2:
+                d = data2['2']
+                if x == x2 or d == 'a-wall' or d == 'a-openwall' or d == 'a-door':
+                    pass
+                else:
                     dx = fabs(data['10']-data2['10'])
                     dy = fabs(data['20']-data2['20'])
                     dz = fabs(data['30']-data2['30'])
@@ -795,14 +798,10 @@ def make_block(page, data):
 
         elif data['2'] == 'a-wall':
             outstr += '> \n'
-            if data['animation']:
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
             outstr += blocks.make_wall(data)
 
         elif data['2'] == 'a-openwall':
             outstr += '> \n'
-            if data['animation']:
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
             #make left wall
             data2 = data.copy()
             data2['41'] = data2['door_off_1']
