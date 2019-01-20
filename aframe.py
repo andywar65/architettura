@@ -777,32 +777,32 @@ def make_block(page, data):
     try:
         if data['TYPE'] == 't01':
             outstr += blocks.make_table_01(data)
-            outstr += animation_wrapper(data)
 
         elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
             outstr += blocks.make_stalker(page, data)
 
         elif data['TYPE'] == 'obj-mtl':
             outstr += blocks.make_object(data)
-            outstr += animation_wrapper(data)
 
         elif data['TYPE'] == 'tree':
             outstr += blocks.make_tree(data)
-            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-door':
             outstr += blocks.make_door(data)
-            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-slab':
             outstr += blocks.make_slab(data)
-            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-wall':
+            outstr += '> \n'
+            if data['animation']:
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
             outstr += blocks.make_wall(data)
-            outstr += animation_wrapper(data)
 
         elif data['2'] == 'a-openwall':
+            outstr += '> \n'
+            if data['animation']:
+                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
             #make left wall
             data2 = data.copy()
             data2['41'] = data2['door_off_1']
@@ -824,14 +824,13 @@ def make_block(page, data):
             outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
             outstr += blocks.make_wall(data2)
             outstr += '</a-entity> \n'
-            outstr += animation_wrapper(data)
 
         #other elifs here
     except:
         outstr += blocks.make_table_01(data)
-        outstr += animation_wrapper(data)
 
     if data['animation']:
+        outstr += is_animation(data)
         outstr += '</a-entity>\n'
     outstr += '</a-entity>\n'
     return outstr
@@ -869,13 +868,6 @@ def start_entity_wrapper(page, data):
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
 
-    return outstr
-
-def animation_wrapper(data):
-    outstr = ''
-    if data['animation']:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
-        outstr += is_animation(data)
     return outstr
 
 def start_entity(data):

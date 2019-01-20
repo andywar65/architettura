@@ -24,6 +24,7 @@ def make_table_01(data):
     data = prepare_material_values(values, data)
 
     outstr = '> \n'#blocks need to close wrapper
+    outstr += animation_wrapper(data)
     #table top
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
@@ -72,7 +73,7 @@ def make_stalker(page, data):
     """
     outstr = 'look-at="#camera-foot"> \n'
     if data['TYPE'] == 'obj-stalker':
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
+        outstr += f'<a-entity id="stalker-{data["num"]}-object" \n'
         outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
         if data['MATERIAL']:
             outstr += f'" material="src: #{data["8"]}; color: {data["color"]}" \n'
@@ -107,7 +108,7 @@ def make_stalker(page, data):
         outstr += f'rotation="90 0 0" \n'
         outstr += f'scale="{fabs(data["41"])/1.5} 0 {fabs(data["41"])/3}"> \n'
         outstr += '</a-cylinder></a-entity>\n'
-        outstr += f'<a-triangle id="stalker-triangle-{data["num"]}" \n'
+        outstr += f'<a-triangle id="stalker-{data["num"]}-triangle" \n'
         outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.0005; \n'
         outstr += f'vertexB:0 {data["43"]-.05} 0.0005; \n'
         outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.0005"> \n'
@@ -155,6 +156,7 @@ def make_door(data):
     data = prepare_material_values(values, data)
 
     outstr = '> \n'#blocks need to close wrapper
+    outstr += animation_wrapper(data)
 
     #left frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
@@ -271,6 +273,7 @@ def make_slab(data):
     )
     data = prepare_material_values(values, data)
     outstr = '> \n'
+    outstr += animation_wrapper(data)
     #floor
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
     outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
@@ -337,7 +340,7 @@ def make_wall(data):
     wall2_h = wall2_h - tile2_h
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
-    outstr = '> \n'
+    outstr = ''
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
@@ -404,6 +407,7 @@ def make_object(data):
     If set, MATERIAL attribute is alternative to MTL.
     """
     outstr = '> \n'
+    outstr += animation_wrapper(data)
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
     outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
     if data['MATERIAL']:
@@ -448,6 +452,7 @@ def make_tree(data):
     ang = gauss(0, 5)
     rot = random()*360
     outstr = '> \n'
+    outstr += animation_wrapper(data)
     outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
@@ -531,4 +536,10 @@ def make_leaves(branch, lb, data):
     outstr += is_repeat(data["leaf_repeat"], lb, lb)
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
+    return outstr
+
+def animation_wrapper(data):
+    outstr = ''
+    if data['animation']:
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
     return outstr
