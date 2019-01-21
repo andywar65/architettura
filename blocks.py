@@ -27,7 +27,7 @@ def make_table_01(data):
     #table top
     data['prefix'] = 'top'
     data['rx'] = fabs(data["41"])
-    data['ry'] = fabs(data["41"])
+    data['ry'] = fabs(data["42"])
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
     outstr += f'scale="{data["rx"]} 0.05 {data["ry"]}" \n'
@@ -66,7 +66,14 @@ def make_stalker(page, data):
     next, previous). If using an object (obj-stalker), PARAM1 is the object file
     name, if PARAM2 is noscale object won't be scaled.
     """
+    values = (
+        ('pool', 0, 'stalker', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
     outstr = ''
+    data['prefix'] = 'stalker'
+    data['rx'] = fabs(data["41"])
+    data['ry'] = fabs(data["43"])
     if data['TYPE'] == 'obj-stalker':
         outstr += f'<a-entity id="stalker-{data["num"]}-object" \n'
         outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
@@ -77,13 +84,13 @@ def make_stalker(page, data):
         if data['PARAM2'] == 'noscale':
             outstr += 'scale="1 1 1"> \n'
         else:
-            outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
+            outstr += f'scale="{data["rx"]} {data["ry"]} {fabs(data["42"])}"> \n'
         outstr += '</a-entity>'
     else:
         outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
         outstr += f'position="0 {data["43"]/2} 0" \n'
-        outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-        outstr += entity_material(data)
+        outstr += f'width="{data["rx"]}" height="{data["ry"]}" \n'
+        outstr += object_material(data)
         outstr += '</a-plane>\n'
 
     if data['PARAM3']:
@@ -138,7 +145,7 @@ def make_stalker(page, data):
     return outstr
 
 def make_door(data):
-    """Door default BIM block. CLEAN!
+    """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
     dimension. TYPE sets door features. If set to 'ghost' panel will not be
@@ -152,39 +159,39 @@ def make_door(data):
     data = prepare_material_values(values, data)
 
     outstr = ''
+    data['prefix'] = 'frame'
+    data['rx'] = 1
+    data['ry'] = 1
     #left frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
     outstr += f'position="{-0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
-    else:
-        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
-    outstr += '</a-box>\n'
+    outstr += object_material(data)
+    outstr += '></a-box>\n'
     #right frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
     outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
-    else:
-        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
-    outstr += '</a-box>\n'
+    outstr += object_material(data)
+    outstr += '></a-box>\n'
     #top frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
     outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
-    else:
-        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
-    outstr += '</a-box>\n'
+    outstr += object_material(data)
+    outstr += '></a-box>\n'
 
     if data["TYPE"] == 'ghost':
         return outstr
     else:
+        data['prefix'] = 'panel'
+        if eval(data["DOUBLE"]):
+            data['rx'] = fabs(data["41"])/2-0.002
+        else:
+            data['rx'] = fabs(data["41"])-0.002
+        data['ry'] = data["43"]-0.001*unit(data["43"])
         if eval(data["SLIDING"]):
             if eval(data["DOUBLE"]):
                 #animated slide 1
@@ -194,11 +201,7 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
                 outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated slide 2
@@ -209,11 +212,7 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
                 outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -225,11 +224,7 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
                 outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -242,11 +237,7 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
                 outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated hinge 2
@@ -257,11 +248,7 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
                 outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -273,52 +260,45 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
                 outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                if data['wireframe']:
-                    outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-                else:
-                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-                    outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
 
 def make_slab(data):
-    """Slab default BIM block. CLEAN!
+    """Slab default BIM block.
 
     An horizontal partition. Gets dimensions from block scaling. TYPE sets
     partition type (TODO). Gets ceiling material from first component and
     floor material from third component.
     """
     values = (
+        ('pool', 0, 'ceiling', 'MATERIAL'),
         ('pool', 2, 'floor', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
     outstr = ''
+    data['prefix'] = 'floor'
+    data['rx'] = fabs(data["41"])
+    data['ry'] = fabs(data["42"])
     #floor
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
     outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
-    outstr += f'scale="{fabs(data["41"])} 0.01 {fabs(data["42"])}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["floor_color"]}; '
-    else:
-        outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
-        outstr += is_repeat(data["floor_repeat"], data["41"], data["42"])
+    outstr += f'scale="{data["rx"]} 0.01 {data["ry"]}" \n'
+    outstr += object_material(data)
     outstr += '"></a-box>\n'
     #ceiling
+    data['prefix'] = 'ceiling'
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-ceiling" \n'
     outstr += f'position="{data["41"]/2} {-data["43"]/2-0.005*unit(data["43"])} {-data["42"]/2}" \n'
-    outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])-0.01} {fabs(data["42"])}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-        outstr += is_repeat(data["repeat"], data["41"], data["42"])
+    outstr += f'scale="{data["rx"]} {fabs(data["43"])-0.01} {data["ry"]}" \n'
+    outstr += object_material(data)
     outstr += '"></a-box>\n'
 
     return outstr
 
 def make_wall(data):
-    """Wall default BIM block. CLEAN!
+    """Wall default BIM block.
 
     A vertical partition. Gets dimensions from block scaling, TILING and
     SKIRTING height from respective attributes. TYPE sets partition type
@@ -377,14 +357,13 @@ def make_wall(data):
     )
     for v in values:
         if v[0]:
+            data['prefix'] = v[5]
+            data['rx'] = fabs(data["41"])
+            data['ry'] = v[0]
             outstr += f'<a-box id="{data["2"]}-{data["num"]}-{v[1]}" \n'
             outstr += f'position="{data["41"]/2} {v[2]*unit(data["43"])} {-v[3]+0.005*unit(data["42"])}" \n'
-            outstr += f'scale="{fabs(data["41"])} {v[0]} {v[4]-0.01}" \n'
-            if data['wireframe']:
-                outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data[v[5]+"_color"]}; '
-            else:
-                outstr += f'material="src: #{data[v[5]+"_image"]}; color: {data[v[5]+"_color"]}'
-                outstr += is_repeat(data[v[5]+"_repeat"], data["41"], v[0])
+            outstr += f'scale="{data["rx"]} {v[0]} {v[4]-0.01}" \n'
+            outstr += object_material(data)
             outstr += '"></a-box>\n'
 
     return outstr
@@ -393,25 +372,6 @@ def unit(nounit):
     #returns positive/negative scaling
     unit = fabs(nounit)/nounit
     return unit
-
-def is_repeat(repeat, rx, ry):
-    #returns repeat attribute for images
-    if repeat:
-        output = f'; repeat:{fabs(rx)} {fabs(ry)}'
-        return output
-    else:
-        return ';'
-
-def entity_material(data):
-    #returns entity material
-    outstr = ''
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-        outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    return outstr
 
 def object_material(data):
     #returns object material
