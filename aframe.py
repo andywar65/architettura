@@ -131,7 +131,7 @@ def parse_dxf(page, material_dict, layer_dict):
     """Collects entities from DXF file.
 
     This function does too many things and maybe should be cut down. Scans
-    file for 3Dfaces and blocks. Assigns values to each entity, including
+    file for 3Dfaces, lines and blocks. Assigns values to each entity, including
     geometric and appearance values plus functional attributes. Returns a
     nested dictionary.
     """
@@ -288,6 +288,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 #is material set in layer?
                 layer = layer_dict[data['8']]
                 invisible = layer[1]
+                data['wireframe'] = layer[2]
+                data['wf_width'] = layer[3]
                 if invisible:
                     flag = False
                 else:
@@ -331,6 +333,8 @@ def parse_dxf(page, material_dict, layer_dict):
                     data['210'] = data['220'] = 0
                     layer = layer_dict[data['8']]
                     invisible = layer[1]
+                    data['wireframe'] = layer[2]
+                    data['wf_width'] = layer[3]
                     if invisible:
                         flag = False
                     else:
@@ -373,6 +377,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 #is material set in layer?
                 layer = layer_dict[data['8']]
                 invisible = layer[1]
+                data['wireframe'] = layer[2]
+                data['wf_width'] = layer[3]
                 if invisible:
                     flag = False
                 else:
@@ -409,14 +415,14 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {}#default values
+                data = {'wireframe': False, 'wf_width': 2}#default values
                 flag = 'face'
                 x += 1
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '',
-                 'animation': False, 'checkpoint': False}#default values
+                 'animation': False, 'checkpoint': False, 'wireframe': False, 'wf_width': 2}#default values
                 flag = 'block'
                 x += 1
 
@@ -619,9 +625,12 @@ def make_triangle(page, data):
     outstr += f'geometry="vertexA:{data["10"]} {data["30"]} {data["20"]}; \n'
     outstr += f'vertexB:{data["11"]} {data["31"]} {data["21"]}; \n'
     outstr += f'vertexC:{data["12"]} {data["32"]} {data["22"]}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
-    if page.double_face:
-        outstr += 'side: double; '
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
+        if page.double_face:
+            outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
     return outstr
 
@@ -681,10 +690,13 @@ def make_plane(page, data):
     else:#insertion is at corner
         outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
     outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    if page.double_face:
-        outstr += 'side: double; '
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += is_repeat(data["repeat"], data["41"], data["43"])
+        if page.double_face:
+            outstr += 'side: double; '
     outstr += '">\n'
     if data['animation']:
         outstr += is_animation(data)
@@ -908,8 +920,8 @@ def start_entity(data):
 
 def entity_geometry(data):
     attr_dict = {
-        'a-cone': ('OPEN-ENDED', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-cylinder': ('OPEN-ENDED', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
         'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
         'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
         'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
@@ -927,8 +939,12 @@ def entity_geometry(data):
     return outstr
 
 def entity_material(data):
-    outstr = f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr = ''
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     return outstr
 

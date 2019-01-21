@@ -27,8 +27,11 @@ def make_table_01(data):
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
     outstr += f'scale="{fabs(data["41"])} 0.05 {fabs(data["42"])}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-    outstr += is_repeat(data["repeat"], fabs(data["41"]), fabs(data["42"]))
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+        outstr += is_repeat(data["repeat"], fabs(data["41"]), fabs(data["42"]))
     outstr += '"></a-box>\n'
     data['leg'] = data["43"]-0.025*unit(data["43"])
     scale_x = data["41"]/2-0.05*unit(data["41"])
@@ -56,7 +59,10 @@ def close_leg(data):
     #repetitive task in making tables
     outstr = 'radius="0.025" \n'
     outstr += f'height="{data["leg"]}" \n'
-    outstr += f'material="src: #{data["leg_image"]}; color: {data["leg_color"]} '
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["leg_color"]}; '
+    else:
+        outstr += f'material="src: #{data["leg_image"]}; color: {data["leg_color"]} '
     outstr += '"></a-cylinder>\n'
     return outstr
 
@@ -159,20 +165,29 @@ def make_door(data):
     outstr += f'position="{-0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
+    else:
+        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
     outstr += '</a-box>\n'
     #right frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
     outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
+    else:
+        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
     outstr += '</a-box>\n'
     #top frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
     outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["frame_color"]};">'
+    else:
+        outstr += f'material="src: #{data["frame_image"]}; color: {data["frame_color"]}">'
     outstr += '</a-box>\n'
 
     if data["TYPE"] == 'ghost':
@@ -187,8 +202,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
                 outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated slide 2
@@ -199,8 +217,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
                 outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -212,8 +233,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
                 outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
                 outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -226,8 +250,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
                 outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated hinge 2
@@ -238,8 +265,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
                 outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], (fabs(data["41"]))/2-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -251,8 +281,11 @@ def make_door(data):
                 outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
                 outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
                 outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-                outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
+                if data['wireframe']:
+                    outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+                else:
+                    outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+                    outstr += is_repeat(data["repeat"], fabs(data["41"])-0.002, data["43"]-0.001*unit(data["43"]))
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 return outstr
@@ -273,15 +306,21 @@ def make_slab(data):
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
     outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])} 0.01 {fabs(data["42"])}" \n'
-    outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
-    outstr += is_repeat(data["floor_repeat"], data["41"], data["42"])
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["floor_color"]}; '
+    else:
+        outstr += f'material="src: #{data["floor_image"]}; color: {data["floor_color"]}'
+        outstr += is_repeat(data["floor_repeat"], data["41"], data["42"])
     outstr += '"></a-box>\n'
     #ceiling
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-ceiling" \n'
     outstr += f'position="{data["41"]/2} {-data["43"]/2-0.005*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])-0.01} {fabs(data["42"])}" \n'
-    outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["42"])
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
+        outstr += is_repeat(data["repeat"], data["41"], data["42"])
     outstr += '"></a-box>\n'
 
     return outstr
@@ -349,8 +388,11 @@ def make_wall(data):
             outstr += f'<a-box id="{data["2"]}-{data["num"]}-{v[1]}" \n'
             outstr += f'position="{data["41"]/2} {v[2]*unit(data["43"])} {-v[3]+0.005*unit(data["42"])}" \n'
             outstr += f'scale="{fabs(data["41"])} {v[0]} {v[4]-0.01}" \n'
-            outstr += f'material="src: #{data[v[5]+"_image"]}; color: {data[v[5]+"_color"]}'
-            outstr += is_repeat(data[v[5]+"_repeat"], data["41"], v[0])
+            if data['wireframe']:
+                outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data[v[5]+"_color"]}; '
+            else:
+                outstr += f'material="src: #{data[v[5]+"_image"]}; color: {data[v[5]+"_color"]}'
+                outstr += is_repeat(data[v[5]+"_repeat"], data["41"], v[0])
             outstr += '"></a-box>\n'
 
     return outstr
@@ -370,8 +412,12 @@ def is_repeat(repeat, rx, ry):
 
 def entity_material(data):
     #returns entity material
-    outstr = f'material="src: #{data["8"]}; color: {data["color"]}'
-    outstr += is_repeat(data["repeat"], data["41"], data["43"])
+    outstr = ''
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+    else:
+        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     return outstr
 
@@ -418,7 +464,7 @@ def make_object(data):
 def make_tree(data):
     """Tree block
 
-    TODO. Gets dimensions from block scaling. Gets trunk material from first
+    Gets dimensions from block scaling. Gets trunk material from first
     component, branch from second and leaves from third.
     """
     values = (
@@ -454,8 +500,11 @@ def make_tree(data):
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
     outstr += f'position="0 {lt/2} 0" \n'
     outstr += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
-    outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
-    outstr += is_repeat(data["trunk_repeat"], data["41"], lt)
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["trunk_color"]}; '
+    else:
+        outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
+        outstr += is_repeat(data["trunk_repeat"], data["41"], lt)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
     osc = 30 * gauss(1, .1)
@@ -515,8 +564,11 @@ def make_branch(branch, lb, lp, angle, rotx, data):
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-{branch}" \n'
     outstr += f'position="0 {lb/2} 0" \n'
     outstr += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
-    outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
-    outstr += is_repeat(data["branch_repeat"], data["41"], lb)
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["branch_color"]}; '
+    else:
+        outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
+        outstr += is_repeat(data["branch_repeat"], data["41"], lb)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close branch
     return outstr
@@ -525,8 +577,11 @@ def make_leaves(branch, lb, data):
     outstr = f'<a-sphere id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
     outstr += f'position="0 {lb} 0" \n'
     outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
-    outstr += f'material="src: #{data["leaf_image"]}; color: {data["leaf_color"]}'
-    outstr += is_repeat(data["leaf_repeat"], lb, lb)
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["leaf_color"]}; '
+    else:
+        outstr += f'material="src: #{data["leaf_image"]}; color: {data["leaf_color"]}'
+        outstr += is_repeat(data["leaf_repeat"], lb, lb)
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
     return outstr
