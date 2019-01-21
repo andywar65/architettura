@@ -19,51 +19,42 @@ def make_table_01(data):
     from third component.
     """
     values = (
+        ('pool', 0, 'top', 'MATERIAL'),
         ('pool', 2, 'leg', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
     outstr = ''
     #table top
+    data['prefix'] = 'top'
+    data['rx'] = fabs(data["41"])
+    data['ry'] = fabs(data["41"])
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
     outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
-    outstr += f'scale="{fabs(data["41"])} 0.05 {fabs(data["42"])}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]} '
-        outstr += is_repeat(data["repeat"], fabs(data["41"]), fabs(data["42"]))
+    outstr += f'scale="{data["rx"]} 0.05 {data["ry"]}" \n'
+    outstr += object_material(data)
     outstr += '"></a-box>\n'
-    data['leg'] = data["43"]-0.025*unit(data["43"])
+    #prepare legs
+    data['prefix'] = 'leg'
     scale_x = data["41"]/2-0.05*unit(data["41"])
     scale_y = data["42"]/2-0.05*unit(data["42"])
-    #first leg
-    outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-1" \n'
-    outstr += f'position="{scale_x} {data["leg"]/2} {scale_y}" \n'
-    outstr += close_leg(data)
-    #second leg
-    outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-2" \n'
-    outstr += f'position="{scale_x} {data["leg"]/2} {-scale_y}" \n'
-    outstr += close_leg(data)
-    #third leg
-    outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-3" \n'
-    outstr += f'position="{-scale_x} {data["leg"]/2} {scale_y}" \n'
-    outstr += close_leg(data)
-    #fourth leg
-    outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-4" \n'
-    outstr += f'position="{-scale_x} {data["leg"]/2} {-scale_y}" \n'
-    outstr += close_leg(data)
+    height = data["43"]-0.025*unit(data["43"])
+    data['rx'] = 1
+    data['ry'] = 1
+    values = (
+        (1, scale_x, scale_y),
+        (2, scale_x, -scale_y),
+        (3, -scale_x, scale_y),
+        (4, -scale_x, -scale_y),
+    )
+    #make legs
+    for v in values:
+        outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-{v[0]}" \n'
+        outstr += f'position="{v[1]} {height/2} {v[2]}" \n'
+        outstr += 'radius="0.025" \n'
+        outstr += f'height="{height}" \n'
+        outstr += object_material(data)
+        outstr += '"></a-cylinder>\n'
 
-    return outstr
-
-def close_leg(data):
-    #repetitive task in making tables
-    outstr = 'radius="0.025" \n'
-    outstr += f'height="{data["leg"]}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["leg_color"]}; '
-    else:
-        outstr += f'material="src: #{data["leg_image"]}; color: {data["leg_color"]} '
-    outstr += '"></a-cylinder>\n'
     return outstr
 
 def make_stalker(page, data):
@@ -419,6 +410,16 @@ def entity_material(data):
         outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
+    return outstr
+
+def object_material(data):
+    #returns object material
+    outstr = ''
+    if data['wireframe']:
+        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data[data["prefix"]+"_color"]}; '
+    else:
+        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]}'
+        outstr += is_repeat(data[data['prefix']+'_repeat'], data['rx'], data['ry'])
     return outstr
 
 def prepare_material_values(values, data):
