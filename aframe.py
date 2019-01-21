@@ -626,7 +626,7 @@ def make_triangle(page, data):
     outstr += f'vertexB:{data["11"]} {data["31"]} {data["21"]}; \n'
     outstr += f'vertexC:{data["12"]} {data["32"]} {data["22"]}" \n'
     if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
         outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
         if page.double_face:
@@ -691,7 +691,7 @@ def make_plane(page, data):
         outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
     outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
     if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
         outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
@@ -941,7 +941,7 @@ def entity_geometry(data):
 def entity_material(data):
     outstr = ''
     if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframeLinewidth: {data["wf_width"]}; color: {data["color"]}; '
+        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
         outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
