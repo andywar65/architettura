@@ -138,7 +138,7 @@ def make_stalker(page, data):
     return outstr
 
 def make_door(data):
-    """Door default BIM block.
+    """Door default BIM block. CLEAN!
 
     A simple framed door. Gets dimensions from block scaling, except for frame
     dimension. TYPE sets door features. If set to 'ghost' panel will not be
@@ -146,6 +146,7 @@ def make_door(data):
     component and frame material from third component.
     """
     values = (
+        ('pool', 0, 'panel', 'MATERIAL'),
         ('pool', 2, 'frame', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
@@ -282,7 +283,7 @@ def make_door(data):
                 return outstr
 
 def make_slab(data):
-    """Slab default BIM block.
+    """Slab default BIM block. CLEAN!
 
     An horizontal partition. Gets dimensions from block scaling. TYPE sets
     partition type (TODO). Gets ceiling material from first component and
@@ -317,7 +318,7 @@ def make_slab(data):
     return outstr
 
 def make_wall(data):
-    """Wall default BIM block.
+    """Wall default BIM block. CLEAN!
 
     A vertical partition. Gets dimensions from block scaling, TILING and
     SKIRTING height from respective attributes. TYPE sets partition type
@@ -494,6 +495,9 @@ def make_tree(data):
     ang = gauss(0, 5)
     rot = random()*360
     outstr = ''
+    data['prefix'] = 'trunk'
+    data['rx'] = fabs(data["41"])
+    data['ry'] = lt
     outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
@@ -502,11 +506,7 @@ def make_tree(data):
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
     outstr += f'position="0 {lt/2} 0" \n'
     outstr += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["trunk_color"]}; '
-    else:
-        outstr += f'material="src: #{data["trunk_image"]}; color: {data["trunk_color"]}'
-        outstr += is_repeat(data["trunk_repeat"], data["41"], lt)
+    outstr += object_material(data)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
     osc = 30 * gauss(1, .1)
@@ -558,6 +558,9 @@ def make_tree(data):
     return outstr
 
 def make_branch(branch, lb, lp, angle, rotx, data):
+    data['prefix'] = 'branch'
+    data['rx'] = fabs(data["41"])
+    data['ry'] = lb
     ang = gauss(angle, 10)
     rot = gauss(rotx, 20)
     outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-{branch}-ent" \n'
@@ -566,24 +569,19 @@ def make_branch(branch, lb, lp, angle, rotx, data):
     outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-{branch}" \n'
     outstr += f'position="0 {lb/2} 0" \n'
     outstr += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["branch_color"]}; '
-    else:
-        outstr += f'material="src: #{data["branch_image"]}; color: {data["branch_color"]}'
-        outstr += is_repeat(data["branch_repeat"], data["41"], lb)
+    outstr += object_material(data)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close branch
     return outstr
 
 def make_leaves(branch, lb, data):
+    data['prefix'] = 'leaf'
+    data['rx'] = lb
+    data['ry'] = lb
     outstr = f'<a-sphere id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
     outstr += f'position="0 {lb} 0" \n'
     outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["leaf_color"]}; '
-    else:
-        outstr += f'material="src: #{data["leaf_image"]}; color: {data["leaf_color"]}'
-        outstr += is_repeat(data["leaf_repeat"], lb, lb)
+    outstr += object_material(data)
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
     return outstr
