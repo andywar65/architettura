@@ -533,16 +533,15 @@ def door_tilted_case(data, data2):
 def reference_animations(collection):
     """Assigns animations and checkpoints.
 
-    Controls if animation / checkpoint block shares insertion point with other
-    blocks. Animation / checkpoint attributes will be appended to selected
-    block. Returns nested dictionary.
+    Controls if animation / checkpoint / mason block shares insertion point with
+    other blocks. Animation / checkpoint / mason attributes will be appended to
+    selected block. Returns nested dictionary.
     """
     collection2 = collection.copy()
     for x, data in collection.items():
-        if data['2'] == 'a-animation' or data['2'] == 'checkpoint':
+        if data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
             for x2, data2 in collection2.items():
-                d = data2['2']
-                if x == x2 or d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab':
+                if x == x2:
                     pass
                 else:
                     dx = fabs(data['10']-data2['10'])
@@ -551,15 +550,25 @@ def reference_animations(collection):
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
                         if data['2'] == 'checkpoint':
                             data2['checkpoint'] = True
+                        elif data['2'] == 'mason':
+                            if d == 'a-plane':
+                                data2['2'] = 'w-plane'
+                                data2['MATERIAL'] = data['MATERIAL']
+                                data2['TILING'] = data['TILING']
+                                data2['SKIRTING'] = data['SKIRTING']
                         elif data['2'] == 'a-animation':
-                            data2['animation'] = True
-                            data2['ATTRIBUTE'] = data['ATTRIBUTE']
-                            data2['FROM'] = data['FROM']
-                            data2['TO'] = data['TO']
-                            data2['BEGIN'] = data['BEGIN']
-                            data2['DIRECTION'] = data['DIRECTION']
-                            data2['REPEAT'] = data['REPEAT']
-                            data2['DURATION'] = data['DURATION']
+                            d = data2['2']
+                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab':
+                                pass
+                            else:
+                                data2['animation'] = True
+                                data2['ATTRIBUTE'] = data['ATTRIBUTE']
+                                data2['FROM'] = data['FROM']
+                                data2['TO'] = data['TO']
+                                data2['BEGIN'] = data['BEGIN']
+                                data2['DIRECTION'] = data['DIRECTION']
+                                data2['REPEAT'] = data['REPEAT']
+                                data2['DURATION'] = data['DURATION']
                         collection[x2] = data2
     return collection
 
