@@ -801,7 +801,7 @@ def make_block(page, data):
     try:
         if data['TYPE'] == 't01':
             outstr += '> \n'
-            outstr += animation_wrapper(data)
+            outstr += animation_wrapper(data, 0)
             outstr += blocks.make_table_01(data)
 
         elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
@@ -810,12 +810,12 @@ def make_block(page, data):
 
         elif data['TYPE'] == 'obj-mtl':
             outstr += '> \n'
-            outstr += animation_wrapper(data)
+            outstr += animation_wrapper(data, 0)
             outstr += blocks.make_object(data)
 
         elif data['TYPE'] == 'tree':
             outstr += '> \n'
-            outstr += animation_wrapper(data)
+            outstr += animation_wrapper(data, 0)
             outstr += blocks.make_tree(data)
 
         elif data['2'] == 'a-door':
@@ -832,7 +832,7 @@ def make_block(page, data):
 
         elif data['2'] == 'w-plane':
             outstr += '> \n'
-            #animation wrapper is inside the block
+            outstr += animation_wrapper(data, data['41']/2)
             outstr += blocks.make_w_plane(data)
 
         elif data['2'] == 'a-openwall':
@@ -862,7 +862,7 @@ def make_block(page, data):
         #other elifs here
     except:
         outstr += '> \n'
-        outstr += animation_wrapper(data)
+        outstr += animation_wrapper(data, 0)
         outstr += blocks.make_table_01(data)
 
     if data['animation']:
@@ -906,10 +906,11 @@ def start_entity_wrapper(page, data):
 
     return outstr
 
-def animation_wrapper(data):
+def animation_wrapper(data, dx):
     outstr = ''
     if data['animation']:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation"> \n'
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation" \n'
+        outstr += f'position="{dx} 0 0"> \n'
     return outstr
 
 def start_entity(data):
