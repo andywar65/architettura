@@ -368,6 +368,22 @@ def make_wall(data):
 
     return outstr
 
+def make_w_plane(data):
+    """Wall plane default BIM block.
+
+    A vertical surface. Gets dimensions from plane scaling, TILING and
+    SKIRTING height from respective attributes. Gets MATERIAL with 3 components,
+    first for wall, second for tiling and third for skirting.
+    """
+    values = (
+        ('pool', 0, 'wall', 'MATERIAL'),
+        ('pool', 1, 'tile', 'MATERIAL'),
+        ('pool', 2, 'skirt', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
+    outstr = ''
+    return outstr
+
 def unit(nounit):
     #returns positive/negative scaling
     unit = fabs(nounit)/nounit
