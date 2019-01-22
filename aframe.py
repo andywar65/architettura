@@ -830,6 +830,11 @@ def make_block(page, data):
             outstr += '> \n'
             outstr += blocks.make_wall(data)
 
+        elif data['2'] == 'w-plane':
+            outstr += '> \n'
+            #animation wrapper is inside the block
+            outstr += blocks.make_w_plane(data)
+
         elif data['2'] == 'a-openwall':
             outstr += '> \n'
             #make left wall
