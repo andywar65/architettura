@@ -69,6 +69,8 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the components.
 
+`a-mason` standard block transforms lines with thickness and a-planes into `Wall` surfaces (see further).
+
 ### Blocks and BIM standard blocks
 
 `Blocks` are a parametric assembly of primitives. In CAD you just have a bounding box with an insertion point, but setting the `TYPE` attribute leads to different results. There will be a list of block types (default is t01 = simple table). `MATERIAL` attribute defines block appearance, other `PARAMETERS` define functionalities peculiar to each block.
