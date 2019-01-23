@@ -188,6 +188,24 @@ def parse_dxf(page, material_dict, layer_dict):
             elif key == '62':#color
                 data['color'] = cad2hex(value)
 
+        elif flag == 'poly':#stores values for polylines
+            data['10'] = []#vertex list
+            data['20'] = []
+            if key == '8':#layer name
+                data[key] = value
+            elif key == '10':#X position
+                data['10'].append(float(value))
+            elif key == '20':#mirror Y position
+                data['20'].append(-float(value))
+            elif key == '39':#thickness
+                data[key] = float(value)
+            elif key == '62':#color
+                data['color'] = cad2hex(value)
+            elif key == '70' and value == '1':#closed
+                data['70'] = True
+            elif key == '90':#vertex num
+                data[key] = float(value)
+
         elif flag == 'block':#stores values for blocks
             if key == '2':#block name
                 data[key] = value
@@ -431,6 +449,11 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'LINE':#start line
                 data = {'color': '', '39': 0,}#default values
                 flag = 'line'
+                x += 1
+
+            elif value == 'LWPOLYLINE':#start polyline
+                data = {'color': '', '39': 0, '70': False, 'wall': False}#default values
+                flag = 'poly'
                 x += 1
 
     return collection
