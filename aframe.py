@@ -197,7 +197,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 data['10'].append(float(value))
             elif key == '20':#mirror Y position
                 data['20'].append(-float(value))
-            elif key == '39':#thickness
+            elif key == '38' and  key == '39':#elevation and thickness
                 data[key] = float(value)
             elif key == '62':#color
                 data['color'] = cad2hex(value)
@@ -339,7 +339,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
 
             elif flag == 'poly':#close polyline
-                data['2'] = 'poly'
+                data['2'] = 'a-poly'
                 layer = layer_dict[data['8']]
                 invisible = layer[1]
                 data['wireframe'] = layer[2]
@@ -472,7 +472,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
-                data = {'color': '', '39': 0, '70': False, 'wall': False}#default values
+                data = {'color': '','38': 0,  '39': 0, '70': False, 'wall': False}#default values
                 flag = 'poly'
                 x += 1
 
@@ -599,10 +599,19 @@ def reference_animations(collection):
                             if data2['2'] == 'a-plane':
                                 data2['2'] = 'w-plane'
                                 data2['MATERIAL'] = data['MATERIAL']
-                                data2['color'] = data['color']
-                                data2['8'] = data['8']
-                                data2['repeat'] = data['repeat']
-                                data2['pool'] = data['pool']
+                                try:
+                                    data2['pool'] = data['pool']
+                                except:
+                                    pass
+                                data2['TILING'] = data['TILING']
+                                data2['SKIRTING'] = data['SKIRTING']
+                            elif data2['2'] == 'a-poly' and data2['39']:
+                                data2['wall'] = True
+                                data2['MATERIAL'] = data['MATERIAL']
+                                try:
+                                    data2['pool'] = data['pool']
+                                except:
+                                    pass
                                 data2['TILING'] = data['TILING']
                                 data2['SKIRTING'] = data['SKIRTING']
                         elif data['2'] == 'a-animation':
