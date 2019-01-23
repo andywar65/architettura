@@ -165,129 +165,16 @@ def parse_dxf(page, material_dict, layer_dict):
             return collection
 
         if flag == 'face':#stores values for 3D faces
-            if key == '8':#layer name
-                data[key] = value
-            elif key == '10' or key == '11' or key == '12' or key == '13':#X position
-                data[key] = float(value)
-            elif key == '20' or key == '21' or key == '22' or key == '23':#mirror Y position
-                data[key] = -float(value)
-            elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
-                data[key] = float(value)
+            data = store_face_values(data, key, value)
 
         elif flag == 'line':#stores values for lines
-            if key == '8':#layer name
-                data[key] = value
-            elif key == '10' or key == '11':#X position
-                data[key] = float(value)
-            elif key == '20' or key == '21':#mirror Y position
-                data[key] = -float(value)
-            elif key == '30' or key == '31':#Z position
-                data[key] = float(value)
-            elif key == '39':#thickness
-                data[key] = float(value)
-            elif key == '62':#color
-                data['color'] = cad2hex(value)
+            data = store_line_values(data, key, value)
 
         elif flag == 'poly':#stores values for polylines
-            if key == '8':#layer name
-                data[key] = value
-            elif key == '10':#X position
-                data['vx'].append(float(value))
-            elif key == '20':#mirror Y position
-                data['vy'].append(-float(value))
-            elif key == '38' and  key == '39':#elevation and thickness
-                data[key] = float(value)
-            elif key == '62':#color
-                data['color'] = cad2hex(value)
-            elif key == '70' and value == '1':#closed
-                data['70'] = True
-            elif key == '90':#vertex num
-                data[key] = float(value)
+            data = store_poly_values(data, key, value)
 
-        elif flag == 'block':#stores values for blocks
-            if key == '2':#block name
-                data[key] = value
-            if key == '8':#layer name
-                data[key] = value
-                data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
-            elif key == '10' or key == '30':#X Z position
-                data[key] = float(value)
-            elif key == '20':#Y position, mirrored
-                data[key] = -float(value)
-            elif key == '50':#Z rotation
-                data[key] = float(value)
-            elif key == '41' or key == '42' or key == '43':#scale values
-                data[key] = float(value)
-            elif key == '210':#X of OCS unitary vector
-                Az_1 = float(value)
-                P_x = data['10']
-            elif key == '220':#Y of OCS unitary vector
-                Az_2 = float(value)
-                P_y = -data['20']#reset original value
-            elif key == '230':#Z of OCS unitary vector
-                Az_3 = float(value)
-                P_z = data['30']
-                #arbitrary axis algorithm
-                #see if OCS z vector is close to world Z axis
-                if fabs(Az_1) < (1/64) and fabs(Az_2) < (1/64):
-                    W = ('Y', 0, 1, 0)
-                else:
-                    W = ('Z', 0, 0, 1)
-                #cross product for OCS x arbitrary vector, normalized
-                Ax_1 = W[2]*Az_3-W[3]*Az_2
-                Ax_2 = W[3]*Az_1-W[1]*Az_3
-                Ax_3 = W[1]*Az_2-W[2]*Az_1
-                Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
-                Ax_1 = Ax_1/Norm
-                Ax_2 = Ax_2/Norm
-                Ax_3 = Ax_3/Norm
-                #cross product for OCS y arbitrary vector, normalized
-                Ay_1 = Az_2*Ax_3-Az_3*Ax_2
-                Ay_2 = Az_3*Ax_1-Az_1*Ax_3
-                Ay_3 = Az_1*Ax_2-Az_2*Ax_1
-                Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
-                Ay_1 = Ay_1/Norm
-                Ay_2 = Ay_2/Norm
-                Ay_3 = Ay_3/Norm
-                #insertion world coordinates from OCS
-                data['10'] = P_x*Ax_1+P_y*Ay_1+P_z*Az_1
-                data['20'] = P_x*Ax_2+P_y*Ay_2+P_z*Az_2
-                data['30'] = P_x*Ax_3+P_y*Ay_3+P_z*Az_3
-                #OCS X vector translated into WCS
-                Ax_1 = ((P_x+cos(radians(data['50'])))*Ax_1+(P_y+sin(radians(data['50'])))*Ay_1+P_z*Az_1)-data['10']
-                Ax_2 = ((P_x+cos(radians(data['50'])))*Ax_2+(P_y+sin(radians(data['50'])))*Ay_2+P_z*Az_2)-data['20']
-                Ax_3 = ((P_x+cos(radians(data['50'])))*Ax_3+(P_y+sin(radians(data['50'])))*Ay_3+P_z*Az_3)-data['30']
-                #cross product for OCS y vector, normalized
-                Ay_1 = Az_2*Ax_3-Az_3*Ax_2
-                Ay_2 = Az_3*Ax_1-Az_1*Ax_3
-                Ay_3 = Az_1*Ax_2-Az_2*Ax_1
-                Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
-                Ay_1 = Ay_1/Norm
-                Ay_2 = Ay_2/Norm
-                Ay_3 = Ay_3/Norm
-
-                #A-Frame rotation order is Yaw(Z), Pitch(X) and Roll(Y)
-                #thanks for help Marilena Vendittelli and https://www.geometrictools.com/
-                if Ay_3<1:
-                    if Ay_3>-1:
-                        pitch = asin(Ay_3)
-                        yaw = atan2(-Ay_1, Ay_2)
-                        roll = atan2(-Ax_3, Az_3)
-                    else:
-                        pitch = -pi/2
-                        yaw = -atan2(Az_1, Ax_1)
-                        roll = 0
-                else:
-                    pitch = pi/2
-                    yaw = atan2(Az_1, Ax_1)
-                    roll = 0
-
-                #Y position, mirrored
-                data['20'] = -data['20']
-                #rotations from radians to degrees
-                data['210'] = degrees(pitch)
-                data['50'] = degrees(yaw)
-                data['220'] = -degrees(roll)
+        elif flag == 'block':#stores values for blocks (with arbitrary axis algorithm)
+            data = store_block_values(data, key, value)
 
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
@@ -482,6 +369,135 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
     return collection
+
+def store_face_values(data, key, value):
+    if key == '8':#layer name
+        data[key] = value
+    elif key == '10' or key == '11' or key == '12' or key == '13':#X position
+        data[key] = float(value)
+    elif key == '20' or key == '21' or key == '22' or key == '23':#mirror Y position
+        data[key] = -float(value)
+    elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
+        data[key] = float(value)
+    return data
+
+def store_line_values(data, key, value):
+    if key == '8':#layer name
+        data[key] = value
+    elif key == '10' or key == '11':#X position
+        data[key] = float(value)
+    elif key == '20' or key == '21':#mirror Y position
+        data[key] = -float(value)
+    elif key == '30' or key == '31':#Z position
+        data[key] = float(value)
+    elif key == '39':#thickness
+        data[key] = float(value)
+    elif key == '62':#color
+        data['color'] = cad2hex(value)
+    return data
+
+def store_poly_values(data, key, value):
+    if key == '8':#layer name
+        data[key] = value
+    elif key == '10':#X position
+        data['vx'].append(float(value))
+    elif key == '20':#mirror Y position
+        data['vy'].append(-float(value))
+    elif key == '38' and  key == '39':#elevation and thickness
+        data[key] = float(value)
+    elif key == '62':#color
+        data['color'] = cad2hex(value)
+    elif key == '70' and value == '1':#closed
+        data['70'] = True
+    elif key == '90':#vertex num
+        data[key] = float(value)
+    return data
+
+def store_block_values(data, key, value):
+    if key == '2':#block name
+        data[key] = value
+    if key == '8':#layer name
+        data[key] = value
+        data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
+    elif key == '10' or key == '30':#X Z position
+        data[key] = float(value)
+    elif key == '20':#Y position, mirrored
+        data[key] = -float(value)
+    elif key == '50':#Z rotation
+        data[key] = float(value)
+    elif key == '41' or key == '42' or key == '43':#scale values
+        data[key] = float(value)
+    elif key == '210':#X of OCS unitary vector
+        data['Az_1'] = float(value)
+        data['P_x'] = data['10']
+    elif key == '220':#Y of OCS unitary vector
+        data['Az_2'] = float(value)
+        data['P_y'] = -data['20']#reset original value
+    elif key == '230':#Z of OCS unitary vector
+        Az_3 = float(value)
+        P_z = data['30']
+        #arbitrary axis algorithm
+        #see if OCS z vector is close to world Z axis
+        if fabs(data['Az_1']) < (1/64) and fabs(data['Az_2']) < (1/64):
+            W = ('Y', 0, 1, 0)
+        else:
+            W = ('Z', 0, 0, 1)
+        #cross product for OCS x arbitrary vector, normalized
+        Ax_1 = W[2]*Az_3-W[3]*data['Az_2']
+        Ax_2 = W[3]*data['Az_1']-W[1]*Az_3
+        Ax_3 = W[1]*data['Az_2']-W[2]*data['Az_1']
+        Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
+        Ax_1 = Ax_1/Norm
+        Ax_2 = Ax_2/Norm
+        Ax_3 = Ax_3/Norm
+        #cross product for OCS y arbitrary vector, normalized
+        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
+        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+        Ay_1 = Ay_1/Norm
+        Ay_2 = Ay_2/Norm
+        Ay_3 = Ay_3/Norm
+        #insertion world coordinates from OCS
+        data['10'] = data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1']
+        data['20'] = data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2']
+        data['30'] = data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3
+        #OCS X vector translated into WCS
+        Ax_1 = ((data['P_x']+cos(radians(data['50'])))*Ax_1+(data['P_y']+sin(radians(data['50'])))*Ay_1+P_z*data['Az_1'])-data['10']
+        Ax_2 = ((data['P_x']+cos(radians(data['50'])))*Ax_2+(data['P_y']+sin(radians(data['50'])))*Ay_2+P_z*data['Az_2'])-data['20']
+        Ax_3 = ((data['P_x']+cos(radians(data['50'])))*Ax_3+(data['P_y']+sin(radians(data['50'])))*Ay_3+P_z*Az_3)-data['30']
+        #cross product for OCS y vector, normalized
+        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
+        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+        Ay_1 = Ay_1/Norm
+        Ay_2 = Ay_2/Norm
+        Ay_3 = Ay_3/Norm
+
+        #A-Frame rotation order is Yaw(Z), Pitch(X) and Roll(Y)
+        #thanks for help Marilena Vendittelli and https://www.geometrictools.com/
+        if Ay_3<1:
+            if Ay_3>-1:
+                pitch = asin(Ay_3)
+                yaw = atan2(-Ay_1, Ay_2)
+                roll = atan2(-Ax_3, Az_3)
+            else:
+                pitch = -pi/2
+                yaw = -atan2(data['Az_1'], Ax_1)
+                roll = 0
+        else:
+            pitch = pi/2
+            yaw = atan2(data['Az_1'], Ax_1)
+            roll = 0
+
+        #Y position, mirrored
+        data['20'] = -data['20']
+        #rotations from radians to degrees
+        data['210'] = degrees(pitch)
+        data['50'] = degrees(yaw)
+        data['220'] = -degrees(roll)
+    return data
 
 def reference_openings(collection):
     """Compares each door entity with each wall.
