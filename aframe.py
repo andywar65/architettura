@@ -189,14 +189,12 @@ def parse_dxf(page, material_dict, layer_dict):
                 data['color'] = cad2hex(value)
 
         elif flag == 'poly':#stores values for polylines
-            data['10'] = []#vertex list
-            data['20'] = []
             if key == '8':#layer name
                 data[key] = value
             elif key == '10':#X position
-                data['10'].append(float(value))
+                data['vx'].append(float(value))
             elif key == '20':#mirror Y position
-                data['20'].append(-float(value))
+                data['vy'].append(-float(value))
             elif key == '38' and  key == '39':#elevation and thickness
                 data[key] = float(value)
             elif key == '62':#color
@@ -340,6 +338,9 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif flag == 'poly':#close polyline
                 data['2'] = 'a-poly'
+                data['10'] = data['vx'][0]
+                data['20'] = data['vy'][0]
+                data['30'] = data['38']
                 layer = layer_dict[data['8']]
                 invisible = layer[1]
                 data['wireframe'] = layer[2]
@@ -472,7 +473,11 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
-                data = {'color': '','38': 0,  '39': 0, '70': False, 'wall': False}#default values
+                #default values
+                data = {'color': '','38': 0,  '39': 0, '70': False,
+                'wall': False, 'vx': [], 'vy': [], 'checkpoint': False
+                , '50': 0, '210': 0, '220': 0, 230: 1, 'animation': False
+                ,'repeat': False, '41': 1, '42': 1, '43': 1}
                 flag = 'poly'
                 x += 1
 
