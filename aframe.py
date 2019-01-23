@@ -338,6 +338,26 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     flag = False
 
+            elif flag == 'poly':#close polyline
+                data['2'] = 'poly'
+                layer = layer_dict[data['8']]
+                invisible = layer[1]
+                data['wireframe'] = layer[2]
+                data['wf_width'] = layer[3]
+                if invisible:
+                    flag = False
+                else:
+                    if data['color']:
+                        pass
+                    else:
+                        layer_material = layer[0]
+                        data['color'] = layer_color[data['8']]
+
+                    data['num'] = x
+                    collection[x] = data
+
+                    flag = False
+
             elif flag == 'line':#close line
                 if data['39']:#if thickness transform in a-plane, works if on X-Y plane
                     dx = data['10']-data['11']
