@@ -325,12 +325,14 @@ def parse_dxf(page, material_dict, layer_dict):
                     dx = data['10']-data['11']
                     dy = data['20']-data['21']
                     data['2'] = 'a-plane'
-                    data['43'] = data['39']
                     data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+                    data['42'] = 0
+                    data['43'] = data['39']
                     data['50'] = 180-degrees(atan2(dy, dx))
                     data['repeat'] = data['animation'] = data['checkpoint'] = False
-                    data['MATERIAL'] = ''
+                    data['TYPE'] = data['MATERIAL'] = ''
                     data['210'] = data['220'] = 0
+                    data['230'] = 1
                     layer = layer_dict[data['8']]
                     invisible = layer[1]
                     data['wireframe'] = layer[2]
@@ -550,10 +552,14 @@ def reference_animations(collection):
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
                         if data['2'] == 'checkpoint':
                             data2['checkpoint'] = True
-                        elif data['2'] == 'mason':
-                            if d == 'a-plane':
+                        elif data['2'] == 'a-mason':
+                            if data2['2'] == 'a-plane':
                                 data2['2'] = 'w-plane'
                                 data2['MATERIAL'] = data['MATERIAL']
+                                data2['color'] = data['color']
+                                data2['8'] = data['8']
+                                data2['repeat'] = data['repeat']
+                                data2['pool'] = data['pool']
                                 data2['TILING'] = data['TILING']
                                 data2['SKIRTING'] = data['SKIRTING']
                         elif data['2'] == 'a-animation':
@@ -611,7 +617,7 @@ def make_html(page, collection, mode):
             no_camera = False
             entities_dict[x] = make_camera(page, data, mode)
 
-        elif data['2'] == 'a-animation' or data['2'] == 'checkpoint':
+        elif data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
             pass
 
         else:

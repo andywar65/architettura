@@ -375,17 +375,56 @@ def make_w_plane(data):
     SKIRTING height from respective attributes. Gets MATERIAL with 3 components,
     first for wall, second for tiling and third for skirting.
     """
+    #prepare values for materials
     values = (
         ('pool', 0, 'wall', 'MATERIAL'),
         ('pool', 1, 'tile', 'MATERIAL'),
         ('pool', 2, 'skirt', 'MATERIAL'),
     )
     data = prepare_material_values(values, data)
+    #prepare height values
+    wall_h = fabs(data['43'])
+    tile_h = fabs(float(data['TILING']))
+    skirt_h = fabs(float(data['SKIRTING']))
+    if tile_h > wall_h:
+        tile_h = wall_h
+    if skirt_h > wall_h:
+        skirt_h = wall_h
+    if skirt_h > tile_h:
+        tile_h = skirt_h
+    wall_h = wall_h - tile_h
+    tile_h = tile_h - skirt_h
     outstr = ''
+    #open displacement entity
+    if data['animation'] == False:
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-disp" \n'
+        outstr += f'position="{data["41"]/2} 0 0"> \n'
+    #prepare values for surfaces
+    values = (
+        (skirt_h, 'skirt', skirt_h/2,),
+        (tile_h, 'tile', tile_h/2+skirt_h,),
+        (wall_h, 'wall', wall_h/2+tile_h+skirt_h,),
+    )
+    #loop surfaces
+    data['rx'] = fabs(data["41"])
+    for v in values:
+        if v[0]:
+            data['prefix'] = v[1]
+            data['ry'] = v[0]
+            outstr += f'<a-plane id="{data["2"]}-{data["num"]}-{v[1]}" \n'
+            outstr += f'position="0 {v[2]*unit(data["43"])} 0" \n'
+            outstr += f'width="{data["rx"]}" height="{v[0]}" \n'
+            outstr += object_material(data)
+            outstr += '"></a-plane>\n'
+    #close displacement entity
+    if data['animation'] == False:
+        outstr += '</a-entity> \n'
     return outstr
 
 def unit(nounit):
     #returns positive/negative scaling
+    if nounit == 0:
+        return 0
     unit = fabs(nounit)/nounit
     return unit
 
