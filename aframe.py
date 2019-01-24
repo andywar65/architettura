@@ -368,10 +368,11 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'LWPOLYLINE':#start polyline
                 #default values
-                data = {'color': '','38': 0,  '39': 0, '70': False,
+                data = {'38': 0,  '39': 0, '41': 1, '42': 1,
+                '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'wall': False, 'vx': [], 'vy': [], 'checkpoint': False
-                , '50': 0, '210': 0, '220': 0, 230: 1, 'animation': False
-                ,'repeat': False, '41': 1, '42': 1, '43': 1}
+                , 'animation': False, 'color': '','repeat': False,
+                'TYPE': '', 'MATERIAL': ''}
                 flag = 'poly'
                 x += 1
 
