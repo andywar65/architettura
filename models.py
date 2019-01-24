@@ -39,8 +39,8 @@ class MaterialPageComponent(Orderable):
         related_name = '+',
         help_text="Sets general appearance of material component",
     )
-    color = models.CharField(max_length=250, default="white",
-        help_text="Accepts hex (#ffffff) or HTML color",)
+    color = RGBColorField(default='#ffffff',
+        help_text="Component color",)
     pattern = models.BooleanField(default=False,
         help_text="Is it a 1x1 meter pattern?",)
     #thickness = models.IntegerField(default=0, help_text="In millimeters")
@@ -99,9 +99,9 @@ class ScenePage(Page):
         )
     ambient_light_intensity = models.FloatField(default="0.5",
         help_text="Range 1 to 0",)
-    ambient_light_color = models.CharField(max_length=250, default="white",
-        help_text="Accepts hex (#ffffff) or HTML color",)
-    hemispheric_color = models.CharField(max_length=250, default="white",
+    ambient_light_color = RGBColorField(default='#ffffff',
+        help_text="General ambient light color",)
+    hemispheric_color = RGBColorField(default='#ffffff',
         help_text="Ambient light color from below",)
 
     search_fields = Page.search_fields + [
