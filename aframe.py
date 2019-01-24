@@ -235,11 +235,18 @@ def parse_dxf(page, material_dict, layer_dict):
                 if invisible:
                     flag = False
                 else:
+                    layer_material = layer[0]
                     if data['color']:
                         pass
                     else:
-                        layer_material = layer[0]
                         data['color'] = layer_color[data['8']]
+                    data['8'] = 'default'
+                    if layer_material != 'default':
+                        component_pool = material_dict[layer_material]
+                        if component_pool:
+                            component = component_pool[0]
+                            data['color'] = component[1]
+                            data['8'] = layer_material + '-' + component[0]
 
                     data['num'] = x
                     collection[x] = data
@@ -410,7 +417,7 @@ def store_poly_values(data, key, value):
     elif key == '70' and value == '1':#closed
         data['70'] = True
     elif key == '90':#vertex num
-        data[key] = float(value)
+        data[key] = int(value)
     return data
 
 def store_block_values(data, key, value):
@@ -637,7 +644,7 @@ def reference_animations(collection):
                                 data2['SKIRTING'] = data['SKIRTING']
                         elif data['2'] == 'a-animation':
                             d = data2['2']
-                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab':
+                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly':
                                 pass
                             else:
                                 data2['animation'] = True
@@ -896,6 +903,10 @@ def make_block(page, data):
             outstr += '> \n'
             outstr += animation_wrapper(data, 0)
             outstr += blocks.make_tree(data)
+
+        elif data['2'] == 'a-poly':
+            outstr += '> \n'
+            outstr += blocks.make_poly(data)
 
         elif data['2'] == 'a-door':
             outstr += '> \n'

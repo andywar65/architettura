@@ -600,3 +600,7 @@ def make_leaves(branch, lb, data):
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
     return outstr
+
+def make_poly(data):
+    outstr = '<p>POLYLINE!</p>'
+    return outstr
