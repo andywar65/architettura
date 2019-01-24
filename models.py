@@ -13,6 +13,8 @@ from wagtail.search import index
 from wagtail.documents.models import Document
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 
+from colorful.fields import RGBColorField
+
 class MaterialPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Material description",)
@@ -85,8 +87,8 @@ class ScenePage(Page):
         help_text="URL of external repository for OBJ files", blank=True, null=True
         )
 
-    background = models.CharField(max_length=250, blank=True, null=True,
-        help_text="Accepts hex (#ffffff) or HTML color, overrides Equirectangular",)
+    background = RGBColorField(default='#000000',
+        help_text="Background color",)
     equirectangular_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,

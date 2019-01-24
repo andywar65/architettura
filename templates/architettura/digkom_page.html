@@ -14,9 +14,10 @@
 </head>
 <body style='margin : 0px; overflow: hidden;'>
     <a-scene style="width: 100%; height: 768px"
-  {% if page.background %}
+    {% if page.equirectangular_image %}
+    {% else %}
     background="color: {{ page.background }}"
-  {% endif %}
+    {% endif %}
     embedded>
 
   <a-asset>
@@ -65,8 +66,7 @@
   {% with ambient_light=page.get_ambient_light %}
     <a-entity light="type: hemisphere; {{ ambient_light }}"></a-entity>
   {% endwith %}
-  {% if page.background %}
-  {% else %}
+  {% if page.equirectangular_image %}
     <a-sky src="#sky"></a-sky>
   {% endif %}
 
