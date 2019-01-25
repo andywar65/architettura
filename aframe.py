@@ -405,7 +405,7 @@ def store_line_values(data, key, value):
 
 def store_poly_values(data, key, value):
     if key == '8':#layer name
-        data['layer'] = value
+        data['layer'] = data['8'] = value
     elif key == '10':#X position
         data['vx'].append(float(value))
     elif key == '20':#mirror Y position

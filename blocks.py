@@ -602,5 +602,23 @@ def make_leaves(branch, lb, data):
     return outstr
 
 def make_poly(data):
-    outstr = '<p>POLYLINE!</p>'
+    outstr = ''
+    if data['wall']:
+        outstr += '<p>WALL POLYLINE!</p>'
+    else:
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+        outstr += f'line="start:{data["vx"][0]} {data["39"]} {data["vy"][0]}; \n'
+        outstr += f'end:{data["vx"][1]} {data["39"]} {data["vy"][1]}; \n'
+        outstr += f'color: {data["color"]}" \n'
+        print(data['vx'])
+        for i in range(1, data['90']-1):
+            print(i)
+            outstr += f'line__{i+1}="start:{data["vx"][i]} {data["39"]} {data["vy"][i]}; \n'
+            outstr += f'end:{data["vx"][i+1]} {data["39"]} {data["vy"][i+1]}; \n'
+            outstr += f'color: {data["color"]}" \n'
+        if data['70']:
+            outstr += f'line__{i+2}=start:{data["vx"][i+1]} {data["39"]} {data["vy"][i+1]}; \n'
+            outstr += f'end:{data["vx"][0]} {data["39"]} {data["vy"][0]}; \n'
+            outstr += f'color: {data["color"]}" \n'
+        outstr += '></a-entity>'
     return outstr
