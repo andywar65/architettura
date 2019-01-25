@@ -1,0 +1,15 @@
+{% load wagtailadmin_tags staticfiles %}
+
+{% comment %}
+    CSS declarations to be included on the 'create page' and 'edit page' views
+    Add style tag below to help django-colorful display color boxes.
+    File is in {python root}/lib/site-packages/wagtail/admin/templates/wagtailadmin/pages/
+{% endcomment %}
+
+<link rel="stylesheet" href="{% static 'wagtailadmin/css/layouts/page-editor.css' %}" />
+<style>
+input[id*="-color"], #id_background, #id_ambient_light_color, #id_hemispheric_color {
+  height: 40px!important; width: 100px!important; padding: 0px!important;}
+</style>
+
+{% hook_output 'insert_editor_css' %}

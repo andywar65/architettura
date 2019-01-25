@@ -10,7 +10,7 @@ Lots of programs deal with DXF, but the goal here is to have blocks with attribu
 
 ### Install Wagtail app
 
-The app can be cloned or downloaded from [Github](https://github.com/andywar65/architettura). Using a shell get into the project folder and type  `git clone https://github.com/andywar65/architettura`. Add `architettura` to the INSTALLED_APPS in your settings file. Migrate and Collectstatic. The app's templates look for a `base.html` file, so be sure to have one. [Django-colorful](https://github.com/charettes/django-colorful) is also required: type `pip install django-colorful` and add `colorful` to the INSTALLED_APPS.
+The app can be cloned or downloaded from [Github](https://github.com/andywar65/architettura). Using a shell get into the project folder and type  `git clone https://github.com/andywar65/architettura`. Add `architettura` to the INSTALLED_APPS in your settings file. Migrate and Collectstatic. The app's templates look for a `base.html` file, so be sure to have one. [Django-colorful](https://github.com/charettes/django-colorful) is also required: type `pip install django-colorful` and add `colorful` to the INSTALLED_APPS. You must add a style tag in `{python root}/lib/site-packages/wagtail/admin/templates/wagtailadmin/pages/_editor_css.html` to display correctly color boxes. Style tag can be found in `static/architettura/css/_editor_css.html`.
 
 ### DXF constraints
 
