@@ -8,7 +8,7 @@ TYPE), other features depend on PARAM attributes. Some blocks may have
 parameters of their own.
 """
 
-from math import fabs
+from math import degrees, sqrt, pow, fabs, atan2
 from random import random, gauss
 
 def make_table_01(data):
@@ -603,28 +603,30 @@ def make_leaves(branch, lb, data):
 
 def make_poly(data):
     outstr = ''
-    print(data['39'])
-    if data['wall'] or data['39']:
+    if data['39']:
         data['animation'] = False
         data['42'] = 0
         data['43'] = data['39']
+        data['num1'] = data['num']
         for i in range(data['90']-1):
+            data['num'] = str(data['num1']) + '-' + str(i)
             dx = data['vx'][i]-data['vx'][i+1]
             dy = data['vy'][i]-data['vy'][i+1]
             data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             data['50'] = 180-degrees(atan2(dy, dx))
             outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i]} 0 {data["vy"][1]}" \n'
+            outstr += f'position="{data["vx"][i]} 0 {data["vy"][i]}" \n'
             outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
             outstr += make_w_plane(data)
             outstr +='</a-entity>'
         if data['70']:
+            data['num'] = str(data['num1']) + '-' + str(i+1)
             dx = data['vx'][i+1]-data['vx'][0]
             dy = data['vy'][i+1]-data['vy'][0]
             data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             data['50'] = 180-degrees(atan2(dy, dx))
             outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i]} {data["38"]} {data["vy"][1]}" \n'
+            outstr += f'position="{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}" \n'
             outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
             outstr += make_w_plane(data)
             outstr +='</a-entity>'

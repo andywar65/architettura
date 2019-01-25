@@ -373,8 +373,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 #default values
                 data = {'38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
-                'wall': False, 'vx': [], 'vy': [], 'checkpoint': False
-                , 'animation': False, 'color': '','repeat': False,
+                'vx': [], 'vy': [], 'checkpoint': False,
+                'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'poly'
                 x += 1
@@ -409,7 +409,8 @@ def store_line_values(data, key, value):
 
 def store_poly_values(data, key, value):
     if key == '8':#layer name
-        data['layer'] = data['8'] = value
+        data['layer'] = value
+        data['8'] = 'default'
     elif key == '10':#X position
         data['vx'].append(float(value))
     elif key == '20':#mirror Y position
@@ -638,7 +639,6 @@ def reference_animations(collection):
                                 data2['TILING'] = data['TILING']
                                 data2['SKIRTING'] = data['SKIRTING']
                             elif data2['2'] == 'a-poly' and data2['39']:
-                                data2['wall'] = True
                                 try:
                                     data2['MATERIAL'] = data['MATERIAL']
                                     data2['pool'] = data['pool']

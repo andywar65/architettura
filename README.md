@@ -43,9 +43,9 @@ When you have several `Scene Pages` you can collect them under a `Scene Index Pa
 
 ## Entities
 
-### Lines
+### Lines & Polylines
 
-Lines are very simple entities. In CAD you can assign line color, otherwise it inherits layer color. If line has `thickness`, it is transformed into a plane (see Standard blocks). In this case line must be on X-Y plane or parallel.
+Lines are very simple entities. In CAD you can assign line color, otherwise it inherits layer color. If line has `thickness`, it is transformed into a plane (see Standard blocks). In this case line must be on X-Y plane or parallel. Polylines are a sequence of lines, and work pretty much the same.
 
 ### Standard blocks
 
@@ -69,7 +69,7 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the components.
 
-`a-mason` standard block transforms lines with thickness and a-planes into `Wall` surfaces (see further).
+`a-mason` standard block transforms lines and polylines with thickness and a-planes into `Wall` surfaces (see further). To work it has to be attached at insertion point of a-plane or at origin of line or polyline. 
 
 ### Blocks and BIM standard blocks
 
