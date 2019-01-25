@@ -603,22 +603,43 @@ def make_leaves(branch, lb, data):
 
 def make_poly(data):
     outstr = ''
-    if data['wall']:
-        outstr += '<p>WALL POLYLINE!</p>'
+    print(data['39'])
+    if data['wall'] or data['39']:
+        data['animation'] = False
+        data['42'] = 0
+        data['43'] = data['39']
+        for i in range(data['90']-1):
+            dx = data['vx'][i]-data['vx'][i+1]
+            dy = data['vy'][i]-data['vy'][i+1]
+            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            data['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
+            outstr += f'position="{data["vx"][i]} 0 {data["vy"][1]}" \n'
+            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
+            outstr += make_w_plane(data)
+            outstr +='</a-entity>'
+        if data['70']:
+            dx = data['vx'][i+1]-data['vx'][0]
+            dy = data['vy'][i+1]-data['vy'][0]
+            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            data['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
+            outstr += f'position="{data["vx"][i]} {data["38"]} {data["vy"][1]}" \n'
+            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
+            outstr += make_w_plane(data)
+            outstr +='</a-entity>'
     else:
         outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
-        outstr += f'line="start:{data["vx"][0]} {data["39"]} {data["vy"][0]}; \n'
-        outstr += f'end:{data["vx"][1]} {data["39"]} {data["vy"][1]}; \n'
+        outstr += f'line="start:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
+        outstr += f'end:{data["vx"][1]} {data["38"]} {data["vy"][1]}; \n'
         outstr += f'color: {data["color"]}" \n'
-        print(data['vx'])
         for i in range(1, data['90']-1):
-            print(i)
-            outstr += f'line__{i+1}="start:{data["vx"][i]} {data["39"]} {data["vy"][i]}; \n'
-            outstr += f'end:{data["vx"][i+1]} {data["39"]} {data["vy"][i+1]}; \n'
+            outstr += f'line__{i+1}="start:{data["vx"][i]} {data["38"]} {data["vy"][i]}; \n'
+            outstr += f'end:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
             outstr += f'color: {data["color"]}" \n'
         if data['70']:
-            outstr += f'line__{i+2}=start:{data["vx"][i+1]} {data["39"]} {data["vy"][i+1]}; \n'
-            outstr += f'end:{data["vx"][0]} {data["39"]} {data["vy"][0]}; \n'
+            outstr += f'line__{i+2}=start:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
+            outstr += f'end:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
             outstr += f'color: {data["color"]}" \n'
         outstr += '></a-entity>'
     return outstr

@@ -227,6 +227,10 @@ def parse_dxf(page, material_dict, layer_dict):
                 data['2'] = 'a-poly'
                 data['10'] = data['vx'][0]
                 data['20'] = data['vy'][0]
+                #normalize vertices
+                for i in range(data['90']):
+                    data['vx'][i] = data['vx'][i]-data['10']
+                    data['vy'][i] = data['vy'][i]-data['20']
                 data['30'] = data['38']
                 layer = layer_dict[data['layer']]
                 invisible = layer[1]
@@ -371,7 +375,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'wall': False, 'vx': [], 'vy': [], 'checkpoint': False
                 , 'animation': False, 'color': '','repeat': False,
-                'TYPE': '', 'MATERIAL': ''}
+                'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'poly'
                 x += 1
 
@@ -410,7 +414,7 @@ def store_poly_values(data, key, value):
         data['vx'].append(float(value))
     elif key == '20':#mirror Y position
         data['vy'].append(-float(value))
-    elif key == '38' and  key == '39':#elevation and thickness
+    elif key == '38' or  key == '39':#elevation and thickness
         data[key] = float(value)
     elif key == '62':#color
         data['color'] = cad2hex(value)
@@ -641,8 +645,7 @@ def reference_animations(collection):
                                     data2['TILING'] = data['TILING']
                                     data2['SKIRTING'] = data['SKIRTING']
                                 except:
-                                    data2['TILING'] = 0
-                                    data2['SKIRTING'] = 0
+                                    pass
 
                         elif data['2'] == 'a-animation':
                             d = data2['2']
