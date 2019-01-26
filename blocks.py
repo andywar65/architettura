@@ -645,3 +645,23 @@ def make_poly(data):
             outstr += f'color: {data["color"]}" \n'
         outstr += '></a-entity>'
     return outstr
+
+def make_line(data):
+    outstr = ''
+    if data['39']:
+        data['animation'] = False
+        data['42'] = 0
+        data['43'] = data['39']
+        data['41'] = sqrt(pow(data['11'], 2) + pow(data['21'], 2))
+        data['50'] = -degrees(atan2(data['21'], data['11']))
+        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
+        outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
+        outstr += make_w_plane(data)
+        outstr +='</a-entity>'
+    else:
+        outstr = f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+        outstr += 'line="start:0 0 0; \n'
+        outstr += f'end:{data["11"]} {data["31"]} {data["21"]}; \n'
+        outstr += f'color: {data["color"]};"> \n'
+        outstr += '</a-entity> \n'
+    return outstr

@@ -257,55 +257,34 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
 
             elif flag == 'line':#close line
-                if data['39']:#if thickness transform in a-plane, works if on X-Y plane
-                    dx = data['10']-data['11']
-                    dy = data['20']-data['21']
-                    data['2'] = 'a-plane'
-                    data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-                    data['42'] = 0
-                    data['43'] = data['39']
-                    data['50'] = 180-degrees(atan2(dy, dx))
-                    data['repeat'] = data['animation'] = data['checkpoint'] = False
-                    data['TYPE'] = data['MATERIAL'] = ''
-                    data['210'] = data['220'] = 0
-                    data['230'] = 1
-                    layer = layer_dict[data['8']]
-                    invisible = layer[1]
-                    data['wireframe'] = layer[2]
-                    data['wf_width'] = layer[3]
-                    if invisible:
-                        flag = False
-                    else:
-                        layer_material = layer[0]
-                        data['color'] = layer_color[data['8']]
-                        data['8'] = 'default'
-                        if layer_material != 'default':
-                            component_pool = material_dict[layer_material]
-                            if component_pool:
-                                component = component_pool[0]
-                                data['color'] = component[1]
-                                data['8'] = layer_material + '-' + component[0]
-
-                        data['num'] = x
-                        collection[x] = data
+                data['2'] = 'a-line'
+                #normalize vertices
+                data['11'] = data['11'] - data['10']
+                data['21'] = data['21'] - data['20']
+                data['31'] = data['31'] - data['30']
+                layer = layer_dict[data['layer']]
+                invisible = layer[1]
+                data['wireframe'] = layer[2]
+                data['wf_width'] = layer[3]
+                if invisible:
+                    flag = False
                 else:
-                    data['2'] = 'line'
-                    #is material set in layer?
-                    layer = layer_dict[data['8']]
-                    invisible = layer[1]
-                    if invisible:
-                        flag = False
+                    layer_material = layer[0]
+                    if data['color']:
+                        pass
                     else:
-                        if data['color']:
-                            pass
-                        else:
-                            layer_material = layer[0]
-                            data['color'] = layer_color[data['8']]
+                        data['color'] = layer_color[data['layer']]
+                    data['image'] = 'default'
+                    if layer_material != 'default':
+                        data['MATERIAL'] = layer_material
+                        component_pool = material_dict[layer_material]
+                        if component_pool:
+                            data['pool'] = component_pool
 
-                        data['num'] = x
-                        collection[x] = data
+                    data['num'] = x
+                    collection[x] = data
 
-                        flag = False
+                    flag = False
 
             elif value == 'ATTRIB':#start attribute within block
                 attr_value = ''
@@ -365,7 +344,10 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
             elif value == 'LINE':#start line
-                data = {'color': '', '39': 0,}#default values
+                data = {'30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
+                '50': 0, '210': 0, '220': 0, '230': 1,
+                'checkpoint': False, 'animation': False, 'color': '','repeat': False,
+                'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'line'
                 x += 1
 
@@ -394,7 +376,8 @@ def store_face_values(data, key, value):
 
 def store_line_values(data, key, value):
     if key == '8':#layer name
-        data[key] = value
+        data['layer'] = value
+        data['8'] = 'default'
     elif key == '10' or key == '11':#X position
         data[key] = float(value)
     elif key == '20' or key == '21':#mirror Y position
@@ -638,18 +621,19 @@ def reference_animations(collection):
                                     pass
                                 data2['TILING'] = data['TILING']
                                 data2['SKIRTING'] = data['SKIRTING']
-                            elif data2['2'] == 'a-poly' and data2['39']:
-                                try:
-                                    data2['MATERIAL'] = data['MATERIAL']
-                                    data2['pool'] = data['pool']
-                                    data2['TILING'] = data['TILING']
-                                    data2['SKIRTING'] = data['SKIRTING']
-                                except:
-                                    pass
+                            elif data2['2'] == 'a-poly' or data2['2'] == 'a-line':
+                                if data2['39']:
+                                    try:
+                                        data2['MATERIAL'] = data['MATERIAL']
+                                        data2['pool'] = data['pool']
+                                        data2['TILING'] = data['TILING']
+                                        data2['SKIRTING'] = data['SKIRTING']
+                                    except:
+                                        pass
 
                         elif data['2'] == 'a-animation':
                             d = data2['2']
-                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly':
+                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly'or d == 'a-line':
                                 pass
                             else:
                                 data2['animation'] = True
@@ -732,14 +716,6 @@ def make_triangle(page, data):
         if page.double_face:
             outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
-    return outstr
-
-def make_line(data):
-    outstr = f'<a-entity id="line-{data["num"]}" \n'
-    outstr += f'line="start:{data["10"]} {data["30"]} {data["20"]}; \n'
-    outstr += f'end:{data["11"]} {data["31"]} {data["21"]}; \n'
-    outstr += f'color: {data["color"]};"> \n'
-    outstr += '</a-entity> \n'
     return outstr
 
 def make_box(page, data):
@@ -912,6 +888,10 @@ def make_block(page, data):
         elif data['2'] == 'a-poly':
             outstr += '> \n'
             outstr += blocks.make_poly(data)
+
+        elif data['2'] == 'a-line':
+            outstr += '> \n'
+            outstr += blocks.make_line(data)
 
         elif data['2'] == 'a-door':
             outstr += '> \n'
