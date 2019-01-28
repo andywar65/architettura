@@ -258,7 +258,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {'wireframe': False, 'wf_width': 2}#default values
+                data = {}#default values
                 flag = 'ent'
                 data['ent'] = 'a-triangle'
                 x += 1
@@ -266,7 +266,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '',
-                 'animation': False, 'checkpoint': False, 'wireframe': False, 'wf_width': 2}#default values
+                 'animation': False, 'checkpoint': False,}#default values
                 flag = 'ent'
                 data['ent'] = 'a-block'
                 x += 1
