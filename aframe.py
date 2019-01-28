@@ -608,6 +608,8 @@ def make_html(page, collection, mode):
     return entities_dict
 
 def make_triangle(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -617,13 +619,15 @@ def make_triangle(page, data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}; '
         if page.double_face:
             outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
     return outstr
 
 def make_box(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -634,6 +638,8 @@ def make_box(page, data):
     return outstr
 
 def make_circular(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -645,6 +651,8 @@ def make_circular(page, data):
     return outstr
 
 def make_curvedimage(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -655,13 +663,15 @@ def make_curvedimage(page, data):
             outstr += f'theta-start="{data["THETA-START"]}" '
     except KeyError:
         pass
-    outstr += f'src="#{data["8"]}">\n'
+    outstr += f'src="#{data["image"]}">\n'
     if data['animation']:
         outstr += is_animation(data)
     outstr += close_entity(data)
     return outstr
 
 def make_plane(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
@@ -674,7 +684,7 @@ def make_plane(page, data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
         if page.double_face:
             outstr += 'side: double; '
@@ -685,6 +695,8 @@ def make_plane(page, data):
     return outstr
 
 def make_text(data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = f'<a-entity id="a-text-{data["num"]}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
@@ -886,6 +898,13 @@ def start_entity_wrapper(page, data):
 
     return outstr
 
+def prepare_entity_material(data):
+    component = data['pool'][0]
+    data['image'] = data['MATERIAL'] + '-' + component[0]
+    data['color'] = component[1]
+    data['repeat'] = component[2]
+    return data
+
 def animation_wrapper(data, dx):
     outstr = ''
     if data['animation']:
@@ -938,7 +957,7 @@ def entity_material(data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     return outstr
