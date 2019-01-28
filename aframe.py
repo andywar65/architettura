@@ -139,7 +139,6 @@ def parse_dxf(page, material_dict, layer_dict):
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
 
     collection = {}
-    layer_color = {}
     flag = False
     x = 0
     value = 'dummy'
@@ -153,7 +152,10 @@ def parse_dxf(page, material_dict, layer_dict):
             key = dxf_f.readline().strip()
             value = dxf_f.readline().strip()
             key = dxf_f.readline().strip()
-            layer_color[layer_name] = cad2hex(dxf_f.readline().strip())
+            if layer_name in layer_dict:
+                layer_dict[layer_name].append(cad2hex(dxf_f.readline().strip()))
+            else:
+                value = dxf_f.readline().strip()
 
         elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
             return collection
@@ -197,7 +199,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
                 else:
                     layer_material = layer[0]
-                    data['color'] = layer_color[data['8']]
+                    data['color'] = layer[4]
                     data['8'] = 'default'
                     if layer_material != 'default':
                         component_pool = material_dict[layer_material]
@@ -243,7 +245,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     if data['color']:
                         pass
                     else:
-                        data['color'] = layer_color[data['layer']]
+                        data['color'] = layer[4]
                     data['image'] = 'default'
                     if layer_material != 'default':
                         data['MATERIAL'] = layer_material
@@ -273,7 +275,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     if data['color']:
                         pass
                     else:
-                        data['color'] = layer_color[data['layer']]
+                        data['color'] = layer[4]
                     data['image'] = 'default'
                     if layer_material != 'default':
                         data['MATERIAL'] = layer_material
@@ -300,7 +302,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
                 else:
                     layer_material = layer[0]
-                    data['color'] = layer_color[data['8']]
+                    data['color'] = layer[4]
                     data['8'] = 'default'
                     if layer_material != 'default':
                         component_pool = material_dict[layer_material]

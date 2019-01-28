@@ -388,7 +388,7 @@ def prepare_material_dict():
                 x=0
                 component_dict = {}
                 for component in components:
-                    component_dict[x] = (component.name, component.color, component.pattern)
+                    component_dict[x] = [component.name, component.color, component.pattern]
                     x += 1
                 material_dict[m.title] = component_dict
     except:
@@ -404,9 +404,9 @@ def prepare_layer_dict(page_obj):
             for layer in layers:
                 try:
                     m = MaterialPage.objects.get(id=layer.material_id)
-                    layer_dict[layer.name] = (m.title, layer.invisible, layer.wireframe, layer.wireframe_width)
+                    layer_dict[layer.name] = [m.title, layer.invisible, layer.wireframe, layer.wireframe_width]
                 except:
-                    layer_dict[layer.name] = ('default', layer.invisible, layer.wireframe, layer.wireframe_width)
+                    layer_dict[layer.name] = ['default', layer.invisible, layer.wireframe, layer.wireframe_width]
     except:
         pass
 
