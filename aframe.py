@@ -139,7 +139,6 @@ def parse_dxf(page, material_dict, layer_dict):
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
 
     collection = {}
-    layer_color = {}
     flag = False
     x = 0
     value = 'dummy'
@@ -153,7 +152,10 @@ def parse_dxf(page, material_dict, layer_dict):
             key = dxf_f.readline().strip()
             value = dxf_f.readline().strip()
             key = dxf_f.readline().strip()
-            layer_color[layer_name] = cad2hex(dxf_f.readline().strip())
+            if layer_name in layer_dict:
+                layer_dict[layer_name].append(cad2hex(dxf_f.readline().strip()))
+            else:
+                value = dxf_f.readline().strip()
 
         elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
             return collection
@@ -164,191 +166,118 @@ def parse_dxf(page, material_dict, layer_dict):
         if value=='EOF' or key=='':#security to avoid loops if file is corrupted
             return collection
 
-        if flag == 'face':#stores values for 3D faces
-            data = store_face_values(data, key, value)
-
-        elif flag == 'line':#stores values for lines
-            data = store_line_values(data, key, value)
-
-        elif flag == 'poly':#stores values for polylines
-            data = store_poly_values(data, key, value)
-
-        elif flag == 'block':#stores values for blocks (with arbitrary axis algorithm)
-            data = store_block_values(data, key, value)
+        if flag == 'ent':#stores values for all entities (with arbitrary axis algorithm)
+            data = store_entity_values(data, key, value)
 
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
                 data[value] = attr_value
-                flag = 'block'#restore block modality
+                flag = 'ent'#restore block modality
 
         if key == '0':
-            invisible = False#by default layer is visible
 
-            if flag == 'face':#close 3D face
-                data['2'] = '3dface'
-                #is material set in layer?
-                layer = layer_dict[data['8']]
-                invisible = layer[1]
-                data['wireframe'] = layer[2]
-                data['wf_width'] = layer[3]
-                if invisible:
-                    flag = False
-                else:
-                    layer_material = layer[0]
-                    data['color'] = layer_color[data['8']]
-                    data['8'] = 'default'
-                    if layer_material != 'default':
-                        component_pool = material_dict[layer_material]
-                        if component_pool:
-                            component = component_pool[0]
-                            data['color'] = component[1]
-                            data['8'] = layer_material + '-' + component[0]
-
-                    data['num'] = x
-                    collection[x] = data
-
-                    if data['12']!=data['13'] or data['22']!=data['23'] or data['32']!=data['33']:
-                        data2 = data.copy()
-                        data2['11'] = data['12']
-                        data2['21'] = data['22']
-                        data2['31'] = data['32']
-                        data2['12'] = data['13']
-                        data2['22'] = data['23']
-                        data2['32'] = data['33']
-                        x += 1
-                        data2['num'] = x
-                        collection[x] = data2
-
-                    flag = False
-
-            elif flag == 'poly':#close polyline
-                data['2'] = 'a-poly'
-                data['10'] = data['vx'][0]
-                data['20'] = data['vy'][0]
-                #normalize vertices
-                for i in range(data['90']):
-                    data['vx'][i] = data['vx'][i]-data['10']
-                    data['vy'][i] = data['vy'][i]-data['20']
-                data['30'] = data['38']
-                layer = layer_dict[data['layer']]
-                invisible = layer[1]
-                data['wireframe'] = layer[2]
-                data['wf_width'] = layer[3]
-                if invisible:
-                    flag = False
-                else:
-                    layer_material = layer[0]
-                    if data['color']:
-                        pass
-                    else:
-                        data['color'] = layer_color[data['layer']]
-                    data['image'] = 'default'
-                    if layer_material != 'default':
-                        data['MATERIAL'] = layer_material
-                        component_pool = material_dict[layer_material]
-                        if component_pool:
-                            data['pool'] = component_pool
-
-                    data['num'] = x
-                    collection[x] = data
-
-                    flag = False
-
-            elif flag == 'line':#close line
-                data['2'] = 'a-line'
-                #normalize vertices
-                data['11'] = data['11'] - data['10']
-                data['21'] = data['21'] - data['20']
-                data['31'] = data['31'] - data['30']
-                layer = layer_dict[data['layer']]
-                invisible = layer[1]
-                data['wireframe'] = layer[2]
-                data['wf_width'] = layer[3]
-                if invisible:
-                    flag = False
-                else:
-                    layer_material = layer[0]
-                    if data['color']:
-                        pass
-                    else:
-                        data['color'] = layer_color[data['layer']]
-                    data['image'] = 'default'
-                    if layer_material != 'default':
-                        data['MATERIAL'] = layer_material
-                        component_pool = material_dict[layer_material]
-                        if component_pool:
-                            data['pool'] = component_pool
-
-                    data['num'] = x
-                    collection[x] = data
-
-                    flag = False
-
-            elif value == 'ATTRIB':#start attribute within block
+            if value == 'ATTRIB':#start attribute within block
                 attr_value = ''
                 flag = 'attrib'
 
-            elif flag == 'block':#close block
-                #is material set in layer?
-                layer = layer_dict[data['8']]
+            elif flag == 'ent':#close all other entities
+                layer = layer_dict[data['layer']]
                 invisible = layer[1]
-                data['wireframe'] = layer[2]
-                data['wf_width'] = layer[3]
                 if invisible:
                     flag = False
                 else:
-                    layer_material = layer[0]
-                    data['color'] = layer_color[data['8']]
-                    data['8'] = 'default'
-                    if layer_material != 'default':
-                        component_pool = material_dict[layer_material]
+                    layer_material = layer[0]#TO DELETE
+                    data['wireframe'] = layer[2]
+                    data['wf_width'] = layer[3]
+                    data['color'] = data.get('color', layer[4])
+                    data['8'] = data['image'] = 'default'#TO DELETE
+                    data['repeat'] = False#TO DELETE
+                    data['MATERIAL'] = data.get('MATERIAL', layer[0])
+                    data['pool'] = {}
+                    if data['MATERIAL'] == '':
+                        data['MATERIAL'] = layer[0]
+                    if data['MATERIAL'] != 'default':
+                        component_pool = material_dict[data['MATERIAL']]
                         if component_pool:
-                            component = component_pool[0]
-                            data['color'] = component[1]
-                            data['8'] = layer_material + '-' + component[0]
-                            data['repeat'] = component[2]
-                    try:
-                        if data['MATERIAL']:
-                            component_pool = material_dict[data['MATERIAL']]
-                            if component_pool:
-                                component = component_pool[0]
-                                data['color'] = component[1]
-                                data['8'] = data['MATERIAL'] + '-' + component[0]
-                                data['repeat'] = component[2]
-                                data['pool'] = component_pool
-                    except:
-                        pass
-                    try:
-                        if data['2'] == 'a-wall' and data['MATERIAL2']:
-                            data['pool2'] = material_dict[data['MATERIAL2']]
-                    except:
-                        pass
+                            data['pool'] = component_pool
 
-                    data['num'] = x
-                    collection[x] = data
+                    if data['ent'] == 'a-triangle':
+                        data['2'] = '3dface'#TO DELETE
+                        data['num'] = x
+                        collection[x] = data
 
-                    flag = False
+                        if data['12']!=data['13'] or data['22']!=data['23'] or data['32']!=data['33']:
+                            data2 = data.copy()
+                            data2['11'] = data['12']
+                            data2['21'] = data['22']
+                            data2['31'] = data['32']
+                            data2['12'] = data['13']
+                            data2['22'] = data['23']
+                            data2['32'] = data['33']
+                            x += 1
+                            data2['num'] = x
+                            collection[x] = data2
+
+                        flag = False
+
+                    elif data['ent'] == 'a-poly':#close polyline
+                        data['2'] = 'a-poly'
+                        data['10'] = data['vx'][0]
+                        data['20'] = data['vy'][0]
+                        #normalize vertices
+                        for i in range(data['90']):
+                            data['vx'][i] = data['vx'][i]-data['10']
+                            data['vy'][i] = data['vy'][i]-data['20']
+                        data['30'] = data['38']
+                        data['num'] = x
+                        collection[x] = data
+                        flag = False
+
+                    elif data['ent'] == 'a-line':#close line
+                        data['2'] = 'a-line'
+                        #normalize vertices
+                        data['11'] = data['11'] - data['10']
+                        data['21'] = data['21'] - data['20']
+                        data['31'] = data['31'] - data['30']
+                        data['num'] = x
+                        collection[x] = data
+                        flag = False
+
+                    elif data['ent'] == 'a-block':
+                        try:
+                            if data['2'] == 'a-wall' and data['MATERIAL2']:
+                                data['pool2'] = material_dict[data['MATERIAL2']]
+                        except:
+                            pass
+
+                        data['num'] = x
+                        collection[x] = data
+
+                        flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {'wireframe': False, 'wf_width': 2}#default values
-                flag = 'face'
+                data = {}#default values
+                flag = 'ent'
+                data['ent'] = 'a-triangle'
                 x += 1
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '',
-                 'animation': False, 'checkpoint': False, 'wireframe': False, 'wf_width': 2}#default values
-                flag = 'block'
+                 '230': 1,'repeat': False, 'TYPE': '',
+                 'animation': False, 'checkpoint': False,}#default values
+                flag = 'ent'
+                data['ent'] = 'a-block'
                 x += 1
 
             elif value == 'LINE':#start line
                 data = {'30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
                 'checkpoint': False, 'animation': False, 'color': '','repeat': False,
-                'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
-                flag = 'line'
+                'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
+                flag = 'ent'
+                data['ent'] = 'a-line'
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
@@ -357,48 +286,40 @@ def parse_dxf(page, material_dict, layer_dict):
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'vx': [], 'vy': [], 'checkpoint': False,
                 'animation': False, 'color': '','repeat': False,
-                'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
-                flag = 'poly'
+                'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
+                flag = 'ent'
+                data['ent'] = 'a-poly'
                 x += 1
 
     return collection
 
-def store_face_values(data, key, value):
+def store_entity_values(data, key, value):
+    if key == '2':#block name
+        data[key] = value
     if key == '8':#layer name
         data[key] = value
-    elif key == '10' or key == '11' or key == '12' or key == '13':#X position
+        data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
+    elif key == '10':#X position
+        if data['ent'] == 'a-poly':
+            data['vx'].append(float(value))
+        else:
+            data[key] = float(value)
+    elif key == '20':#mirror Y position
+        if data['ent'] == 'a-poly':
+            data['vy'].append(-float(value))
+        else:
+            data[key] = -float(value)
+    elif key == '11' or key == '12' or key == '13':#X position
         data[key] = float(value)
-    elif key == '20' or key == '21' or key == '22' or key == '23':#mirror Y position
+    elif key == '21' or key == '22' or key == '23':#mirror Y position
         data[key] = -float(value)
     elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
         data[key] = float(value)
-    return data
-
-def store_line_values(data, key, value):
-    if key == '8':#layer name
-        data['layer'] = value
-        data['8'] = 'default'
-    elif key == '10' or key == '11':#X position
-        data[key] = float(value)
-    elif key == '20' or key == '21':#mirror Y position
-        data[key] = -float(value)
-    elif key == '30' or key == '31':#Z position
-        data[key] = float(value)
-    elif key == '39':#thickness
-        data[key] = float(value)
-    elif key == '62':#color
-        data['color'] = cad2hex(value)
-    return data
-
-def store_poly_values(data, key, value):
-    if key == '8':#layer name
-        data['layer'] = value
-        data['8'] = 'default'
-    elif key == '10':#X position
-        data['vx'].append(float(value))
-    elif key == '20':#mirror Y position
-        data['vy'].append(-float(value))
     elif key == '38' or  key == '39':#elevation and thickness
+        data[key] = float(value)
+    elif key == '41' or key == '42' or key == '43':#scale values
+        data[key] = float(value)
+    elif key == '50':#Z rotation
         data[key] = float(value)
     elif key == '62':#color
         data['color'] = cad2hex(value)
@@ -406,22 +327,6 @@ def store_poly_values(data, key, value):
         data['70'] = True
     elif key == '90':#vertex num
         data[key] = int(value)
-    return data
-
-def store_block_values(data, key, value):
-    if key == '2':#block name
-        data[key] = value
-    if key == '8':#layer name
-        data[key] = value
-        data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
-    elif key == '10' or key == '30':#X Z position
-        data[key] = float(value)
-    elif key == '20':#Y position, mirrored
-        data[key] = -float(value)
-    elif key == '50':#Z rotation
-        data[key] = float(value)
-    elif key == '41' or key == '42' or key == '43':#scale values
-        data[key] = float(value)
     elif key == '210':#X of OCS unitary vector
         data['Az_1'] = float(value)
         data['P_x'] = data['10']
@@ -703,6 +608,8 @@ def make_html(page, collection, mode):
     return entities_dict
 
 def make_triangle(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
     if page.shadows:
         outstr += 'shadow="receive: true; cast: true" \n'
@@ -712,13 +619,15 @@ def make_triangle(page, data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}; '
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}; '
         if page.double_face:
             outstr += 'side: double; '
     outstr += '">\n</a-triangle> \n'
     return outstr
 
 def make_box(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -729,6 +638,8 @@ def make_box(page, data):
     return outstr
 
 def make_circular(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -740,6 +651,8 @@ def make_circular(page, data):
     return outstr
 
 def make_curvedimage(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += start_entity(data)
@@ -750,13 +663,15 @@ def make_curvedimage(page, data):
             outstr += f'theta-start="{data["THETA-START"]}" '
     except KeyError:
         pass
-    outstr += f'src="#{data["8"]}">\n'
+    outstr += f'src="#{data["image"]}">\n'
     if data['animation']:
         outstr += is_animation(data)
     outstr += close_entity(data)
     return outstr
 
 def make_plane(page, data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
@@ -769,7 +684,7 @@ def make_plane(page, data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
         if page.double_face:
             outstr += 'side: double; '
@@ -780,6 +695,8 @@ def make_plane(page, data):
     return outstr
 
 def make_text(data):
+    if data['pool']:
+        data = prepare_entity_material(data)
     outstr = f'<a-entity id="a-text-{data["num"]}" \n'
     outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
     outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
@@ -981,6 +898,13 @@ def start_entity_wrapper(page, data):
 
     return outstr
 
+def prepare_entity_material(data):
+    component = data['pool'][0]
+    data['image'] = data['MATERIAL'] + '-' + component[0]
+    data['color'] = component[1]
+    data['repeat'] = component[2]
+    return data
+
 def animation_wrapper(data, dx):
     outstr = ''
     if data['animation']:
@@ -1033,7 +957,7 @@ def entity_material(data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
     else:
-        outstr += f'material="src: #{data["8"]}; color: {data["color"]}'
+        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
         outstr += is_repeat(data["repeat"], data["41"], data["43"])
     outstr += '">\n'
     return outstr
