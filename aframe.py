@@ -178,17 +178,20 @@ def parse_dxf(page, material_dict, layer_dict):
         elif flag == 'block':#stores values for blocks (with arbitrary axis algorithm)
             data = store_block_values(data, key, value)
 
+        elif flag == 'ent':#stores values for all entities (with arbitrary axis algorithm)
+            data = store_entity_values(data, key, value)
+
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
                 data[value] = attr_value
-                flag = 'block'#restore block modality
+                flag = 'ent'#restore block modality
 
         if key == '0':
             invisible = False#by default layer is visible
 
-            if flag == 'face':#close 3D face
+            if flag == 'ent' and data['ent'] == 'a-triangle':#close 3D face
                 data['2'] = '3dface'
                 #is material set in layer?
                 layer = layer_dict[data['8']]
@@ -225,7 +228,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     flag = False
 
-            elif flag == 'poly':#close polyline
+            elif flag == 'ent' and data['ent'] == 'a-poly':#close polyline
                 data['2'] = 'a-poly'
                 data['10'] = data['vx'][0]
                 data['20'] = data['vy'][0]
@@ -258,7 +261,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     flag = False
 
-            elif flag == 'line':#close line
+            elif flag == 'ent' and data['ent'] == 'a-line':#close line
                 data['2'] = 'a-line'
                 #normalize vertices
                 data['11'] = data['11'] - data['10']
@@ -292,7 +295,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 attr_value = ''
                 flag = 'attrib'
 
-            elif flag == 'block':#close block
+            elif flag == 'ent' and data['ent'] == 'a-block':#close block
                 #is material set in layer?
                 layer = layer_dict[data['8']]
                 invisible = layer[1]
@@ -335,14 +338,16 @@ def parse_dxf(page, material_dict, layer_dict):
 
             if value == '3DFACE':#start 3D face
                 data = {'wireframe': False, 'wf_width': 2}#default values
-                flag = 'face'
+                flag = 'ent'
+                data['ent'] = 'a-triangle'
                 x += 1
 
             elif value == 'INSERT':#start block
                 data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '', 'MATERIAL': '',
                  'animation': False, 'checkpoint': False, 'wireframe': False, 'wf_width': 2}#default values
-                flag = 'block'
+                flag = 'ent'
+                data['ent'] = 'a-block'
                 x += 1
 
             elif value == 'LINE':#start line
@@ -350,7 +355,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 '50': 0, '210': 0, '220': 0, '230': 1,
                 'checkpoint': False, 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
-                flag = 'line'
+                flag = 'ent'
+                data['ent'] = 'a-line'
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
@@ -360,7 +366,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 'vx': [], 'vy': [], 'checkpoint': False,
                 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'MATERIAL': '', 'TILING': 0, 'SKIRTING': 0}
-                flag = 'poly'
+                flag = 'ent'
+                data['ent'] = 'a-poly'
                 x += 1
 
     return collection
@@ -424,6 +431,112 @@ def store_block_values(data, key, value):
         data[key] = float(value)
     elif key == '41' or key == '42' or key == '43':#scale values
         data[key] = float(value)
+    elif key == '210':#X of OCS unitary vector
+        data['Az_1'] = float(value)
+        data['P_x'] = data['10']
+    elif key == '220':#Y of OCS unitary vector
+        data['Az_2'] = float(value)
+        data['P_y'] = -data['20']#reset original value
+    elif key == '230':#Z of OCS unitary vector
+        Az_3 = float(value)
+        P_z = data['30']
+        #arbitrary axis algorithm
+        #see if OCS z vector is close to world Z axis
+        if fabs(data['Az_1']) < (1/64) and fabs(data['Az_2']) < (1/64):
+            W = ('Y', 0, 1, 0)
+        else:
+            W = ('Z', 0, 0, 1)
+        #cross product for OCS x arbitrary vector, normalized
+        Ax_1 = W[2]*Az_3-W[3]*data['Az_2']
+        Ax_2 = W[3]*data['Az_1']-W[1]*Az_3
+        Ax_3 = W[1]*data['Az_2']-W[2]*data['Az_1']
+        Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
+        Ax_1 = Ax_1/Norm
+        Ax_2 = Ax_2/Norm
+        Ax_3 = Ax_3/Norm
+        #cross product for OCS y arbitrary vector, normalized
+        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
+        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+        Ay_1 = Ay_1/Norm
+        Ay_2 = Ay_2/Norm
+        Ay_3 = Ay_3/Norm
+        #insertion world coordinates from OCS
+        data['10'] = data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1']
+        data['20'] = data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2']
+        data['30'] = data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3
+        #OCS X vector translated into WCS
+        Ax_1 = ((data['P_x']+cos(radians(data['50'])))*Ax_1+(data['P_y']+sin(radians(data['50'])))*Ay_1+P_z*data['Az_1'])-data['10']
+        Ax_2 = ((data['P_x']+cos(radians(data['50'])))*Ax_2+(data['P_y']+sin(radians(data['50'])))*Ay_2+P_z*data['Az_2'])-data['20']
+        Ax_3 = ((data['P_x']+cos(radians(data['50'])))*Ax_3+(data['P_y']+sin(radians(data['50'])))*Ay_3+P_z*Az_3)-data['30']
+        #cross product for OCS y vector, normalized
+        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
+        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+        Ay_1 = Ay_1/Norm
+        Ay_2 = Ay_2/Norm
+        Ay_3 = Ay_3/Norm
+
+        #A-Frame rotation order is Yaw(Z), Pitch(X) and Roll(Y)
+        #thanks for help Marilena Vendittelli and https://www.geometrictools.com/
+        if Ay_3<1:
+            if Ay_3>-1:
+                pitch = asin(Ay_3)
+                yaw = atan2(-Ay_1, Ay_2)
+                roll = atan2(-Ax_3, Az_3)
+            else:
+                pitch = -pi/2
+                yaw = -atan2(data['Az_1'], Ax_1)
+                roll = 0
+        else:
+            pitch = pi/2
+            yaw = atan2(data['Az_1'], Ax_1)
+            roll = 0
+
+        #Y position, mirrored
+        data['20'] = -data['20']
+        #rotations from radians to degrees
+        data['210'] = degrees(pitch)
+        data['50'] = degrees(yaw)
+        data['220'] = -degrees(roll)
+    return data
+
+def store_entity_values(data, key, value):
+    if key == '2':#block name
+        data[key] = value
+    if key == '8':#layer name
+        data[key] = value
+        data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
+    elif key == '10':#X position
+        if data['ent'] == 'a-poly':
+            data['vx'].append(float(value))
+        else:
+            data[key] = float(value)
+    elif key == '20':#mirror Y position
+        if data['ent'] == 'a-poly':
+            data['vy'].append(-float(value))
+        else:
+            data[key] = -float(value)
+    elif key == '11' or key == '12' or key == '13':#X position
+        data[key] = float(value)
+    elif key == '21' or key == '22' or key == '23':#mirror Y position
+        data[key] = -float(value)
+    elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
+        data[key] = float(value)
+    elif key == '38' or  key == '39':#elevation and thickness
+        data[key] = float(value)
+    elif key == '41' or key == '42' or key == '43':#scale values
+        data[key] = float(value)
+    elif key == '50':#Z rotation
+        data[key] = float(value)
+    elif key == '62':#color
+        data['color'] = cad2hex(value)
+    elif key == '70' and value == '1':#closed
+        data['70'] = True
+    elif key == '90':#vertex num
+        data[key] = int(value)
     elif key == '210':#X of OCS unitary vector
         data['Az_1'] = float(value)
         data['P_x'] = data['10']
