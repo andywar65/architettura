@@ -549,6 +549,9 @@ def reference_animations(collection):
                                 data2['DIRECTION'] = data['DIRECTION']
                                 data2['REPEAT'] = data['REPEAT']
                                 data2['DURATION'] = data['DURATION']
+                                data2['TARGET'] = data['TARGET']
+                                data2['TEXT'] = data['TEXT']
+                                data2['LINK'] = data['LINK']
                         collection[x2] = data2
     return collection
 
