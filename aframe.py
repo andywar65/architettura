@@ -633,36 +633,8 @@ def make_new_html(page, d):
     d = prepare_coordinates(d)
 
     outstr = ''
-    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
-    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
-    if d['animation']:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
-        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'stalker':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
-        outstr += 'look-at="#camera-foot" \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'checkpoint':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
-        outstr += 'checkpoint \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    #handle
-    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
-    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
-    if page.shadows:
-        if data['2'] == 'a-curvedimage':
-            outstr += 'shadow="receive: false; cast: false" \n'
-        elif data['2'] == 'a-light':
-            pass
-        else:
-            outstr += 'shadow="receive: true; cast: true" \n'
-    if d['ATTRIBUTE'] == 'look-at':
-        if d['TARGET']:
-            outstr += f'look-at="#{d["ID"]}" \n'
-        else:
-            outstr += 'look-at="#camera" \n'
-    outstr += '> \n'
+    outstr += prepare_insertion(page, d)
+
     #finally make entities
     if d['2'] == 'a-box':
         outstr += blocks.make_box(d)
@@ -672,15 +644,7 @@ def make_new_html(page, d):
         outstr += blocks.make_curvedimage(d)
     #make animations (is animation)
     if d['animation']:
-        outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
-        outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
-        outstr += f'from="{d["FROM"]}"\n'
-        outstr += f'to="{d["TO"]}"\n'
-        outstr += f'begin="{d["BEGIN"]}"\n'
-        outstr += f'direction="{d["DIRECTION"]}"\n'
-        outstr += f'repeat="{d["REPEAT"]}"\n'
-        outstr += f'dur="{d["DURATION"]}"\n'
-        outstr += '></a-animation>\n'
+        outstr += add_animation(d)
     #make stalker balloon and link TODO
     if d['ATTRIBUTE'] == 'stalker':
         if d['TEXT']:
@@ -808,6 +772,53 @@ def prepare_coordinates(d):
 
     return d
 
+def prepare_insertion(page, d):
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
+    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+    if d['animation']:
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
+        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
+    elif d['ATTRIBUTE'] == 'stalker':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
+        outstr += 'look-at="#camera-foot" \n'
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+    elif d['ATTRIBUTE'] == 'checkpoint':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
+        outstr += 'checkpoint \n'
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+    #handle
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
+    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
+    if page.shadows:
+        if data['2'] == 'a-curvedimage':
+            outstr += 'shadow="receive: false; cast: false" \n'
+        elif data['2'] == 'a-light':
+            pass
+        else:
+            outstr += 'shadow="receive: true; cast: true" \n'
+    if d['ATTRIBUTE'] == 'look-at':
+        if d['TARGET']:
+            outstr += f'look-at="#{d["ID"]}" \n'
+        else:
+            outstr += 'look-at="#camera" \n'
+    outstr += '> \n'
+    return outstr
+
+def add_animation(d):
+    outstr = ''
+    outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
+    outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
+    outstr += f'from="{d["FROM"]}"\n'
+    outstr += f'to="{d["TO"]}"\n'
+    outstr += f'begin="{d["BEGIN"]}"\n'
+    outstr += f'direction="{d["DIRECTION"]}"\n'
+    outstr += f'repeat="{d["REPEAT"]}"\n'
+    outstr += f'dur="{d["DURATION"]}"\n'
+    outstr += '></a-animation>\n'
+    return outstr
+
 def make_triangle(page, data):
     if data['pool']:
         data = prepare_entity_material(data)
@@ -838,7 +849,7 @@ def make_box(page, data):#DELETE
     outstr += close_entity(data)
     return outstr
 
-def make_circular(page, data):
+def make_circular(page, data):#DELETE
     if data['pool']:
         data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
@@ -851,7 +862,7 @@ def make_circular(page, data):
     outstr += close_entity(data)
     return outstr
 
-def make_curvedimage(page, data):
+def make_curvedimage(page, data):#DELETE
     if data['pool']:
         data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
