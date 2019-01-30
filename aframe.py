@@ -543,7 +543,7 @@ def reference_animations(collection):
                                         pass
 
                         elif data['2'] == 'a-animation':
-                            data2['animation'] = True
+                            data2['animation'] = True#this should be eliminated
                             data2['ATTRIBUTE'] = data['ATTRIBUTE']
                             data2['FROM'] = data['FROM']
                             data2['TO'] = data['TO']
@@ -559,7 +559,7 @@ def reference_animations(collection):
                             if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly'or d == 'a-line':
                                 pass
                             else:
-                                data2['animation'] = True
+                                data2['animation'] = True#this should be eliminated
                                 data2['ATTRIBUTE'] = data['ATTRIBUTE']
                                 data2['FROM'] = data['FROM']
                                 data2['TO'] = data['TO']
@@ -594,7 +594,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_curvedimage(page, data)
 
         elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
-            entities_dict[x] = make_circular(page, data)
+            entities_dict[x] = make_new_html(page, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
             entities_dict[x] = make_plane(page, data)
@@ -631,22 +631,6 @@ def make_html(page, collection, mode):
 def make_new_html(page, d):
     #center position for box like entity
     d = prepare_coordinates(d)
-    d['xg'] = d['yg'] = d['zg'] = 0
-    d['animation'] = False
-    if 'ATTRIBUTE' in d:
-        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-            d['zg'] = d['43']/2
-        elif d['ATTRIBUTE'] == 'look-out':
-            d['xg'] = d['41']/2
-            d['yg'] = d['42']/2
-            d['zg'] = d['43']/2
-        else:
-            d['animation'] = True
-    else:
-        d['ATTRIBUTE'] = False
-        d['xg'] = d['41']/2
-        d['yg'] = d['42']/2
-        d['zg'] = d['43']/2
 
     outstr = ''
     outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
@@ -654,7 +638,7 @@ def make_new_html(page, d):
     outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
     if d['animation']:
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation" \n'
-        outstr += f'position="{d["xs"]} {d["43"]/2} {d["ys"]}"> \n'
+        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'stalker':
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
         outstr += 'look-at="#camera-foot" \n'
@@ -662,7 +646,7 @@ def make_new_html(page, d):
     elif d['ATTRIBUTE'] == 'checkpoint':
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
         outstr += 'checkpoint \n'
-        outstr += f'position="{d["41"]/2} 0 {d["42"]/2}"> \n'
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
     #handle
     outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
     outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
@@ -679,8 +663,11 @@ def make_new_html(page, d):
         else:
             outstr += 'look-at="#camera" \n'
     outstr += '> \n'
-    #finally make box
-    outstr += blocks.make_box(d)
+    #finally make entities
+    if d['2'] == 'a-box':
+        outstr += blocks.make_box(d)
+    elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+        outstr += blocks.make_circular(d)
     #make animations (is animation)
     if d['animation']:
         outstr += f'<a-animation attribute="{d["ATTRIBUTE"]}"\n'
@@ -754,30 +741,36 @@ def make_new_html(page, d):
 
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c',
-    'a-circle': 'c', 'a-curvedimage': 'c', 'a-sphere': 'c',
+    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
     d['animation'] = False
+    #position of animation rig
     if insertion[d['2']] == 'v':
         d['xs'] = d['41']/2
-        d['ys'] = d['42']/2
+        d['ys'] = -d['42']/2
+    elif insertion[d['2']] == 'c':
+        d['zs'] = d['43']/2
+    elif insertion[d['2']] == 'c2':
+        d['zs'] = d['43']
+    #position of entity handle
     if insertion[d['2']] == 'v':
         if 'ATTRIBUTE' in d:
             if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
                 d['zg'] = d['43']/2
             elif d['ATTRIBUTE'] == 'look-out':
                 d['xg'] = d['41']/2
-                d['yg'] = d['42']/2
+                d['yg'] = -d['42']/2
                 d['zg'] = d['43']/2
             else:
                 d['animation'] = True
         else:
             d['ATTRIBUTE'] = False
             d['xg'] = d['41']/2
-            d['yg'] = d['42']/2
+            d['yg'] = -d['42']/2
             d['zg'] = d['43']/2
-    if insertion[d['2']] == 'c':
+    elif insertion[d['2']] == 'c':
         if 'ATTRIBUTE' in d:
             if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
                 d['zg'] = d['43']/2
@@ -788,6 +781,28 @@ def prepare_coordinates(d):
         else:
             d['ATTRIBUTE'] = False
             d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'c2':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                d['zg'] = d['43']
+            elif d['ATTRIBUTE'] == 'look-out':
+                d['zg'] = d['43']
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+            d['zg'] = d['43']
+    elif insertion[d['2']] == '0':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                pass
+            elif d['ATTRIBUTE'] == 'look-out':
+                pass
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+
     return d
 
 def make_triangle(page, data):
@@ -808,7 +823,7 @@ def make_triangle(page, data):
     outstr += '">\n</a-triangle> \n'
     return outstr
 
-def make_box(page, data):
+def make_box(page, data):#DELETE
     if data['pool']:
         data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)

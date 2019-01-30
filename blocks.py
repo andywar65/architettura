@@ -28,6 +28,51 @@ def make_box(d):
 
     return outstr
 
+def make_circular(d):
+    values = (
+        ('pool', 0, d['2'], 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = d['2']
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    outstr = ''
+    outstr += f'<{d["2"]} id="{d["2"]}-{d["num"]}" \n'
+    if d['2'] == 'a-circle':
+        outstr += f'radius="{fabs(d["41"])}" \n'
+    else:
+        outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    if float(d['43']) < 0:
+        if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-sphere':
+            outstr += 'rotation="180 0 0">\n'
+    outstr += entity_geometry(d)
+    outstr += object_material(d)
+    outstr += '"> \n'
+    outstr += f'</{d["2"]}> \n'
+
+    return outstr
+
+def entity_geometry(d):
+    attr_dict = {
+        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
+        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
+        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
+    }
+    attributes = attr_dict[d['2']]
+    outstr = 'geometry="'
+    for attribute in attributes:
+        try:
+            if data[attribute]:
+                outstr += f'{attribute.lower()}: {d[attribute]};'
+        except:
+            pass
+
+    outstr += '" \n'
+    return outstr
+
+
 def make_table_01(data):
     """Table 01, default block (t01)
 
