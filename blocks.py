@@ -95,7 +95,7 @@ def make_box(page, d):
             else:
                 wrapcount = length/3
             outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
-            outstr += f'position="0 {d["43"]+d["41"]/4+.1} 0" \n'
+            outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
             outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
             outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
             outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
@@ -104,13 +104,13 @@ def make_box(page, d):
             outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
             outstr += '</a-cylinder></a-entity>\n'
             outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
-            outstr += f'geometry="vertexA:0 {d["43"]+.1} 0.0005; \n'
-            outstr += f'vertexB:0 {d["43"]-.05} 0.0005; \n'
-            outstr += f'vertexC:{d["41"]/4} {d["43"]+.1} 0.0005"> \n'
+            outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
+            outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
+            outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
             outstr += '</a-triangle> \n'
         if d['LINK']:
             outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
-            outstr += f'position="{d["41"]*.7} {d["43"]*.5} 0.02" \n'
+            outstr += f'position="{d["41"]*.7} 0 0.02" \n'
             outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
             try:
                 if d['LINK'] == 'parent':
