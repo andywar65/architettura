@@ -645,60 +645,9 @@ def make_new_html(page, d):
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
-    #make stalker balloon and link TODO
+    #make stalker balloon and link
     if d['ATTRIBUTE'] == 'stalker':
-        if d['TEXT']:
-            length = len(d['TEXT'])
-            if length <= 8:
-                wrapcount = length+1
-            elif length <= 30:
-                wrapcount = 10
-            else:
-                wrapcount = length/3
-            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
-            outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
-            outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
-            outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
-            outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
-            outstr += f'position="0 0 -0.01" \n'
-            outstr += f'rotation="90 0 0" \n'
-            outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
-            outstr += '</a-cylinder></a-entity>\n'
-            outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
-            outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
-            outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
-            outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
-            outstr += '</a-triangle> \n'
-        if d['LINK']:
-            outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
-            outstr += f'position="{d["41"]*.7} 0 0.02" \n'
-            outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
-            try:
-                if d['LINK'] == 'parent':
-                    target = page.get_parent()
-                elif d['LINK'] == 'child':
-                    target = page.get_first_child()
-                elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
-                    target = page.get_prev_sibling()
-                elif d['LINK'] == 'next':
-                    target = page.get_next_sibling()
-            except:
-                target = False
-            if target:
-                outstr += f'href="{target.url}" \n'
-                outstr += f'title="{target.title}" on="click" \n'
-                try:
-                    eq_image = target.specific.equirectangular_image
-                    if eq_image:
-                        outstr += f'image="{eq_image.file.url}"'
-                except:
-                    outstr += 'image="#default-sky"'
-            else:
-                outstr += f'href="{d["LINK"]}" \n'
-                outstr += 'title="Sorry, no title" on="click" \n'
-                outstr += 'image="#default-sky"'
-            outstr += '>\n'
-            outstr += '</a-link>\n'
+        outstr += add_stalker(page, d)
 
     outstr += '</a-entity> <!--close handle-->\n'
     if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
@@ -817,6 +766,62 @@ def add_animation(d):
     outstr += f'repeat="{d["REPEAT"]}"\n'
     outstr += f'dur="{d["DURATION"]}"\n'
     outstr += '></a-animation>\n'
+    return outstr
+
+def add_stalker(page, d):
+    outstr = ''
+    if d['TEXT']:
+        length = len(d['TEXT'])
+        if length <= 8:
+            wrapcount = length+1
+        elif length <= 30:
+            wrapcount = 10
+        else:
+            wrapcount = length/3
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
+        outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
+        outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
+        outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
+        outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
+        outstr += f'position="0 0 -0.01" \n'
+        outstr += f'rotation="90 0 0" \n'
+        outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
+        outstr += '</a-cylinder></a-entity>\n'
+        outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
+        outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
+        outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
+        outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
+        outstr += '</a-triangle> \n'
+    if d['LINK']:
+        outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
+        outstr += f'position="{d["41"]*.7} 0 0.02" \n'
+        outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
+        try:
+            if d['LINK'] == 'parent':
+                target = page.get_parent()
+            elif d['LINK'] == 'child':
+                target = page.get_first_child()
+            elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+                target = page.get_prev_sibling()
+            elif d['LINK'] == 'next':
+                target = page.get_next_sibling()
+        except:
+            target = False
+        if target:
+            outstr += f'href="{target.url}" \n'
+            outstr += f'title="{target.title}" on="click" \n'
+            try:
+                eq_image = target.specific.equirectangular_image
+                if eq_image:
+                    outstr += f'image="{eq_image.file.url}"'
+            except:
+                outstr += 'image="#default-sky"'
+        else:
+            outstr += f'href="{d["LINK"]}" \n'
+            outstr += 'title="Sorry, no title" on="click" \n'
+            outstr += 'image="#default-sky"'
+        outstr += '>\n'
+        outstr += '</a-link>\n'
     return outstr
 
 def make_triangle(page, data):
