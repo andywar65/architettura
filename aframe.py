@@ -588,7 +588,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_line(data)
 
         elif data['2'] == 'a-box':
-            entities_dict[x] = make_box(page, data)
+            entities_dict[x] = blocks.make_box(page, data)
 
         elif data['2'] == 'a-curvedimage':
             entities_dict[x] = make_curvedimage(page, data)
