@@ -630,6 +630,7 @@ def make_html(page, collection, mode):
 
 def make_new_html(page, d):
     #center position for box like entity
+    d = prepare_coordinates(d)
     d['xg'] = d['yg'] = d['zg'] = 0
     d['animation'] = False
     if 'ATTRIBUTE' in d:
@@ -653,11 +654,11 @@ def make_new_html(page, d):
     outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
     if d['animation']:
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation" \n'
-        outstr += f'position="{d["41"]/2} {d["43"]/2} {d["42"]/2}"> \n'
+        outstr += f'position="{d["xs"]} {d["43"]/2} {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'stalker':
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
         outstr += 'look-at="#camera-foot" \n'
-        outstr += f'position="{d["41"]/2} 0 {d["42"]/2}"> \n'
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'checkpoint':
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
         outstr += 'checkpoint \n'
@@ -750,6 +751,44 @@ def make_new_html(page, d):
         outstr += '</a-entity> <!--close animation-->\n'
     outstr += '</a-entity> <!--close insertion-->\n'
     return outstr
+
+def prepare_coordinates(d):
+    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c',
+    'a-circle': 'c', 'a-curvedimage': 'c', 'a-sphere': 'c',
+    }
+    d['xg'] = d['yg'] = d['zg'] = 0
+    d['xs'] = d['ys'] = d['zs'] = 0
+    d['animation'] = False
+    if insertion[d['2']] == 'v':
+        d['xs'] = d['41']/2
+        d['ys'] = d['42']/2
+    if insertion[d['2']] == 'v':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                d['zg'] = d['43']/2
+            elif d['ATTRIBUTE'] == 'look-out':
+                d['xg'] = d['41']/2
+                d['yg'] = d['42']/2
+                d['zg'] = d['43']/2
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+            d['xg'] = d['41']/2
+            d['yg'] = d['42']/2
+            d['zg'] = d['43']/2
+    if insertion[d['2']] == 'c':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                d['zg'] = d['43']/2
+            elif d['ATTRIBUTE'] == 'look-out':
+                d['zg'] = d['43']/2
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+            d['zg'] = d['43']/2
+    return d
 
 def make_triangle(page, data):
     if data['pool']:
