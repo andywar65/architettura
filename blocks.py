@@ -44,12 +44,27 @@ def make_circular(d):
         outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     if float(d['43']) < 0:
         if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-sphere':
-            outstr += 'rotation="180 0 0">\n'
+            outstr += 'rotation="180 0 0" \n'
     outstr += entity_geometry(d)
     outstr += object_material(d)
     outstr += '"> \n'
     outstr += f'</{d["2"]}> \n'
 
+    return outstr
+
+def make_curvedimage(d):
+    values = (
+        ('pool', 0, 'curved', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = 'curved'
+    outstr = ''
+    outstr += f'<a-curvedimage id="{d["2"]}-{d["num"]}" \n'
+    outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    outstr += entity_geometry(d)
+    outstr += object_material(d)
+    outstr += '"> \n'
+    outstr += '</a-curvedimage> \n'
     return outstr
 
 def entity_geometry(d):
@@ -71,7 +86,6 @@ def entity_geometry(d):
 
     outstr += '" \n'
     return outstr
-
 
 def make_table_01(data):
     """Table 01, default block (t01)

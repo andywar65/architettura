@@ -591,7 +591,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_new_html(page, data)
 
         elif data['2'] == 'a-curvedimage':
-            entities_dict[x] = make_curvedimage(page, data)
+            entities_dict[x] = make_new_html(page, data)
 
         elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
             entities_dict[x] = make_new_html(page, data)
@@ -629,7 +629,7 @@ def make_html(page, collection, mode):
     return entities_dict
 
 def make_new_html(page, d):
-    #center position for box like entity
+
     d = prepare_coordinates(d)
 
     outstr = ''
@@ -637,7 +637,7 @@ def make_new_html(page, d):
     outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
     outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
     if d['animation']:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation" \n'
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
         outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'stalker':
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
@@ -668,9 +668,12 @@ def make_new_html(page, d):
         outstr += blocks.make_box(d)
     elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
         outstr += blocks.make_circular(d)
+    elif d['2'] == 'a-curvedimage':
+        outstr += blocks.make_curvedimage(d)
     #make animations (is animation)
     if d['animation']:
-        outstr += f'<a-animation attribute="{d["ATTRIBUTE"]}"\n'
+        outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
+        outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
         outstr += f'from="{d["FROM"]}"\n'
         outstr += f'to="{d["TO"]}"\n'
         outstr += f'begin="{d["BEGIN"]}"\n'
@@ -735,7 +738,7 @@ def make_new_html(page, d):
 
     outstr += '</a-entity> <!--close handle-->\n'
     if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-        outstr += '</a-entity> <!--close animation-->\n'
+        outstr += '</a-entity> <!--close animation rig-->\n'
     outstr += '</a-entity> <!--close insertion-->\n'
     return outstr
 
