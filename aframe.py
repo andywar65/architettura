@@ -588,13 +588,13 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_line(data)
 
         elif data['2'] == 'a-box':
-            entities_dict[x] = make_new_html(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-curvedimage':
-            entities_dict[x] = make_new_html(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
-            entities_dict[x] = make_new_html(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
             entities_dict[x] = make_plane(page, data)
@@ -628,7 +628,7 @@ def make_html(page, collection, mode):
 
     return entities_dict
 
-def make_new_html(page, d):
+def make_entities(page, d):
 
     d = prepare_coordinates(d)
 
