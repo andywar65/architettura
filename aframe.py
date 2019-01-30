@@ -588,7 +588,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_line(data)
 
         elif data['2'] == 'a-box':
-            entities_dict[x] = blocks.make_box(page, data)
+            entities_dict[x] = make_new_html(page, data)
 
         elif data['2'] == 'a-curvedimage':
             entities_dict[x] = make_curvedimage(page, data)
@@ -627,6 +627,129 @@ def make_html(page, collection, mode):
         entities_dict[x] = make_camera(page, data, mode)
 
     return entities_dict
+
+def make_new_html(page, d):
+    #center position for box like entity
+    d['xg'] = d['yg'] = d['zg'] = 0
+    d['animation'] = False
+    if 'ATTRIBUTE' in d:
+        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+            d['zg'] = d['43']/2
+        elif d['ATTRIBUTE'] == 'look-out':
+            d['xg'] = d['41']/2
+            d['yg'] = d['42']/2
+            d['zg'] = d['43']/2
+        else:
+            d['animation'] = True
+    else:
+        d['ATTRIBUTE'] = False
+        d['xg'] = d['41']/2
+        d['yg'] = d['42']/2
+        d['zg'] = d['43']/2
+
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
+    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+    if d['animation']:
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation" \n'
+        outstr += f'position="{d["41"]/2} {d["43"]/2} {d["42"]/2}"> \n'
+    elif d['ATTRIBUTE'] == 'stalker':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
+        outstr += 'look-at="#camera-foot" \n'
+        outstr += f'position="{d["41"]/2} 0 {d["42"]/2}"> \n'
+    elif d['ATTRIBUTE'] == 'checkpoint':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
+        outstr += 'checkpoint \n'
+        outstr += f'position="{d["41"]/2} 0 {d["42"]/2}"> \n'
+    #handle
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
+    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
+    if page.shadows:
+        if data['2'] == 'a-curvedimage':
+            outstr += 'shadow="receive: false; cast: false" \n'
+        elif data['2'] == 'a-light':
+            pass
+        else:
+            outstr += 'shadow="receive: true; cast: true" \n'
+    if d['ATTRIBUTE'] == 'look-at':
+        if d['TARGET']:
+            outstr += f'look-at="#{d["ID"]}" \n'
+        else:
+            outstr += 'look-at="#camera" \n'
+    outstr += '> \n'
+    #finally make box
+    outstr += blocks.make_box(d)
+    #make animations (is animation)
+    if d['animation']:
+        outstr += f'<a-animation attribute="{d["ATTRIBUTE"]}"\n'
+        outstr += f'from="{d["FROM"]}"\n'
+        outstr += f'to="{d["TO"]}"\n'
+        outstr += f'begin="{d["BEGIN"]}"\n'
+        outstr += f'direction="{d["DIRECTION"]}"\n'
+        outstr += f'repeat="{d["REPEAT"]}"\n'
+        outstr += f'dur="{d["DURATION"]}"\n'
+        outstr += '></a-animation>\n'
+    #make stalker balloon and link TODO
+    if d['ATTRIBUTE'] == 'stalker':
+        if d['TEXT']:
+            length = len(d['TEXT'])
+            if length <= 8:
+                wrapcount = length+1
+            elif length <= 30:
+                wrapcount = 10
+            else:
+                wrapcount = length/3
+            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
+            outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
+            outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
+            outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
+            outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
+            outstr += f'position="0 0 -0.01" \n'
+            outstr += f'rotation="90 0 0" \n'
+            outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
+            outstr += '</a-cylinder></a-entity>\n'
+            outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
+            outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
+            outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
+            outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
+            outstr += '</a-triangle> \n'
+        if d['LINK']:
+            outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
+            outstr += f'position="{d["41"]*.7} 0 0.02" \n'
+            outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
+            try:
+                if d['LINK'] == 'parent':
+                    target = page.get_parent()
+                elif d['LINK'] == 'child':
+                    target = page.get_first_child()
+                elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+                    target = page.get_prev_sibling()
+                elif d['LINK'] == 'next':
+                    target = page.get_next_sibling()
+            except:
+                target = False
+            if target:
+                outstr += f'href="{target.url}" \n'
+                outstr += f'title="{target.title}" on="click" \n'
+                try:
+                    eq_image = target.specific.equirectangular_image
+                    if eq_image:
+                        outstr += f'image="{eq_image.file.url}"'
+                except:
+                    outstr += 'image="#default-sky"'
+            else:
+                outstr += f'href="{d["LINK"]}" \n'
+                outstr += 'title="Sorry, no title" on="click" \n'
+                outstr += 'image="#default-sky"'
+            outstr += '>\n'
+            outstr += '</a-link>\n'
+
+    outstr += '</a-entity> <!--close handle-->\n'
+    if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+        outstr += '</a-entity> <!--close animation-->\n'
+    outstr += '</a-entity> <!--close insertion-->\n'
+    return outstr
 
 def make_triangle(page, data):
     if data['pool']:
