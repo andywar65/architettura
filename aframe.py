@@ -514,9 +514,15 @@ def reference_animations(collection):
                     dy = fabs(data['20']-data2['20'])
                     dz = fabs(data['30']-data2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
+                        #this if should be eliminated in the future
                         if data['2'] == 'checkpoint':
                             data2['checkpoint'] = True
                         elif data['2'] == 'a-mason':
+                            data2['MATERIAL'] = data['MATERIAL']
+                            data2['pool'] = data['pool']
+                            data2['TILING'] = data['TILING']
+                            data2['SKIRTING'] = data['SKIRTING']
+                            #all other conditions to be eliminated in the future
                             if data2['2'] == 'a-plane':
                                 data2['2'] = 'w-plane'
                                 data2['MATERIAL'] = data['MATERIAL']
@@ -537,6 +543,18 @@ def reference_animations(collection):
                                         pass
 
                         elif data['2'] == 'a-animation':
+                            data2['animation'] = True
+                            data2['ATTRIBUTE'] = data['ATTRIBUTE']
+                            data2['FROM'] = data['FROM']
+                            data2['TO'] = data['TO']
+                            data2['BEGIN'] = data['BEGIN']
+                            data2['DIRECTION'] = data['DIRECTION']
+                            data2['REPEAT'] = data['REPEAT']
+                            data2['DURATION'] = data['DURATION']
+                            data2['TARGET'] = data['TARGET']
+                            data2['TEXT'] = data['TEXT']
+                            data2['LINK'] = data['LINK']
+                            #conditions below should be eliminated in the future
                             d = data2['2']
                             if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly'or d == 'a-line':
                                 pass
