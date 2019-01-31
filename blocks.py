@@ -461,7 +461,7 @@ def make_wall(data):
 
     return outstr
 
-def make_w_plane(data):
+def make_w_plane(page, data):
     """Wall plane default BIM block.
 
     A vertical surface. Gets dimensions from plane scaling, TILING and
@@ -508,6 +508,8 @@ def make_w_plane(data):
             outstr += f'position="0 {v[2]*unit(data["43"])} 0" \n'
             outstr += f'width="{data["rx"]}" height="{v[0]}" \n'
             outstr += object_material(data)
+            if page.double_face:
+                outstr += 'side: double; '
             outstr += '"></a-plane>\n'
     #close displacement entity
     if data['animation'] == False:
@@ -735,22 +737,24 @@ def make_poly(data):
         outstr += '></a-entity>'
     return outstr
 
-def make_line(data):
+def make_line(page, d):
     outstr = ''
-    if data['39']:
-        data['animation'] = False
-        data['42'] = 0
-        data['43'] = data['39']
-        data['41'] = sqrt(pow(data['11'], 2) + pow(data['21'], 2))
-        data['50'] = -degrees(atan2(data['21'], data['11']))
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-        outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-        outstr += make_w_plane(data)
+    outstr += f'<a-entity position="{-d["xg"]} {-d["zg"]} {-d["yg"]}"> \n'
+    if d['39']:
+        d['animation'] = False
+        d['42'] = 0
+        d['43'] = d['39']
+        d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))
+        d['50'] = -degrees(atan2(d['21'], d['11']))
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+        outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+        outstr += make_w_plane(page, d)
         outstr +='</a-entity>'
     else:
-        outstr = f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
         outstr += 'line="start:0 0 0; \n'
-        outstr += f'end:{data["11"]} {data["31"]} {data["21"]}; \n'
-        outstr += f'color: {data["color"]};"> \n'
-        outstr += '</a-entity> \n'
+        outstr += f'end:{d["11"]} {d["31"]} {d["21"]}; \n'
+        outstr += f'color: {d["color"]};"> \n'
+        outstr += '</a-entity><!--close line--> \n'
+    outstr += '</a-entity><!--close line helper--> \n'
     return outstr

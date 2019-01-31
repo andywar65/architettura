@@ -584,8 +584,8 @@ def make_html(page, collection, mode):
         if data['2'] == 'a-triangle':
             entities_dict[x] = make_entities(page, data)
 
-        elif data['2'] == 'line':
-            entities_dict[x] = make_line(data)
+        elif data['2'] == 'a-line':
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-box':
             entities_dict[x] = make_entities(page, data)
@@ -644,6 +644,8 @@ def make_entities(page, d):
         outstr += blocks.make_curvedimage(d)
     elif d['2'] == 'a-triangle':
         outstr += blocks.make_triangle(page, d)
+    elif d['2'] == 'a-line':
+        outstr += blocks.make_line(page, d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -658,7 +660,7 @@ def make_entities(page, d):
     return outstr
 
 def prepare_coordinates(d):
-    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c',
+    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
@@ -672,6 +674,9 @@ def prepare_coordinates(d):
         d['zs'] = d['43']/2
     elif insertion[d['2']] == 'c2':
         d['zs'] = d['43']
+    elif insertion[d['2']] == 'l':
+        d['xs'] = d['11']/2
+        d['ys'] = -d['21']/2
     elif insertion[d['2']] == 't':
         #normalize vertices
         d['11'] = d['11'] - d['10']
@@ -698,6 +703,21 @@ def prepare_coordinates(d):
             d['xg'] = d['41']/2
             d['yg'] = -d['42']/2
             d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'l':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                d['zg'] = d['31']/2
+            elif d['ATTRIBUTE'] == 'look-out':
+                d['xg'] = d['11']/2
+                d['yg'] = -d['21']/2
+                d['zg'] = d['31']/2
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+            d['xg'] = d['11']/2
+            d['yg'] = -d['21']/2
+            d['zg'] = d['31']/2
     elif insertion[d['2']] == 't':
         if 'ATTRIBUTE' in d:
             if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
