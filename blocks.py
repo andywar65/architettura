@@ -37,7 +37,8 @@ def make_triangle(page, d):
     d['rx'] = 1
     d['ry'] = 1
     outstr = ''
-    outstr += f'<a-entity position="{-d["xg"]} {-d["zg"]} {-d["yg"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
     outstr += f'<a-triangle id="a-triangle-{d["num"]}" \n'
     outstr += 'geometry="vertexA:0 0 0; \n'
     outstr += f'vertexB:{d["11"]} {d["31"]} {d["21"]}; \n'
@@ -45,7 +46,7 @@ def make_triangle(page, d):
     outstr += object_material(d)
     if page.double_face:
         outstr += 'side: double; '
-    outstr += '">\n</a-triangle></a-entity> \n'
+    outstr += '">\n</a-triangle></a-entity><!--close triangle reset--> \n'
     return outstr
 
 def make_circular(d):
@@ -488,10 +489,6 @@ def make_w_plane(page, data):
     wall_h = wall_h - tile_h
     tile_h = tile_h - skirt_h
     outstr = ''
-    #open displacement entity
-    if data['animation'] == False:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-disp" \n'
-        outstr += f'position="{data["41"]/2} 0 0"> \n'
     #prepare values for surfaces
     values = (
         (skirt_h, 'skirt', skirt_h/2,),
@@ -511,9 +508,7 @@ def make_w_plane(page, data):
             if page.double_face:
                 outstr += 'side: double; '
             outstr += '"></a-plane>\n'
-    #close displacement entity
-    if data['animation'] == False:
-        outstr += '</a-entity> \n'
+
     return outstr
 
 def unit(nounit):
@@ -739,22 +734,23 @@ def make_poly(data):
 
 def make_line(page, d):
     outstr = ''
-    outstr += f'<a-entity position="{-d["xg"]} {-d["zg"]} {-d["yg"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
     if d['39']:
-        d['animation'] = False
         d['42'] = 0
         d['43'] = d['39']
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))
         d['50'] = -degrees(atan2(d['21'], d['11']))
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
-        outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+        outstr += f'position="{d["11"]/2} 0 {d["21"]/2}" \n'
+        outstr += f'rotation="0 {d["50"]} 0"> \n'
         outstr += make_w_plane(page, d)
-        outstr +='</a-entity>'
+        outstr +='</a-entity><!--close wall--> \n'
     else:
         outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
         outstr += 'line="start:0 0 0; \n'
         outstr += f'end:{d["11"]} {d["31"]} {d["21"]}; \n'
         outstr += f'color: {d["color"]};"> \n'
         outstr += '</a-entity><!--close line--> \n'
-    outstr += '</a-entity><!--close line helper--> \n'
+    outstr += '</a-entity><!--close line reset--> \n'
     return outstr

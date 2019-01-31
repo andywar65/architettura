@@ -666,17 +666,23 @@ def prepare_coordinates(d):
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
     d['animation'] = False
-    #position of animation rig
+    #position of gravity center from insertion point
     if insertion[d['2']] == 'v':
-        d['xs'] = d['41']/2
-        d['ys'] = -d['42']/2
+        d['xg'] = d['41']/2
+        d['yg'] = -d['42']/2
+        d['zg'] = d['43']/2
     elif insertion[d['2']] == 'c':
-        d['zs'] = d['43']/2
+        d['zg'] = d['43']/2
     elif insertion[d['2']] == 'c2':
-        d['zs'] = d['43']
+        d['zg'] = d['43']
     elif insertion[d['2']] == 'l':
-        d['xs'] = d['11']/2
-        d['ys'] = -d['21']/2
+        d['xg'] = d['11']/2
+        d['yg'] = d['21']/2
+        d['39'] = d.get('39', 0)
+        if d['39']:#it has thickness?
+            d['zg'] = d['39']/2
+        else:
+            d['zg'] = d['31']/2
     elif insertion[d['2']] == 't':
         #normalize vertices
         d['11'] = d['11'] - d['10']
@@ -685,86 +691,25 @@ def prepare_coordinates(d):
         d['22'] = d['22'] - d['20']
         d['31'] = d['31'] - d['30']
         d['32'] = d['32'] - d['30']
-        d['xs'] = (d['11'] + d['12'])/3
-        d['ys'] = (d['21'] + d['22'])/3
-    #position of entity handle
-    if insertion[d['2']] == 'v':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                d['zg'] = d['43']/2
-            elif d['ATTRIBUTE'] == 'look-out':
-                d['xg'] = d['41']/2
-                d['yg'] = -d['42']/2
-                d['zg'] = d['43']/2
-            else:
-                d['animation'] = True
+        d['xg'] = (d['11'] + d['12'])/3
+        d['yg'] = (d['21'] + d['22'])/3
+        d['zg'] = (d['31'] + d['32'])/3
+
+    if 'ATTRIBUTE' in d:
+        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+            d['xs'] = d['xg']
+            d['ys'] = d['yg']
+            d['xg'] = d['yg'] = 0
+        elif d['ATTRIBUTE'] == 'look-out':
+            pass
         else:
-            d['ATTRIBUTE'] = False
-            d['xg'] = d['41']/2
-            d['yg'] = -d['42']/2
-            d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'l':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                d['zg'] = d['31']/2
-            elif d['ATTRIBUTE'] == 'look-out':
-                d['xg'] = d['11']/2
-                d['yg'] = -d['21']/2
-                d['zg'] = d['31']/2
-            else:
-                d['animation'] = True
-        else:
-            d['ATTRIBUTE'] = False
-            d['xg'] = d['11']/2
-            d['yg'] = -d['21']/2
-            d['zg'] = d['31']/2
-    elif insertion[d['2']] == 't':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                d['zg'] = (d['31'] + d['32'])/3
-            elif d['ATTRIBUTE'] == 'look-out':
-                d['xg'] = (d['11'] + d['12'])/3
-                d['yg'] = (d['21'] + d['22'])/3
-                d['zg'] = (d['31'] + d['32'])/3
-            else:
-                d['animation'] = True
-        else:
-            d['ATTRIBUTE'] = False
-            d['xg'] = (d['11'] + d['12'])/3
-            d['yg'] = (d['21'] + d['22'])/3
-            d['zg'] = (d['31'] + d['32'])/3
-    elif insertion[d['2']] == 'c':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                d['zg'] = d['43']/2
-            elif d['ATTRIBUTE'] == 'look-out':
-                d['zg'] = d['43']/2
-            else:
-                d['animation'] = True
-        else:
-            d['ATTRIBUTE'] = False
-            d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'c2':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                d['zg'] = d['43']
-            elif d['ATTRIBUTE'] == 'look-out':
-                d['zg'] = d['43']
-            else:
-                d['animation'] = True
-        else:
-            d['ATTRIBUTE'] = False
-            d['zg'] = d['43']
-    elif insertion[d['2']] == '0':
-        if 'ATTRIBUTE' in d:
-            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-                pass
-            elif d['ATTRIBUTE'] == 'look-out':
-                pass
-            else:
-                d['animation'] = True
-        else:
-            d['ATTRIBUTE'] = False
+            d['animation'] = True
+            d['xs'] = d['xg']
+            d['ys'] = d['yg']
+            d['zs'] = d['zg']
+            d['xg'] = d['yg'] = d['zg'] = 0
+    else:
+        d['ATTRIBUTE'] = False
 
     return d
 
