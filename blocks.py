@@ -28,6 +28,26 @@ def make_box(d):
 
     return outstr
 
+def make_triangle(page, d):
+    values = (
+        ('pool', 0, 'triangle', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = 'triangle'
+    d['rx'] = 1
+    d['ry'] = 1
+    outstr = ''
+    outstr += f'<a-entity position="{-d["xg"]} {-d["zg"]} {-d["yg"]}"> \n'
+    outstr += f'<a-triangle id="triangle-{d["num"]}" \n'
+    outstr += 'geometry="vertexA:0 0 0; \n'
+    outstr += f'vertexB:{d["11"]} {d["31"]} {d["21"]}; \n'
+    outstr += f'vertexC:{d["12"]} {d["32"]} {d["22"]}" \n'
+    outstr += object_material(d)
+    if page.double_face:
+        outstr += 'side: double; '
+    outstr += '">\n</a-triangle></a-entity> \n'
+    return outstr
+
 def make_circular(d):
     values = (
         ('pool', 0, d['2'], 'MATERIAL'),

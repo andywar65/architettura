@@ -258,7 +258,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {}#default values
+                data = {'50': 0, '210': 0, '220': 0, '230': 1,}#default values
                 flag = 'ent'
                 data['ent'] = 'a-triangle'
                 x += 1
@@ -582,7 +582,7 @@ def make_html(page, collection, mode):
     for x, data in collection.items():
 
         if data['2'] == '3dface':
-            entities_dict[x] = make_triangle(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'line':
             entities_dict[x] = make_line(data)
@@ -642,6 +642,8 @@ def make_entities(page, d):
         outstr += blocks.make_circular(d)
     elif d['2'] == 'a-curvedimage':
         outstr += blocks.make_curvedimage(d)
+    elif d['2'] == '3dface':
+        outstr += blocks.make_triangle(page, d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -657,7 +659,7 @@ def make_entities(page, d):
 
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c',
-    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2',
+    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', '3dface': 't',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -670,6 +672,16 @@ def prepare_coordinates(d):
         d['zs'] = d['43']/2
     elif insertion[d['2']] == 'c2':
         d['zs'] = d['43']
+    elif insertion[d['2']] == 't':
+        #normalize vertices
+        d['11'] = d['11'] - d['10']
+        d['12'] = d['12'] - d['10']
+        d['21'] = d['21'] - d['20']
+        d['22'] = d['22'] - d['20']
+        d['31'] = d['31'] - d['30']
+        d['32'] = d['32'] - d['30']
+        d['xs'] = (d['11'] + d['12'])/3
+        d['ys'] = (d['21'] + d['22'])/3
     #position of entity handle
     if insertion[d['2']] == 'v':
         if 'ATTRIBUTE' in d:
@@ -686,6 +698,21 @@ def prepare_coordinates(d):
             d['xg'] = d['41']/2
             d['yg'] = -d['42']/2
             d['zg'] = d['43']/2
+    elif insertion[d['2']] == 't':
+        if 'ATTRIBUTE' in d:
+            if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+                d['zg'] = (d['31'] + d['32'])/3
+            elif d['ATTRIBUTE'] == 'look-out':
+                d['xg'] = (d['11'] + d['12'])/3
+                d['yg'] = (d['21'] + d['22'])/3
+                d['zg'] = (d['31'] + d['32'])/3
+            else:
+                d['animation'] = True
+        else:
+            d['ATTRIBUTE'] = False
+            d['xg'] = (d['11'] + d['12'])/3
+            d['yg'] = (d['21'] + d['22'])/3
+            d['zg'] = (d['31'] + d['32'])/3
     elif insertion[d['2']] == 'c':
         if 'ATTRIBUTE' in d:
             if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
@@ -824,7 +851,7 @@ def add_stalker(page, d):
         outstr += '</a-link>\n'
     return outstr
 
-def make_triangle(page, data):
+def make_triangle(page, data):#DELETE
     if data['pool']:
         data = prepare_entity_material(data)
     outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
