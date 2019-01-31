@@ -38,7 +38,7 @@ def make_triangle(page, d):
     d['ry'] = 1
     outstr = ''
     outstr += f'<a-entity position="{-d["xg"]} {-d["zg"]} {-d["yg"]}"> \n'
-    outstr += f'<a-triangle id="triangle-{d["num"]}" \n'
+    outstr += f'<a-triangle id="a-triangle-{d["num"]}" \n'
     outstr += 'geometry="vertexA:0 0 0; \n'
     outstr += f'vertexB:{d["11"]} {d["31"]} {d["21"]}; \n'
     outstr += f'vertexC:{d["12"]} {d["32"]} {d["22"]}" \n'

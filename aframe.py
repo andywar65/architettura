@@ -204,7 +204,7 @@ def parse_dxf(page, material_dict, layer_dict):
                             data['pool'] = component_pool
 
                     if data['ent'] == 'a-triangle':
-                        data['2'] = '3dface'#TO DELETE
+                        data['2'] = 'a-triangle'#TO DELETE
                         data['num'] = x
                         collection[x] = data
 
@@ -581,7 +581,7 @@ def make_html(page, collection, mode):
         no_camera = True
     for x, data in collection.items():
 
-        if data['2'] == '3dface':
+        if data['2'] == 'a-triangle':
             entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'line':
@@ -642,7 +642,7 @@ def make_entities(page, d):
         outstr += blocks.make_circular(d)
     elif d['2'] == 'a-curvedimage':
         outstr += blocks.make_curvedimage(d)
-    elif d['2'] == '3dface':
+    elif d['2'] == 'a-triangle':
         outstr += blocks.make_triangle(page, d)
     #make animations (is animation)
     if d['animation']:
@@ -659,7 +659,7 @@ def make_entities(page, d):
 
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c',
-    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', '3dface': 't',
+    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
