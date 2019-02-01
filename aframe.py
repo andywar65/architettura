@@ -313,26 +313,26 @@ def store_entity_values(data, key, value):
         data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
     elif key == '10':#X position
         if data['ent'] == 'a-poly':
-            data['vx'].append(float(value))
+            data['vx'].append(round(float(value), 4))
         else:
-            data[key] = float(value)
+            data[key] = round(float(value), 4)
     elif key == '20':#mirror Y position
         if data['ent'] == 'a-poly':
-            data['vy'].append(-float(value))
+            data['vy'].append(-round(float(value), 4))
         else:
-            data[key] = -float(value)
+            data[key] = -round(float(value), 4)
     elif key == '11' or key == '12' or key == '13':#X position
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '21' or key == '22' or key == '23':#mirror Y position
-        data[key] = -float(value)
+        data[key] = -round(float(value), 4)
     elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '38' or  key == '39':#elevation and thickness
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '41' or key == '42' or key == '43':#scale values
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '50':#Z rotation
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '62':#color
         data['color'] = cad2hex(value)
     elif key == '70' and value == '1':#closed
@@ -371,9 +371,9 @@ def store_entity_values(data, key, value):
         Ay_2 = Ay_2/Norm
         Ay_3 = Ay_3/Norm
         #insertion world coordinates from OCS
-        data['10'] = data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1']
-        data['20'] = data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2']
-        data['30'] = data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3
+        data['10'] = round(data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1'], 4)
+        data['20'] = round(data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2'], 4)
+        data['30'] = round(data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3, 4)
         #OCS X vector translated into WCS
         Ax_1 = ((data['P_x']+cos(radians(data['50'])))*Ax_1+(data['P_y']+sin(radians(data['50'])))*Ay_1+P_z*data['Az_1'])-data['10']
         Ax_2 = ((data['P_x']+cos(radians(data['50'])))*Ax_2+(data['P_y']+sin(radians(data['50'])))*Ay_2+P_z*data['Az_2'])-data['20']
@@ -406,9 +406,9 @@ def store_entity_values(data, key, value):
         #Y position, mirrored
         data['20'] = -data['20']
         #rotations from radians to degrees
-        data['210'] = degrees(pitch)
-        data['50'] = degrees(yaw)
-        data['220'] = -degrees(roll)
+        data['210'] = round(degrees(pitch), 4)
+        data['50'] = round(degrees(yaw), 4)
+        data['220'] = -round(degrees(roll), 4)
     return data
 
 def reference_openings(collection):
@@ -715,6 +715,13 @@ def prepare_coordinates(d):
             d['xg'] = d['yg'] = d['zg'] = 0
     else:
         d['ATTRIBUTE'] = False
+    #round off
+    d['xg'] = round(d['xg'], 4)
+    d['yg'] = round(d['yg'], 4)
+    d['zg'] = round(d['zg'], 4)
+    d['xs'] = round(d['xs'], 4)
+    d['ys'] = round(d['ys'], 4)
+    d['zs'] = round(d['zs'], 4)
 
     return d
 
