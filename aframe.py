@@ -205,16 +205,28 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     if data['ent'] == 'a-triangle':
                         data['2'] = 'a-triangle'#TO DELETE
+
+                        #normalize vertices
+                        data['11'] = data['11'] - data['10']
+                        data['12'] = data['12'] - data['10']
+                        data['13'] = data['13'] - data['10']
+                        data['21'] = data['21'] - data['20']
+                        data['22'] = data['22'] - data['20']
+                        data['23'] = data['23'] - data['20']
+                        data['31'] = data['31'] - data['30']
+                        data['32'] = data['32'] - data['30']
+                        data['33'] = data['33'] - data['30']
+
                         data['num'] = x
                         collection[x] = data
 
                         if data['12']!=data['13'] or data['22']!=data['23'] or data['32']!=data['33']:
                             data2 = data.copy()
                             data2['11'] = data['12']
-                            data2['21'] = data['22']
-                            data2['31'] = data['32']
                             data2['12'] = data['13']
+                            data2['21'] = data['22']
                             data2['22'] = data['23']
+                            data2['31'] = data['32']
                             data2['32'] = data['33']
                             x += 1
                             data2['num'] = x
@@ -684,13 +696,6 @@ def prepare_coordinates(d):
         else:
             d['zg'] = d['31']/2
     elif insertion[d['2']] == 't':
-        #normalize vertices
-        d['11'] = d['11'] - d['10']
-        d['12'] = d['12'] - d['10']
-        d['21'] = d['21'] - d['20']
-        d['22'] = d['22'] - d['20']
-        d['31'] = d['31'] - d['30']
-        d['32'] = d['32'] - d['30']
         d['xg'] = (d['11'] + d['12'])/3
         d['yg'] = (d['21'] + d['22'])/3
         d['zg'] = (d['31'] + d['32'])/3

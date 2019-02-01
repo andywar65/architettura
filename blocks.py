@@ -524,9 +524,9 @@ def object_material(data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data[data["prefix"]+"_color"]}; '
     else:
-        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]}'
+        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]};'
         if data[data['prefix']+'_repeat']:
-            outstr += f'; repeat:{data["rx"]} {data["ry"]}'
+            outstr += f' repeat:{data["rx"]} {data["ry"]};'
     return outstr
 
 def prepare_material_values(values, data):
