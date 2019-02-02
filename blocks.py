@@ -153,10 +153,10 @@ def make_table_01(data):
         outstr += f'height="{height}" \n'
         outstr += object_material(data)
         outstr += '"></a-cylinder>\n'
-    outstr += '</a-entity><!--close polyline reset--> \n'
+    outstr += '</a-entity><!--close table01 reset--> \n'
     return outstr
 
-def make_stalker(page, data):
+def make_stalker(page, data):#DELETE
     """Stalker, a look-at image / object with eventual balloon text and link.
 
     Stalker always looks towards camera. Plane / object dimension is set by
@@ -255,6 +255,8 @@ def make_door(data):
     data = prepare_material_values(values, data)
 
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     data['prefix'] = 'frame'
     data['rx'] = 1
     data['ry'] = 1
@@ -264,22 +266,23 @@ def make_door(data):
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
     #right frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
     outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
     #top frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
     outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
 
     if data["TYPE"] == 'ghost':
+        outstr += '</a-entity><!--close door reset--> \n'
         return outstr
     else:
         data['prefix'] = 'panel'
@@ -311,6 +314,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated slide
@@ -323,6 +327,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
         else:#hinged
             if eval(data["DOUBLE"]):
@@ -347,6 +352,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated hinge
@@ -359,6 +365,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
 
 def make_slab(data):
@@ -442,7 +449,11 @@ def make_wall(data):
     wall2_h = wall2_h - tile2_h
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
+
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
@@ -462,6 +473,7 @@ def make_wall(data):
             outstr += object_material(data)
             outstr += '"></a-box>\n'
 
+    outstr += '</a-entity><!--close door reset--> \n'
     return outstr
 
 def make_w_plane(page, data):
@@ -599,6 +611,8 @@ def make_tree(data):
     ang = gauss(0, 5)
     rot = random()*360
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     data['prefix'] = 'trunk'
     data['rx'] = fabs(data["41"])
     data['ry'] = lt
@@ -658,7 +672,8 @@ def make_tree(data):
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
 
-    outstr += '</a-entity> \n'
+    outstr += '</a-entity><!--close tree--> \n'
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
 def make_branch(branch, lb, lp, angle, rotx, data):

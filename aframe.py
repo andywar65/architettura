@@ -623,6 +623,12 @@ def make_html(page, collection, mode):
         elif data['2'] == 'a-block':
             entities_dict[x] = make_entities(page, data)
 
+        elif data['2'] == 'a-door':
+            entities_dict[x] = make_entities(page, data)
+
+        elif data['2'] == 'a-wall':
+            entities_dict[x] = make_entities(page, data)
+
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
@@ -666,6 +672,10 @@ def make_entities(page, d):
     elif d['2'] == 'a-block':
         d['TYPE'] = d.get('TYPE', 't01')
         outstr += make_block(page, d)
+    elif d['2'] == 'a-door':
+        outstr += blocks.make_door(d)
+    elif d['2'] == 'a-wall':
+        outstr += blocks.make_wall(d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -682,7 +692,7 @@ def make_entities(page, d):
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
-    'a-poly': 'p', 'a-block': 'c',
+    'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -692,6 +702,10 @@ def prepare_coordinates(d):
         d['xg'] = d['41']/2
         d['yg'] = -d['42']/2
         d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'v2':
+        d['xg'] = d['41']/2
+        d['yg'] = -d['42']/2
+        d['zg'] = -d['43']/2
     elif insertion[d['2']] == 'c':
         d['zg'] = d['43']/2
     elif insertion[d['2']] == 'c2':
@@ -1035,6 +1049,8 @@ def make_block(page, data):
         outstr += blocks.make_object(data)
     if data['TYPE'] == 't01':
         outstr += blocks.make_table_01(data)
+    if data['TYPE'] == 'tree':
+        outstr += blocks.make_tree(data)
     return outstr
 
     outstr = start_entity_wrapper(page, data)
