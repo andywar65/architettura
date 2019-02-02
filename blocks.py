@@ -121,6 +121,8 @@ def make_table_01(data):
     )
     data = prepare_material_values(values, data)
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     #table top
     data['prefix'] = 'top'
     data['rx'] = fabs(data["41"])
@@ -151,7 +153,7 @@ def make_table_01(data):
         outstr += f'height="{height}" \n'
         outstr += object_material(data)
         outstr += '"></a-cylinder>\n'
-
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
 def make_stalker(page, data):

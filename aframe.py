@@ -1033,16 +1033,14 @@ def make_block(page, data):
     outstr = ''
     if data['TYPE'] == 'obj-mtl':
         outstr += blocks.make_object(data)
+    if data['TYPE'] == 't01':
+        outstr += blocks.make_table_01(data)
     return outstr
 
     outstr = start_entity_wrapper(page, data)
     try:
-        if data['TYPE'] == 't01':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_table_01(data)
 
-        elif data['TYPE'] == 'tree':
+        if data['TYPE'] == 'tree':
             outstr += '> \n'
             outstr += animation_wrapper(data, 0)
             outstr += blocks.make_tree(data)
