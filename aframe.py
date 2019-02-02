@@ -599,6 +599,9 @@ def make_html(page, collection, mode):
         elif data['2'] == 'a-line':
             entities_dict[x] = make_entities(page, data)
 
+        elif data['2'] == 'a-poly':
+            entities_dict[x] = make_entities(page, data)
+
         elif data['2'] == 'a-box':
             entities_dict[x] = make_entities(page, data)
 
@@ -658,6 +661,8 @@ def make_entities(page, d):
         outstr += blocks.make_triangle(page, d)
     elif d['2'] == 'a-line':
         outstr += blocks.make_line(page, d)
+    elif d['2'] == 'a-poly':
+        outstr += blocks.make_poly(page, d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -674,6 +679,7 @@ def make_entities(page, d):
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
+    'a-poly': 'p',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -699,6 +705,24 @@ def prepare_coordinates(d):
         d['xg'] = (d['11'] + d['12'])/3
         d['yg'] = (d['21'] + d['22'])/3
         d['zg'] = (d['31'] + d['32'])/3
+    elif insertion[d['2']] == 'p':
+        xmax = xmin = 0
+        ymax = ymin = 0
+        for i in range(1, d['90']):
+            if d['vx'][i] < xmin:
+                xmin = d['vx'][i]
+            elif d['vx'][i] > xmax:
+                xmax = d['vx'][i]
+            if d['vy'][i] < ymin:
+                ymin = d['vy'][i]
+            elif d['vy'][i] > ymax:
+                ymax = d['vy'][i]
+
+        d['xg'] = (xmax + xmin)/2
+        d['yg'] = (ymax + ymin)/2
+        d['39'] = d.get('39', 0)
+        if d['39']:#it has thickness?
+            d['zg'] = d['39']/2
 
     if 'ATTRIBUTE' in d:
         if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':

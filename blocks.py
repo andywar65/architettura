@@ -687,49 +687,51 @@ def make_leaves(branch, lb, data):
     outstr += '</a-sphere> \n'#close branch
     return outstr
 
-def make_poly(data):
+def make_poly(page, d):
     outstr = ''
-    if data['39']:
-        data['animation'] = False
-        data['42'] = 0
-        data['43'] = data['39']
-        data['num1'] = data['num']
-        for i in range(data['90']-1):
-            data['num'] = str(data['num1']) + '-' + str(i)
-            dx = data['vx'][i]-data['vx'][i+1]
-            dy = data['vy'][i]-data['vy'][i+1]
-            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            data['50'] = 180-degrees(atan2(dy, dx))
-            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i]} 0 {data["vy"][i]}" \n'
-            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-            outstr += make_w_plane(data)
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    if d['39']:
+        d['42'] = 0
+        d['43'] = d['39']
+        d['num1'] = d['num']
+        for i in range(d['90']-1):
+            d['num'] = str(d['num1']) + '-' + str(i)
+            dx = d['vx'][i]-d['vx'][i+1]
+            dy = d['vy'][i]-d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+            outstr += f'position="{d["vx"][i]-dx/2} 0 {d["vy"][i]-dy/2}" \n'
+            outstr += f'rotation="0 {d["50"]} 0"> \n'
+            outstr += make_w_plane(page, d)
             outstr +='</a-entity>'
-        if data['70']:
-            data['num'] = str(data['num1']) + '-' + str(i+1)
-            dx = data['vx'][i+1]-data['vx'][0]
-            dy = data['vy'][i+1]-data['vy'][0]
-            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            data['50'] = 180-degrees(atan2(dy, dx))
-            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}" \n'
-            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-            outstr += make_w_plane(data)
+        if d['70']:
+            d['num'] = str(d['num1']) + '-' + str(i+1)
+            dx = d['vx'][i+1]
+            dy = d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+            outstr += f'position="{dx/2} 0 {dy/2}" \n'
+            outstr += f'rotation="0 {d["50"]} 0"> \n'
+            outstr += make_w_plane(page, d)
             outstr +='</a-entity>'
     else:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
-        outstr += f'line="start:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
-        outstr += f'end:{data["vx"][1]} {data["38"]} {data["vy"][1]}; \n'
-        outstr += f'color: {data["color"]}" \n'
-        for i in range(1, data['90']-1):
-            outstr += f'line__{i+1}="start:{data["vx"][i]} {data["38"]} {data["vy"][i]}; \n'
-            outstr += f'end:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
-            outstr += f'color: {data["color"]}" \n'
-        if data['70']:
-            outstr += f'line__{i+2}=start:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
-            outstr += f'end:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
-            outstr += f'color: {data["color"]}" \n'
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
+        outstr += f'line="start:0 0 0; \n'
+        outstr += f'end:{d["vx"][1]} 0 {d["vy"][1]}; \n'
+        outstr += f'color: {d["color"]}" \n'
+        for i in range(1, d['90']-1):
+            outstr += f'line__{i+1}="start:{d["vx"][i]} 0 {d["vy"][i]}; \n'
+            outstr += f'end:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
+            outstr += f'color: {d["color"]}" \n'
+        if d['70']:
+            outstr += f'line__{i+2}=start:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
+            outstr += 'end:0 0 0; \n'
+            outstr += f'color: {d["color"]}" \n'
         outstr += '></a-entity>'
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
 def make_line(page, d):
