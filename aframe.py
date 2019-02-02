@@ -827,6 +827,7 @@ def add_stalker(page, d):
         outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
         outstr += f'position="{d["41"]*.7} 0 0.02" \n'
         outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
+        target = False
         try:
             if d['LINK'] == 'parent':
                 target = page.get_parent()
@@ -837,7 +838,6 @@ def add_stalker(page, d):
             elif d['LINK'] == 'next':
                 target = page.get_next_sibling()
         except:
-            target = False
             d['LINK'] = ''
         if target:
             outstr += f'href="{target.url}" \n'
