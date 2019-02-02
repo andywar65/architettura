@@ -620,6 +620,9 @@ def make_html(page, collection, mode):
         elif data['2'] == 'a-text':
             entities_dict[x] = make_text(data)
 
+        elif data['2'] == 'a-block':
+            entities_dict[x] = make_entities(page, data)
+
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
@@ -629,9 +632,6 @@ def make_html(page, collection, mode):
 
         elif data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
             pass
-
-        else:
-            entities_dict[x] = make_block(page, data)
 
     if no_camera:
         x += 1
@@ -663,6 +663,9 @@ def make_entities(page, d):
         outstr += blocks.make_line(page, d)
     elif d['2'] == 'a-poly':
         outstr += blocks.make_poly(page, d)
+    elif d['2'] == 'a-block':
+        d['TYPE'] = d.get('TYPE', 't01')
+        outstr += make_block(page, d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -679,7 +682,7 @@ def make_entities(page, d):
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
-    'a-poly': 'p',
+    'a-poly': 'p', 'a-block': 'c',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -835,6 +838,7 @@ def add_stalker(page, d):
                 target = page.get_next_sibling()
         except:
             target = False
+            d['LINK'] = ''
         if target:
             outstr += f'href="{target.url}" \n'
             outstr += f'title="{target.title}" on="click" \n'
@@ -1026,6 +1030,11 @@ def make_light_target(data):
     return outstr
 
 def make_block(page, data):
+    outstr = ''
+    if data['TYPE'] == 'obj-mtl':
+        outstr += blocks.make_object(data)
+    return outstr
+
     outstr = start_entity_wrapper(page, data)
     try:
         if data['TYPE'] == 't01':
@@ -1033,27 +1042,10 @@ def make_block(page, data):
             outstr += animation_wrapper(data, 0)
             outstr += blocks.make_table_01(data)
 
-        elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
-            outstr += 'look-at="#camera-foot"> \n'
-            outstr += blocks.make_stalker(page, data)
-
-        elif data['TYPE'] == 'obj-mtl':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_object(data)
-
         elif data['TYPE'] == 'tree':
             outstr += '> \n'
             outstr += animation_wrapper(data, 0)
             outstr += blocks.make_tree(data)
-
-        elif data['2'] == 'a-poly':
-            outstr += '> \n'
-            outstr += blocks.make_poly(data)
-
-        elif data['2'] == 'a-line':
-            outstr += '> \n'
-            outstr += blocks.make_line(data)
 
         elif data['2'] == 'a-door':
             outstr += '> \n'

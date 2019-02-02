@@ -546,23 +546,24 @@ def prepare_material_values(values, data):
 
     return data
 
-def make_object(data):
+def make_object(d):
     """Object block
 
     Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
     must be equal to *.obj and *.mtl filename (use lowercase extension). Files
     must share same filename and must be loaded in the media/document folder.
-    If PARAM2 is set to 'noscale', object will not be scaled.
+    If PARAM2 is set to 'scale', object will be scaled.
     """
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
-    outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
-    outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
-    if data['PARAM2'] == 'noscale':
-        outstr += 'scale="1 1 1"> \n'
-    else:
-        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
-    outstr += '</a-entity>'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-object" \n'
+    outstr += f'obj-model="obj: #{d["PARAM1"]}-obj; \n'
+    outstr += f' mtl: #{d["PARAM1"]}-mtl" \n'
+    if d['PARAM2'] == 'scale':
+        outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    outstr += '></a-entity><!--close object--> \n'
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
 def make_tree(data):
