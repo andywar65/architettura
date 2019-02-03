@@ -629,6 +629,9 @@ def make_html(page, collection, mode):
         elif data['2'] == 'a-wall':
             entities_dict[x] = make_entities(page, data)
 
+        elif data['2'] == 'a-openwall':
+            entities_dict[x] = make_entities(page, data)
+
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
@@ -676,6 +679,8 @@ def make_entities(page, d):
         outstr += blocks.make_door(d)
     elif d['2'] == 'a-wall':
         outstr += blocks.make_wall(d)
+    elif d['2'] == 'a-openwall':
+        outstr += blocks.make_openwall(d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -693,6 +698,7 @@ def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
+    'a-openwall': 'v',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
