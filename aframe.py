@@ -615,7 +615,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-light':
-            entities_dict[x] = make_light(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-text':
             entities_dict[x] = make_text(data)
@@ -688,6 +688,8 @@ def make_entities(page, d):
         outstr += blocks.make_openwall(d)
     elif d['2'] == 'a-slab':
         outstr += blocks.make_slab(d)
+    elif d['2'] == 'a-light':
+        outstr += blocks.make_light(page, d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -705,7 +707,7 @@ def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
-    'a-openwall': 'v', 'a-plane': 'pl',
+    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -802,9 +804,9 @@ def prepare_insertion(page, d):
     outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
     outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
     if page.shadows:
-        if data['2'] == 'a-curvedimage':
+        if d['2'] == 'a-curvedimage':
             outstr += 'shadow="receive: false; cast: false" \n'
-        elif data['2'] == 'a-light':
+        elif d['2'] == 'a-light':
             pass
         else:
             outstr += 'shadow="receive: true; cast: true" \n'
@@ -948,7 +950,7 @@ def make_curvedimage(page, data):#DELETE
     outstr += close_entity(data)
     return outstr
 
-def make_plane(page, data):
+def make_plane(page, data):#DELETE
     if data['pool']:
         data = prepare_entity_material(data)
     outstr = start_entity_wrapper(page, data)
@@ -1020,7 +1022,7 @@ def make_link(page, data):
     except:
         return ''
 
-def make_light(page, data):
+def make_light(page, data):#DELETE
     outstr = start_entity_wrapper(page, data)
     outstr += '> \n'
     outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
@@ -1067,35 +1069,6 @@ def make_block(page, data):
         outstr += blocks.make_table_01(data)
     if data['TYPE'] == 'tree':
         outstr += blocks.make_tree(data)
-    return outstr
-
-    outstr = start_entity_wrapper(page, data)
-    try:
-
-        if data['TYPE'] == 'tree':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_tree(data)
-
-
-
-        elif data['2'] == 'w-plane':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, data['41']/2)
-            outstr += blocks.make_w_plane(data)
-
-
-
-        #other elifs here
-    except:
-        outstr += '> \n'
-        outstr += animation_wrapper(data, 0)
-        outstr += blocks.make_table_01(data)
-
-    if data['animation']:
-        outstr += is_animation(data)
-        outstr += '</a-entity>\n'
-    outstr += '</a-entity>\n'
     return outstr
 
 def make_camera(page, data, mode):

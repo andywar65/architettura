@@ -515,7 +515,6 @@ def make_plane(page, d):
     outstr += '</a-entity><!--close plane reset--> \n'
     return outstr
 
-
 def make_w_plane(page, data):
     """Wall plane default BIM block.
 
@@ -569,6 +568,42 @@ def make_w_plane(page, data):
                 outstr += 'side: double; '
             outstr += '"></a-plane>\n'
 
+    return outstr
+
+def make_light(page, data):
+    #set defaults
+    data['TYPE'] = data.get('TYPE', 'point')
+    data['INTENSITY'] = data.get('INTENSITY', 0.75)
+    data['DISTANCE'] = data.get('DISTANCE', 50)
+    data['DECAY'] = data.get('DECAY', 2)
+    outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+
+
+    outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+    if data['TYPE'] != 'ambient':
+        if page.shadows:
+            outstr += 'castShadow: true; '
+    if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
+        outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
+    if data['TYPE'] == 'spot':
+        outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
+    if data['TYPE'] == 'directional':
+        outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
+        outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
+        outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
+        outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
+    if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
+        outstr += make_light_target(data)
+    else:
+        outstr += '">\n'
+
+    outstr += '</a-entity> \n'#close light entity
+    return outstr
+
+def make_light_target(data):
+    outstr = f'target: #light-{data["num"]}-target;"> \n'
+    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
     return outstr
 
 def unit(nounit):
