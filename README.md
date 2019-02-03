@@ -35,11 +35,11 @@ Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that mak
 
 ### digitalkOmiX mode
 
-In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `checkpoint block` in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
+In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `animation block` with `ATTRIBUTE` set to `checkpoint`in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
 
 ### Nesting Pages
 
-When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs.
+When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually delete `navigation_tags` from the template, it's not a Wagtail native tag.
 
 ## Entities
 
@@ -55,21 +55,19 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `a-light` standard block has a `TYPE` attribute which can be set to ambient, directional, point and spot. Directional light is best suited for shadowing. Scale light block to modify shadow camera frustum. Refer to [A-Frame Light Component Documentation](https://aframe.io/docs/0.8.0/components/light.html) for further details.
 
-`Look-at` standard block is a plane that always faces the camera.
-
 `a-text` standard block is a text centered in a bounding plane. The attributes control alignment, content and wrap count, which is the number of letters that fill the width of the bounding plane.
 
 `a-camera` standard block lets you choose the position of the camera. Only first camera will be rendered, if no camera is found a standard one will be placed at (0, 0, 0).
 
-`a-link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link.
+`a-link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link. You can also write an URL in the `TREE` field.
 
 `a-curvedimage` standard block is an open cylinder where you can project panoramic images.
 
-`a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes.
+`a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.8.0/core/animations.html) for further details on animation attributes. Apart from regular animations, `ATTRIBUTE` can be set to `checkpoint`, `look-at` and `stalker`.
+`Checkpoint` transforms into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see before). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the component.
+`Look-at` and `stalker` have similar behaviour. First gazes towards the camera or given `TARGET`, latter stalkers the camera and may have a `TEXT` in a balloon or a `LINK`.
 
-`Checkpoint` standard block transform into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see further). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the components.
-
-`a-mason` standard block transforms lines and polylines with thickness and a-planes into `Wall` surfaces (see further). To work it has to be attached at insertion point of a-plane or at origin of line or polyline. 
+`a-mason` standard block transforms lines and polylines with thickness and a-planes into `Wall` surfaces (see further). To work it has to be attached at insertion point of a-plane or at origin of line or polyline.
 
 ### Blocks and BIM standard blocks
 
