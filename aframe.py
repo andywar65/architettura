@@ -509,7 +509,7 @@ def door_tilted_case(data, data2):
     return data2
 
 def reference_animations(collection):
-    """Assigns animations and checkpoints.
+    """Assigns animations and masons.
 
     Controls if animation / checkpoint / mason block shares insertion point with
     other blocks. Animation / checkpoint / mason attributes will be appended to
@@ -517,7 +517,7 @@ def reference_animations(collection):
     """
     collection2 = collection.copy()
     for x, data in collection.items():
-        if data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
+        if data['2'] == 'a-animation' or data['2'] == 'a-mason':
             for x2, data2 in collection2.items():
                 if x == x2:
                     pass
@@ -526,33 +526,11 @@ def reference_animations(collection):
                     dy = fabs(data['20']-data2['20'])
                     dz = fabs(data['30']-data2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
-                        #this if should be eliminated in the future
-                        if data['2'] == 'checkpoint':
-                            data2['checkpoint'] = True
-                        elif data['2'] == 'a-mason':
+                        if data['2'] == 'a-mason':
                             data2['MATERIAL'] = data['MATERIAL']
                             data2['pool'] = data['pool']
                             data2['TILING'] = data['TILING']
                             data2['SKIRTING'] = data['SKIRTING']
-                            #all other conditions to be eliminated in the future
-                            if data2['2'] == 'a-plane':
-                                data2['2'] = 'w-plane'
-                                data2['MATERIAL'] = data['MATERIAL']
-                                try:
-                                    data2['pool'] = data['pool']
-                                except:
-                                    pass
-                                data2['TILING'] = data['TILING']
-                                data2['SKIRTING'] = data['SKIRTING']
-                            elif data2['2'] == 'a-poly' or data2['2'] == 'a-line':
-                                if data2['39']:
-                                    try:
-                                        data2['MATERIAL'] = data['MATERIAL']
-                                        data2['pool'] = data['pool']
-                                        data2['TILING'] = data['TILING']
-                                        data2['SKIRTING'] = data['SKIRTING']
-                                    except:
-                                        pass
 
                         elif data['2'] == 'a-animation':
                             data2['animation'] = True#this should be eliminated
@@ -566,22 +544,7 @@ def reference_animations(collection):
                             data2['TARGET'] = data['TARGET']
                             data2['TEXT'] = data['TEXT']
                             data2['LINK'] = data['LINK']
-                            #conditions below should be eliminated in the future
-                            d = data2['2']
-                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly'or d == 'a-line':
-                                pass
-                            else:
-                                data2['animation'] = True#this should be eliminated
-                                data2['ATTRIBUTE'] = data['ATTRIBUTE']
-                                data2['FROM'] = data['FROM']
-                                data2['TO'] = data['TO']
-                                data2['BEGIN'] = data['BEGIN']
-                                data2['DIRECTION'] = data['DIRECTION']
-                                data2['REPEAT'] = data['REPEAT']
-                                data2['DURATION'] = data['DURATION']
-                                data2['TARGET'] = data['TARGET']
-                                data2['TEXT'] = data['TEXT']
-                                data2['LINK'] = data['LINK']
+
                         collection[x2] = data2
     return collection
 
@@ -875,92 +838,6 @@ def make_camera(page, data, mode):
     outstr += f'<a-light type="point" distance="10" intensity="{data["LIGHT-INT"]}"></a-light> \n'
     outstr += f'<a-entity position="0 {-data["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     outstr += '</a-camera></a-entity> \n'
-    return outstr
-
-def prepare_entity_material(data):
-    component = data['pool'][0]
-    data['image'] = data['MATERIAL'] + '-' + component[0]
-    data['color'] = component[1]
-    data['repeat'] = component[2]
-    return data
-
-def animation_wrapper(data, dx):
-    outstr = ''
-    if data['animation']:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation" \n'
-        outstr += f'position="{dx} 0 0"> \n'
-    return outstr
-
-def start_entity(data):
-    outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}" \n'
-    if data['2'] == 'a-box':
-        outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
-    elif data['2'] == 'a-circle':
-        pass
-    elif data['2'] == 'a-sphere':
-        outstr += f'position="0 {data["43"]} 0" \n'
-    else:
-        outstr += f'position="0 {data["43"]/2} 0" \n'
-    if data['2'] == 'a-circle':
-        outstr += f'radius="{fabs(data["41"])}" \n'
-    else:
-        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    if float(data['43']) < 0:
-        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-curvedimage' or data['2'] == 'a-sphere':
-            outstr += 'rotation="180 0 0">\n'
-
-    return outstr
-
-def entity_geometry(data):
-    attr_dict = {
-        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
-        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
-        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
-    }
-    attributes = attr_dict[data['2']]
-    outstr = 'geometry="'
-    for attribute in attributes:
-        try:
-            if data[attribute]:
-                outstr += f'{attribute.lower()}: {data[attribute]};'
-        except:
-            pass
-
-    outstr += '" \n'
-    return outstr
-
-def entity_material(data):
-    outstr = ''
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
-        outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    return outstr
-
-def close_entity(data):
-    outstr = f'</{data["2"]}>\n</a-entity>\n'
-    return outstr
-
-def is_repeat(repeat, rx, ry):
-    if repeat:
-        output = f'; repeat:{fabs(rx)} {fabs(ry)}'
-        return output
-    else:
-        return ';'
-
-def is_animation(data):
-    outstr = f'<a-animation attribute="{data["ATTRIBUTE"]}"\n'
-    outstr += f'from="{data["FROM"]}"\n'
-    outstr += f'to="{data["TO"]}"\n'
-    outstr += f'begin="{data["BEGIN"]}"\n'
-    outstr += f'direction="{data["DIRECTION"]}"\n'
-    outstr += f'repeat="{data["REPEAT"]}"\n'
-    outstr += f'dur="{data["DURATION"]}"\n'
-    outstr += '></a-animation>\n'
     return outstr
 
 def cad2hex(cad_color):
