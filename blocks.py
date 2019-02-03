@@ -606,6 +606,50 @@ def make_light_target(data):
     outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
     return outstr
 
+def make_text(data):
+    values = (
+        ('pool', 0, 'text', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
+    outstr = ''
+    outstr += f'<a-entity id="a-text-{data["num"]}" \n'
+    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["text_color"]}; '
+    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
+    outstr += '">\n'
+    outstr += '</a-entity>\n'
+    return outstr
+
+def make_link(page, d):
+    outstr = f'<a-link id="a-link-{d["num"]}" \n'
+    outstr += f'scale="{d["41"]} {d["43"]} {d["42"]}"\n'
+    target = False
+    try:
+        if d['LINK'] == 'parent':
+            target = page.get_parent()
+        elif d['LINK'] == 'child':
+            target = page.get_first_child()
+        elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+            target = page.get_prev_sibling()
+        elif d['LINK'] == 'next':
+            target = page.get_next_sibling()
+    except:
+        d['LINK'] = ''
+    if target:
+        outstr += f'href="{target.url}" \n'
+        outstr += f'title="{target.title}" on="click" \n'
+        try:
+            eq_image = target.specific.equirectangular_image
+            if eq_image:
+                outstr += f'image="{eq_image.file.url}"'
+        except:
+            outstr += 'image="#default-sky"'
+    else:
+        outstr += f'href="{d["LINK"]}" \n'
+        outstr += 'title="Sorry, no title" on="click" \n'
+        outstr += 'image="#default-sky"'
+    outstr += '></a-link>\n'
+    return outstr
+
 def unit(nounit):
     #returns positive/negative scaling
     if nounit == 0:

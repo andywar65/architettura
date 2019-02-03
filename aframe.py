@@ -593,57 +593,13 @@ def make_html(page, collection, mode):
         no_camera = True
     for x, data in collection.items():
 
-        if data['2'] == 'a-triangle':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-line':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-poly':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-box':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-curvedimage':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-plane' or data['2'] == 'look-at':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-light':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-text':
-            entities_dict[x] = make_text(data)
-
-        elif data['2'] == 'a-block':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-door':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-wall':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-openwall':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-slab':
-            entities_dict[x] = make_entities(page, data)
-
-        elif data['2'] == 'a-link':
-            entities_dict[x] = make_link(page, data)
-
-        elif data['2'] == 'a-camera' and no_camera:
+        if data['2'] == 'a-camera' and no_camera:
             no_camera = False
             entities_dict[x] = make_camera(page, data, mode)
-
         elif data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
             pass
+        else:
+            entities_dict[x] = make_entities(page, data)
 
     if no_camera:
         x += 1
@@ -690,6 +646,10 @@ def make_entities(page, d):
         outstr += blocks.make_slab(d)
     elif d['2'] == 'a-light':
         outstr += blocks.make_light(page, d)
+    elif d['2'] == 'a-link':
+        outstr += blocks.make_link(page, d)
+    elif d['2'] == 'a-text':
+        outstr += blocks.make_text(d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)
@@ -707,7 +667,7 @@ def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
-    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0',
+    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0', 'a-link': '0', 'a-text': '0',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -888,179 +848,6 @@ def add_stalker(page, d):
         outstr += '</a-link>\n'
     return outstr
 
-def make_triangle(page, data):#DELETE
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'geometry="vertexA:{data["10"]} {data["30"]} {data["20"]}; \n'
-    outstr += f'vertexB:{data["11"]} {data["31"]} {data["21"]}; \n'
-    outstr += f'vertexC:{data["12"]} {data["32"]} {data["22"]}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}; '
-        if page.double_face:
-            outstr += 'side: double; '
-    outstr += '">\n</a-triangle> \n'
-    return outstr
-
-def make_box(page, data):#DELETE
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    outstr += entity_material(data)
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_circular(page, data):#DELETE
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    outstr += entity_geometry(data)
-    outstr += entity_material(data)
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_curvedimage(page, data):#DELETE
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    try:
-        if data['THETA-LENGTH']!='270':
-            outstr += f'theta-length="{data["THETA-LENGTH"]}" '
-        if data['THETA-START']!='0':
-            outstr += f'theta-start="{data["THETA-START"]}" '
-    except KeyError:
-        pass
-    outstr += f'src="#{data["image"]}">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_plane(page, data):#DELETE
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
-    if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
-        outstr += f'position="0 {data["43"]/2} 0" \n'
-        outstr += 'look-at="#camera-foot" \n'
-    else:#insertion is at corner
-        outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
-    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
-        outstr += is_repeat(data["repeat"], data["41"], data["43"])
-        if page.double_face:
-            outstr += 'side: double; '
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_text(data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = f'<a-entity id="a-text-{data["num"]}" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
-    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["color"]}; '
-    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-entity>\n'
-    return outstr
-
-def make_link(page, data):
-    outstr = f'<a-link id="a-link-{data["num"]}" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
-    outstr += f'scale="{data["41"]} {data["43"]} {data["42"]}"\n'
-    if data['TREE'] == 'parent':
-        target = page.get_parent()
-    elif data['TREE'] == 'child':
-        target = page.get_first_child()
-    elif data['TREE'] == 'previous' or data['tree'] == 'prev':
-        target = page.get_prev_sibling()
-    else:#we default to next sibling
-        target = page.get_next_sibling()
-    try:
-        if target:
-            outstr += f'href="{target.url}"\n'
-            outstr += f'title="{data["TITLE"]}" color="{data["color"]}" on="click"\n'
-            try:
-                eq_image = target.specific.equirectangular_image
-                if eq_image:
-                    outstr += f'image="{eq_image.file.url}"'
-            except:
-                outstr += 'image="#default-sky"'
-            outstr += '>\n'
-            if data['animation']:
-                outstr += is_animation(data)
-            outstr += '</a-link>\n'
-            return outstr
-        else:
-            return ''
-    except:
-        return ''
-
-def make_light(page, data):#DELETE
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
-
-    try:
-        outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-        if data['TYPE'] != 'ambient':
-            if page.shadows:
-                outstr += 'castShadow: true; '
-        if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
-            outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
-        if data['TYPE'] == 'spot':
-            outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
-        if data['TYPE'] == 'directional':
-            outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
-            outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
-            outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
-            outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
-        if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
-            outstr += make_light_target(data)
-        else:
-            outstr += '">\n'
-    except KeyError:#default if no light type is set
-        outstr += 'light="type: point; intensity: 0.75; distance: 50; decay: 2; '
-        if page.shadows:
-            outstr += 'castShadow: true;'
-        outstr += '">\n'
-
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-entity></a-entity>\n'#close light entity
-    return outstr
-
-def make_light_target(data):
-    outstr = f'target: #light-{data["num"]}-target;"> \n'
-    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
-    return outstr
-
 def make_block(page, data):
     outstr = ''
     if data['TYPE'] == 'obj-mtl':
@@ -1088,22 +875,6 @@ def make_camera(page, data, mode):
     outstr += f'<a-light type="point" distance="10" intensity="{data["LIGHT-INT"]}"></a-light> \n'
     outstr += f'<a-entity position="0 {-data["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     outstr += '</a-camera></a-entity> \n'
-    return outstr
-
-def start_entity_wrapper(page, data):
-    outstr = f'<a-entity id="{data["2"]}-{data["num"]}-ent" \n'
-    if data['checkpoint']:
-        outstr += 'checkpoint \n'
-    if page.shadows:
-        if data['2'] == 'a-curvedimage':
-            outstr += 'shadow="receive: false; cast: false" \n'
-        elif data['2'] == 'a-light':
-            pass
-        else:
-            outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
-
     return outstr
 
 def prepare_entity_material(data):
