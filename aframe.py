@@ -632,6 +632,9 @@ def make_html(page, collection, mode):
         elif data['2'] == 'a-openwall':
             entities_dict[x] = make_entities(page, data)
 
+        elif data['2'] == 'a-slab':
+            entities_dict[x] = make_entities(page, data)
+
         elif data['2'] == 'a-link':
             entities_dict[x] = make_link(page, data)
 
@@ -681,6 +684,8 @@ def make_entities(page, d):
         outstr += blocks.make_wall(d)
     elif d['2'] == 'a-openwall':
         outstr += blocks.make_openwall(d)
+    elif d['2'] == 'a-slab':
+        outstr += blocks.make_slab(d)
     #make animations (is animation)
     if d['animation']:
         outstr += add_animation(d)

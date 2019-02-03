@@ -381,6 +381,9 @@ def make_slab(data):
     )
     data = prepare_material_values(values, data)
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+
     data['prefix'] = 'floor'
     data['rx'] = fabs(data["41"])
     data['ry'] = fabs(data["42"])
@@ -397,6 +400,7 @@ def make_slab(data):
     outstr += f'scale="{data["rx"]} {fabs(data["43"])-0.01} {data["ry"]}" \n'
     outstr += object_material(data)
     outstr += '"></a-box>\n'
+    outstr += '</a-entity><!--close slab reset--> \n'
 
     return outstr
 
@@ -473,7 +477,7 @@ def make_wall(data):
             outstr += object_material(data)
             outstr += '"></a-box>\n'
 
-    outstr += '</a-entity><!--close door reset--> \n'
+    outstr += '</a-entity><!--close wall reset--> \n'
     return outstr
 
 def make_openwall(data):
@@ -500,7 +504,7 @@ def make_openwall(data):
     outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
     outstr += make_wall(data2)
     outstr += '</a-entity> \n'
-    
+
     return outstr
 
 def make_w_plane(page, data):
