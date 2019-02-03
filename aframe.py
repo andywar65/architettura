@@ -204,17 +204,29 @@ def parse_dxf(page, material_dict, layer_dict):
                             data['pool'] = component_pool
 
                     if data['ent'] == 'a-triangle':
-                        data['2'] = '3dface'#TO DELETE
+                        data['2'] = 'a-triangle'#TO DELETE
+
+                        #normalize vertices
+                        data['11'] = data['11'] - data['10']
+                        data['12'] = data['12'] - data['10']
+                        data['13'] = data['13'] - data['10']
+                        data['21'] = data['21'] - data['20']
+                        data['22'] = data['22'] - data['20']
+                        data['23'] = data['23'] - data['20']
+                        data['31'] = data['31'] - data['30']
+                        data['32'] = data['32'] - data['30']
+                        data['33'] = data['33'] - data['30']
+
                         data['num'] = x
                         collection[x] = data
 
                         if data['12']!=data['13'] or data['22']!=data['23'] or data['32']!=data['33']:
                             data2 = data.copy()
                             data2['11'] = data['12']
-                            data2['21'] = data['22']
-                            data2['31'] = data['32']
                             data2['12'] = data['13']
+                            data2['21'] = data['22']
                             data2['22'] = data['23']
+                            data2['31'] = data['32']
                             data2['32'] = data['33']
                             x += 1
                             data2['num'] = x
@@ -258,7 +270,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {}#default values
+                data = {'50': 0, '210': 0, '220': 0, '230': 1,}#default values
                 flag = 'ent'
                 data['ent'] = 'a-triangle'
                 x += 1
@@ -301,26 +313,26 @@ def store_entity_values(data, key, value):
         data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
     elif key == '10':#X position
         if data['ent'] == 'a-poly':
-            data['vx'].append(float(value))
+            data['vx'].append(round(float(value), 4))
         else:
-            data[key] = float(value)
+            data[key] = round(float(value), 4)
     elif key == '20':#mirror Y position
         if data['ent'] == 'a-poly':
-            data['vy'].append(-float(value))
+            data['vy'].append(-round(float(value), 4))
         else:
-            data[key] = -float(value)
+            data[key] = -round(float(value), 4)
     elif key == '11' or key == '12' or key == '13':#X position
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '21' or key == '22' or key == '23':#mirror Y position
-        data[key] = -float(value)
+        data[key] = -round(float(value), 4)
     elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '38' or  key == '39':#elevation and thickness
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '41' or key == '42' or key == '43':#scale values
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '50':#Z rotation
-        data[key] = float(value)
+        data[key] = round(float(value), 4)
     elif key == '62':#color
         data['color'] = cad2hex(value)
     elif key == '70' and value == '1':#closed
@@ -359,9 +371,9 @@ def store_entity_values(data, key, value):
         Ay_2 = Ay_2/Norm
         Ay_3 = Ay_3/Norm
         #insertion world coordinates from OCS
-        data['10'] = data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1']
-        data['20'] = data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2']
-        data['30'] = data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3
+        data['10'] = round(data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1'], 4)
+        data['20'] = round(data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2'], 4)
+        data['30'] = round(data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3, 4)
         #OCS X vector translated into WCS
         Ax_1 = ((data['P_x']+cos(radians(data['50'])))*Ax_1+(data['P_y']+sin(radians(data['50'])))*Ay_1+P_z*data['Az_1'])-data['10']
         Ax_2 = ((data['P_x']+cos(radians(data['50'])))*Ax_2+(data['P_y']+sin(radians(data['50'])))*Ay_2+P_z*data['Az_2'])-data['20']
@@ -394,9 +406,9 @@ def store_entity_values(data, key, value):
         #Y position, mirrored
         data['20'] = -data['20']
         #rotations from radians to degrees
-        data['210'] = degrees(pitch)
-        data['50'] = degrees(yaw)
-        data['220'] = -degrees(roll)
+        data['210'] = round(degrees(pitch), 4)
+        data['50'] = round(degrees(yaw), 4)
+        data['220'] = -round(degrees(roll), 4)
     return data
 
 def reference_openings(collection):
@@ -497,7 +509,7 @@ def door_tilted_case(data, data2):
     return data2
 
 def reference_animations(collection):
-    """Assigns animations and checkpoints.
+    """Assigns animations and masons.
 
     Controls if animation / checkpoint / mason block shares insertion point with
     other blocks. Animation / checkpoint / mason attributes will be appended to
@@ -505,7 +517,7 @@ def reference_animations(collection):
     """
     collection2 = collection.copy()
     for x, data in collection.items():
-        if data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
+        if data['2'] == 'a-animation' or data['2'] == 'a-mason':
             for x2, data2 in collection2.items():
                 if x == x2:
                     pass
@@ -514,41 +526,25 @@ def reference_animations(collection):
                     dy = fabs(data['20']-data2['20'])
                     dz = fabs(data['30']-data2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
-                        if data['2'] == 'checkpoint':
-                            data2['checkpoint'] = True
-                        elif data['2'] == 'a-mason':
-                            if data2['2'] == 'a-plane':
-                                data2['2'] = 'w-plane'
-                                data2['MATERIAL'] = data['MATERIAL']
-                                try:
-                                    data2['pool'] = data['pool']
-                                except:
-                                    pass
-                                data2['TILING'] = data['TILING']
-                                data2['SKIRTING'] = data['SKIRTING']
-                            elif data2['2'] == 'a-poly' or data2['2'] == 'a-line':
-                                if data2['39']:
-                                    try:
-                                        data2['MATERIAL'] = data['MATERIAL']
-                                        data2['pool'] = data['pool']
-                                        data2['TILING'] = data['TILING']
-                                        data2['SKIRTING'] = data['SKIRTING']
-                                    except:
-                                        pass
+                        if data['2'] == 'a-mason':
+                            data2['MATERIAL'] = data['MATERIAL']
+                            data2['pool'] = data['pool']
+                            data2['TILING'] = data['TILING']
+                            data2['SKIRTING'] = data['SKIRTING']
 
                         elif data['2'] == 'a-animation':
-                            d = data2['2']
-                            if d == 'a-wall' or d == 'a-openwall' or d == 'a-door' or d == 'a-slab' or d == 'a-poly'or d == 'a-line':
-                                pass
-                            else:
-                                data2['animation'] = True
-                                data2['ATTRIBUTE'] = data['ATTRIBUTE']
-                                data2['FROM'] = data['FROM']
-                                data2['TO'] = data['TO']
-                                data2['BEGIN'] = data['BEGIN']
-                                data2['DIRECTION'] = data['DIRECTION']
-                                data2['REPEAT'] = data['REPEAT']
-                                data2['DURATION'] = data['DURATION']
+                            data2['animation'] = True#this should be eliminated
+                            data2['ATTRIBUTE'] = data['ATTRIBUTE']
+                            data2['FROM'] = data['FROM']
+                            data2['TO'] = data['TO']
+                            data2['BEGIN'] = data['BEGIN']
+                            data2['DIRECTION'] = data['DIRECTION']
+                            data2['REPEAT'] = data['REPEAT']
+                            data2['DURATION'] = data['DURATION']
+                            data2['TARGET'] = data['TARGET']
+                            data2['TEXT'] = data['TEXT']
+                            data2['LINK'] = data['LINK']
+
                         collection[x2] = data2
     return collection
 
@@ -560,42 +556,13 @@ def make_html(page, collection, mode):
         no_camera = True
     for x, data in collection.items():
 
-        if data['2'] == '3dface':
-            entities_dict[x] = make_triangle(page, data)
-
-        elif data['2'] == 'line':
-            entities_dict[x] = make_line(data)
-
-        elif data['2'] == 'a-box':
-            entities_dict[x] = make_box(page, data)
-
-        elif data['2'] == 'a-curvedimage':
-            entities_dict[x] = make_curvedimage(page, data)
-
-        elif data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-circle' or data['2'] == 'a-sphere':
-            entities_dict[x] = make_circular(page, data)
-
-        elif data['2'] == 'a-plane' or data['2'] == 'look-at':
-            entities_dict[x] = make_plane(page, data)
-
-        elif data['2'] == 'a-light':
-            entities_dict[x] = make_light(page, data)
-
-        elif data['2'] == 'a-text':
-            entities_dict[x] = make_text(data)
-
-        elif data['2'] == 'a-link':
-            entities_dict[x] = make_link(page, data)
-
-        elif data['2'] == 'a-camera' and no_camera:
+        if data['2'] == 'a-camera' and no_camera:
             no_camera = False
             entities_dict[x] = make_camera(page, data, mode)
-
         elif data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
             pass
-
         else:
-            entities_dict[x] = make_block(page, data)
+            entities_dict[x] = make_entities(page, data)
 
     if no_camera:
         x += 1
@@ -607,260 +574,251 @@ def make_html(page, collection, mode):
 
     return entities_dict
 
-def make_triangle(page, data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = f'<a-triangle id="triangle-{data["num"]}" \n'
-    if page.shadows:
-        outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'geometry="vertexA:{data["10"]} {data["30"]} {data["20"]}; \n'
-    outstr += f'vertexB:{data["11"]} {data["31"]} {data["21"]}; \n'
-    outstr += f'vertexC:{data["12"]} {data["32"]} {data["22"]}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
+def make_entities(page, d):
+
+    d = prepare_coordinates(d)
+
+    outstr = ''
+    outstr += prepare_insertion(page, d)
+
+    #finally make entities
+    if d['2'] == 'a-box':
+        outstr += blocks.make_box(d)
+    elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+        outstr += blocks.make_circular(d)
+    elif d['2'] == 'a-curvedimage':
+        outstr += blocks.make_curvedimage(d)
+    elif d['2'] == 'a-plane':
+        outstr += blocks.make_plane(page, d)
+    elif d['2'] == 'a-triangle':
+        outstr += blocks.make_triangle(page, d)
+    elif d['2'] == 'a-line':
+        outstr += blocks.make_line(page, d)
+    elif d['2'] == 'a-poly':
+        outstr += blocks.make_poly(page, d)
+    elif d['2'] == 'a-block':
+        d['TYPE'] = d.get('TYPE', 't01')
+        outstr += make_block(page, d)
+    elif d['2'] == 'a-door':
+        outstr += blocks.make_door(d)
+    elif d['2'] == 'a-wall':
+        outstr += blocks.make_wall(d)
+    elif d['2'] == 'a-openwall':
+        outstr += blocks.make_openwall(d)
+    elif d['2'] == 'a-slab':
+        outstr += blocks.make_slab(d)
+    elif d['2'] == 'a-light':
+        outstr += blocks.make_light(page, d)
+    elif d['2'] == 'a-link':
+        outstr += blocks.make_link(page, d)
+    elif d['2'] == 'a-text':
+        outstr += blocks.make_text(d)
+    #make animations (is animation)
+    if d['animation']:
+        outstr += add_animation(d)
+    #make stalker balloon and link
+    if d['ATTRIBUTE'] == 'stalker':
+        outstr += add_stalker(page, d)
+
+    outstr += '</a-entity> <!--close handle-->\n'
+    if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+        outstr += '</a-entity> <!--close animation rig-->\n'
+    outstr += '</a-entity> <!--close insertion-->\n'
+    return outstr
+
+def prepare_coordinates(d):
+    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
+    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
+    'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
+    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0', 'a-link': '0', 'a-text': '0',
+    }
+    d['xg'] = d['yg'] = d['zg'] = 0
+    d['xs'] = d['ys'] = d['zs'] = 0
+    d['animation'] = False
+    #position of gravity center from insertion point
+    if insertion[d['2']] == 'v':
+        d['xg'] = d['41']/2
+        d['yg'] = -d['42']/2
+        d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'v2':
+        d['xg'] = d['41']/2
+        d['yg'] = -d['42']/2
+        d['zg'] = -d['43']/2
+    elif insertion[d['2']] == 'pl':
+        d['xg'] = d['41']/2
+        d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'c':
+        d['zg'] = d['43']/2
+    elif insertion[d['2']] == 'c2':
+        d['zg'] = d['43']
+    elif insertion[d['2']] == 'l':
+        d['xg'] = d['11']/2
+        d['yg'] = d['21']/2
+        d['39'] = d.get('39', 0)
+        if d['39']:#it has thickness?
+            d['zg'] = d['39']/2
+        else:
+            d['zg'] = d['31']/2
+    elif insertion[d['2']] == 't':
+        d['xg'] = (d['11'] + d['12'])/3
+        d['yg'] = (d['21'] + d['22'])/3
+        d['zg'] = (d['31'] + d['32'])/3
+    elif insertion[d['2']] == 'p':
+        xmax = xmin = 0
+        ymax = ymin = 0
+        for i in range(1, d['90']):
+            if d['vx'][i] < xmin:
+                xmin = d['vx'][i]
+            elif d['vx'][i] > xmax:
+                xmax = d['vx'][i]
+            if d['vy'][i] < ymin:
+                ymin = d['vy'][i]
+            elif d['vy'][i] > ymax:
+                ymax = d['vy'][i]
+
+        d['xg'] = (xmax + xmin)/2
+        d['yg'] = (ymax + ymin)/2
+        d['39'] = d.get('39', 0)
+        if d['39']:#it has thickness?
+            d['zg'] = d['39']/2
+
+    if 'ATTRIBUTE' in d:
+        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
+            d['xs'] = d['xg']
+            d['ys'] = d['yg']
+            d['xg'] = d['yg'] = 0
+        elif d['ATTRIBUTE'] == 'look-out':
+            pass
+        else:
+            d['animation'] = True
+            d['xs'] = d['xg']
+            d['ys'] = d['yg']
+            d['zs'] = d['zg']
+            d['xg'] = d['yg'] = d['zg'] = 0
     else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}; '
-        if page.double_face:
-            outstr += 'side: double; '
-    outstr += '">\n</a-triangle> \n'
-    return outstr
+        d['ATTRIBUTE'] = False
+    #round off
+    d['xg'] = round(d['xg'], 4)
+    d['yg'] = round(d['yg'], 4)
+    d['zg'] = round(d['zg'], 4)
+    d['xs'] = round(d['xs'], 4)
+    d['ys'] = round(d['ys'], 4)
+    d['zs'] = round(d['zs'], 4)
 
-def make_box(page, data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    outstr += entity_material(data)
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
+    return d
 
-def make_circular(page, data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    outstr += entity_geometry(data)
-    outstr += entity_material(data)
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_curvedimage(page, data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += start_entity(data)
-    try:
-        if data['THETA-LENGTH']!='270':
-            outstr += f'theta-length="{data["THETA-LENGTH"]}" '
-        if data['THETA-START']!='0':
-            outstr += f'theta-start="{data["THETA-START"]}" '
-    except KeyError:
-        pass
-    outstr += f'src="#{data["image"]}">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
-    return outstr
-
-def make_plane(page, data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += f'<a-plane id="{data["2"]}-{data["num"]}" \n'
-    if data['2'] == 'look-at':#if it's a look at, it is centered and looks at the camera foot
-        outstr += f'position="0 {data["43"]/2} 0" \n'
+def prepare_insertion(page, d):
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
+    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+    if d['animation']:
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
+        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
+    elif d['ATTRIBUTE'] == 'stalker':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
         outstr += 'look-at="#camera-foot" \n'
-    else:#insertion is at corner
-        outstr += f'position="{data["41"]/2} {data["43"]/2} 0" \n'
-    outstr += f'width="{fabs(data["41"])}" height="{fabs(data["43"])}" \n'
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
-        outstr += is_repeat(data["repeat"], data["41"], data["43"])
-        if page.double_face:
-            outstr += 'side: double; '
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += close_entity(data)
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+    elif d['ATTRIBUTE'] == 'checkpoint':
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
+        outstr += 'checkpoint \n'
+        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+    #handle
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
+    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
+    if page.shadows:
+        if d['2'] == 'a-curvedimage':
+            outstr += 'shadow="receive: false; cast: false" \n'
+        elif d['2'] == 'a-light':
+            pass
+        else:
+            outstr += 'shadow="receive: true; cast: true" \n'
+    if d['ATTRIBUTE'] == 'look-at':
+        if d['TARGET']:
+            outstr += f'look-at="#{d["ID"]}" \n'
+        else:
+            outstr += 'look-at="#camera" \n'
+    outstr += '> \n'
     return outstr
 
-def make_text(data):
-    if data['pool']:
-        data = prepare_entity_material(data)
-    outstr = f'<a-entity id="a-text-{data["num"]}" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
-    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["color"]}; '
-    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
-    outstr += '">\n'
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-entity>\n'
+def add_animation(d):
+    outstr = ''
+    outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
+    outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
+    outstr += f'from="{d["FROM"]}"\n'
+    outstr += f'to="{d["TO"]}"\n'
+    outstr += f'begin="{d["BEGIN"]}"\n'
+    outstr += f'direction="{d["DIRECTION"]}"\n'
+    outstr += f'repeat="{d["REPEAT"]}"\n'
+    outstr += f'dur="{d["DURATION"]}"\n'
+    outstr += '></a-animation>\n'
     return outstr
 
-def make_link(page, data):
-    outstr = f'<a-link id="a-link-{data["num"]}" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"\n'
-    outstr += f'scale="{data["41"]} {data["43"]} {data["42"]}"\n'
-    if data['TREE'] == 'parent':
-        target = page.get_parent()
-    elif data['TREE'] == 'child':
-        target = page.get_first_child()
-    elif data['TREE'] == 'previous' or data['tree'] == 'prev':
-        target = page.get_prev_sibling()
-    else:#we default to next sibling
-        target = page.get_next_sibling()
-    try:
+def add_stalker(page, d):
+    outstr = ''
+    if d['TEXT']:
+        length = len(d['TEXT'])
+        if length <= 8:
+            wrapcount = length+1
+        elif length <= 30:
+            wrapcount = 10
+        else:
+            wrapcount = length/3
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
+        outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
+        outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
+        outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
+        outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
+        outstr += f'position="0 0 -0.01" \n'
+        outstr += f'rotation="90 0 0" \n'
+        outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
+        outstr += '</a-cylinder></a-entity>\n'
+        outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
+        outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
+        outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
+        outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
+        outstr += '</a-triangle> \n'
+    if d['LINK']:
+        outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
+        outstr += f'position="{d["41"]*.7} 0 0.02" \n'
+        outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
+        target = False
+        try:
+            if d['LINK'] == 'parent':
+                target = page.get_parent()
+            elif d['LINK'] == 'child':
+                target = page.get_first_child()
+            elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+                target = page.get_prev_sibling()
+            elif d['LINK'] == 'next':
+                target = page.get_next_sibling()
+        except:
+            d['LINK'] = ''
         if target:
-            outstr += f'href="{target.url}"\n'
-            outstr += f'title="{data["TITLE"]}" color="{data["color"]}" on="click"\n'
+            outstr += f'href="{target.url}" \n'
+            outstr += f'title="{target.title}" on="click" \n'
             try:
                 eq_image = target.specific.equirectangular_image
                 if eq_image:
                     outstr += f'image="{eq_image.file.url}"'
             except:
                 outstr += 'image="#default-sky"'
-            outstr += '>\n'
-            if data['animation']:
-                outstr += is_animation(data)
-            outstr += '</a-link>\n'
-            return outstr
         else:
-            return ''
-    except:
-        return ''
-
-def make_light(page, data):
-    outstr = start_entity_wrapper(page, data)
-    outstr += '> \n'
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
-
-    try:
-        outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-        if data['TYPE'] != 'ambient':
-            if page.shadows:
-                outstr += 'castShadow: true; '
-        if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
-            outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
-        if data['TYPE'] == 'spot':
-            outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
-        if data['TYPE'] == 'directional':
-            outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
-            outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
-            outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
-            outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
-        if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
-            outstr += make_light_target(data)
-        else:
-            outstr += '">\n'
-    except KeyError:#default if no light type is set
-        outstr += 'light="type: point; intensity: 0.75; distance: 50; decay: 2; '
-        if page.shadows:
-            outstr += 'castShadow: true;'
-        outstr += '">\n'
-
-    if data['animation']:
-        outstr += is_animation(data)
-    outstr += '</a-entity></a-entity>\n'#close light entity
-    return outstr
-
-def make_light_target(data):
-    outstr = f'target: #light-{data["num"]}-target;"> \n'
-    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
+            outstr += f'href="{d["LINK"]}" \n'
+            outstr += 'title="Sorry, no title" on="click" \n'
+            outstr += 'image="#default-sky"'
+        outstr += '>\n'
+        outstr += '</a-link>\n'
     return outstr
 
 def make_block(page, data):
-    outstr = start_entity_wrapper(page, data)
-    try:
-        if data['TYPE'] == 't01':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_table_01(data)
-
-        elif data['TYPE'] == 'stalker' or data['TYPE'] == 'obj-stalker':
-            outstr += 'look-at="#camera-foot"> \n'
-            outstr += blocks.make_stalker(page, data)
-
-        elif data['TYPE'] == 'obj-mtl':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_object(data)
-
-        elif data['TYPE'] == 'tree':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, 0)
-            outstr += blocks.make_tree(data)
-
-        elif data['2'] == 'a-poly':
-            outstr += '> \n'
-            outstr += blocks.make_poly(data)
-
-        elif data['2'] == 'a-line':
-            outstr += '> \n'
-            outstr += blocks.make_line(data)
-
-        elif data['2'] == 'a-door':
-            outstr += '> \n'
-            outstr += blocks.make_door(data)
-
-        elif data['2'] == 'a-slab':
-            outstr += '> \n'
-            outstr += blocks.make_slab(data)
-
-        elif data['2'] == 'a-wall':
-            outstr += '> \n'
-            outstr += blocks.make_wall(data)
-
-        elif data['2'] == 'w-plane':
-            outstr += '> \n'
-            outstr += animation_wrapper(data, data['41']/2)
-            outstr += blocks.make_w_plane(data)
-
-        elif data['2'] == 'a-openwall':
-            outstr += '> \n'
-            #make left wall
-            data2 = data.copy()
-            data2['41'] = data2['door_off_1']
-            data2['2'] = 'a-openwall-left'
-            outstr += blocks.make_wall(data2)
-            #make part above door
-            data2 = data.copy()
-            data2['41'] = data2['door_off_2'] - data2['door_off_1']
-            data2['2'] = 'a-openwall-above'
-            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-            outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
-            outstr += blocks.make_wall(data2)
-            outstr += '</a-entity> \n'
-            #make right wall
-            data2 = data.copy()
-            data2['41'] = data2['41'] - data2['door_off_2']
-            data2['2'] = 'a-openwall-right'
-            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-            outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
-            outstr += blocks.make_wall(data2)
-            outstr += '</a-entity> \n'
-
-        #other elifs here
-    except:
-        outstr += '> \n'
-        outstr += animation_wrapper(data, 0)
+    outstr = ''
+    if data['TYPE'] == 'obj-mtl':
+        outstr += blocks.make_object(data)
+    if data['TYPE'] == 't01':
         outstr += blocks.make_table_01(data)
-
-    if data['animation']:
-        outstr += is_animation(data)
-        outstr += '</a-entity>\n'
-    outstr += '</a-entity>\n'
+    if data['TYPE'] == 'tree':
+        outstr += blocks.make_tree(data)
     return outstr
 
 def make_camera(page, data, mode):
@@ -880,108 +838,6 @@ def make_camera(page, data, mode):
     outstr += f'<a-light type="point" distance="10" intensity="{data["LIGHT-INT"]}"></a-light> \n'
     outstr += f'<a-entity position="0 {-data["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     outstr += '</a-camera></a-entity> \n'
-    return outstr
-
-def start_entity_wrapper(page, data):
-    outstr = f'<a-entity id="{data["2"]}-{data["num"]}-ent" \n'
-    if data['checkpoint']:
-        outstr += 'checkpoint \n'
-    if page.shadows:
-        if data['2'] == 'a-curvedimage':
-            outstr += 'shadow="receive: false; cast: false" \n'
-        elif data['2'] == 'a-light':
-            pass
-        else:
-            outstr += 'shadow="receive: true; cast: true" \n'
-    outstr += f'position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
-
-    return outstr
-
-def prepare_entity_material(data):
-    component = data['pool'][0]
-    data['image'] = data['MATERIAL'] + '-' + component[0]
-    data['color'] = component[1]
-    data['repeat'] = component[2]
-    return data
-
-def animation_wrapper(data, dx):
-    outstr = ''
-    if data['animation']:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-animation" \n'
-        outstr += f'position="{dx} 0 0"> \n'
-    return outstr
-
-def start_entity(data):
-    outstr = f'<{data["2"]} id="{data["2"]}-{data["num"]}" \n'
-    if data['2'] == 'a-box':
-        outstr += f'position="{data["41"]/2} {data["43"]/2} {-data["42"]/2}" \n'
-    elif data['2'] == 'a-circle':
-        pass
-    elif data['2'] == 'a-sphere':
-        outstr += f'position="0 {data["43"]} 0" \n'
-    else:
-        outstr += f'position="0 {data["43"]/2} 0" \n'
-    if data['2'] == 'a-circle':
-        outstr += f'radius="{fabs(data["41"])}" \n'
-    else:
-        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}" \n'
-    if float(data['43']) < 0:
-        if data['2'] == 'a-cone' or data['2'] == 'a-cylinder' or data['2'] == 'a-curvedimage' or data['2'] == 'a-sphere':
-            outstr += 'rotation="180 0 0">\n'
-
-    return outstr
-
-def entity_geometry(data):
-    attr_dict = {
-        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
-        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
-        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
-    }
-    attributes = attr_dict[data['2']]
-    outstr = 'geometry="'
-    for attribute in attributes:
-        try:
-            if data[attribute]:
-                outstr += f'{attribute.lower()}: {data[attribute]};'
-        except:
-            pass
-
-    outstr += '" \n'
-    return outstr
-
-def entity_material(data):
-    outstr = ''
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data["color"]}; '
-    else:
-        outstr += f'material="src: #{data["image"]}; color: {data["color"]}'
-        outstr += is_repeat(data["repeat"], data["41"], data["43"])
-    outstr += '">\n'
-    return outstr
-
-def close_entity(data):
-    outstr = f'</{data["2"]}>\n</a-entity>\n'
-    return outstr
-
-def is_repeat(repeat, rx, ry):
-    if repeat:
-        output = f'; repeat:{fabs(rx)} {fabs(ry)}'
-        return output
-    else:
-        return ';'
-
-def is_animation(data):
-    outstr = f'<a-animation attribute="{data["ATTRIBUTE"]}"\n'
-    outstr += f'from="{data["FROM"]}"\n'
-    outstr += f'to="{data["TO"]}"\n'
-    outstr += f'begin="{data["BEGIN"]}"\n'
-    outstr += f'direction="{data["DIRECTION"]}"\n'
-    outstr += f'repeat="{data["REPEAT"]}"\n'
-    outstr += f'dur="{data["DURATION"]}"\n'
-    outstr += '></a-animation>\n'
     return outstr
 
 def cad2hex(cad_color):

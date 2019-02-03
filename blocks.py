@@ -11,6 +11,103 @@ parameters of their own.
 from math import degrees, sqrt, pow, fabs, atan2
 from random import random, gauss
 
+def make_box(d):
+    values = (
+        ('pool', 0, 'box', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = 'box'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    outstr = ''
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}" \n'
+    outstr += f'scale="{d["rx"]} {d["43"]} {d["ry"]}" \n'
+    outstr += object_material(d)
+    outstr += '"> \n'
+    outstr += '</a-box> \n'
+
+    return outstr
+
+def make_triangle(page, d):
+    values = (
+        ('pool', 0, 'triangle', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = 'triangle'
+    d['rx'] = 1
+    d['ry'] = 1
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    outstr += f'<a-triangle id="a-triangle-{d["num"]}" \n'
+    outstr += 'geometry="vertexA:0 0 0; \n'
+    outstr += f'vertexB:{d["11"]} {d["31"]} {d["21"]}; \n'
+    outstr += f'vertexC:{d["12"]} {d["32"]} {d["22"]}" \n'
+    outstr += object_material(d)
+    if page.double_face:
+        outstr += 'side: double; '
+    outstr += '">\n</a-triangle></a-entity><!--close triangle reset--> \n'
+    return outstr
+
+def make_circular(d):
+    values = (
+        ('pool', 0, d['2'], 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = d['2']
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    outstr = ''
+    outstr += f'<{d["2"]} id="{d["2"]}-{d["num"]}" \n'
+    if d['2'] == 'a-circle':
+        outstr += f'radius="{fabs(d["41"])}" \n'
+    else:
+        outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    if float(d['43']) < 0:
+        if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-sphere':
+            outstr += 'rotation="180 0 0" \n'
+    outstr += entity_geometry(d)
+    outstr += object_material(d)
+    outstr += '"> \n'
+    outstr += f'</{d["2"]}> \n'
+
+    return outstr
+
+def make_curvedimage(d):
+    values = (
+        ('pool', 0, 'curved', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = 'curved'
+    outstr = ''
+    outstr += f'<a-curvedimage id="{d["2"]}-{d["num"]}" \n'
+    outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    outstr += entity_geometry(d)
+    outstr += object_material(d)
+    outstr += '"> \n'
+    outstr += '</a-curvedimage> \n'
+    return outstr
+
+def entity_geometry(d):
+    attr_dict = {
+        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
+        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
+        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
+    }
+    attributes = attr_dict[d['2']]
+    outstr = 'geometry="'
+    for attribute in attributes:
+        try:
+            if data[attribute]:
+                outstr += f'{attribute.lower()}: {d[attribute]};'
+        except:
+            pass
+
+    outstr += '" \n'
+    return outstr
+
 def make_table_01(data):
     """Table 01, default block (t01)
 
@@ -24,6 +121,8 @@ def make_table_01(data):
     )
     data = prepare_material_values(values, data)
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     #table top
     data['prefix'] = 'top'
     data['rx'] = fabs(data["41"])
@@ -54,91 +153,7 @@ def make_table_01(data):
         outstr += f'height="{height}" \n'
         outstr += object_material(data)
         outstr += '"></a-cylinder>\n'
-
-    return outstr
-
-def make_stalker(page, data):
-    """Stalker, a look-at image / object with eventual balloon text and link.
-
-    Stalker always looks towards camera. Plane / object dimension is set by
-    block X and Z scaling. Image is set by MATERIAL, text is on PARAM3 (sorry,
-    no è, à, ; etc.), link tree is on PARAM4 (allowed values: parent, child,
-    next, previous). If using an object (obj-stalker), PARAM1 is the object file
-    name, if PARAM2 is noscale object won't be scaled.
-    """
-    values = (
-        ('pool', 0, 'stalker', 'MATERIAL'),
-    )
-    data = prepare_material_values(values, data)
-    outstr = ''
-    data['prefix'] = 'stalker'
-    data['rx'] = fabs(data["41"])
-    data['ry'] = fabs(data["43"])
-    if data['TYPE'] == 'obj-stalker':
-        outstr += f'<a-entity id="stalker-{data["num"]}-object" \n'
-        outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
-        outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
-        if data['PARAM2'] == 'noscale':
-            outstr += 'scale="1 1 1"> \n'
-        else:
-            outstr += f'scale="{data["rx"]} {data["ry"]} {fabs(data["42"])}"> \n'
-        outstr += '</a-entity>'
-    else:
-        outstr += f'<a-plane id="{data["TYPE"]}-{data["num"]}" \n'
-        outstr += f'position="0 {data["43"]/2} 0" \n'
-        outstr += f'width="{data["rx"]}" height="{data["ry"]}" \n'
-        outstr += object_material(data)
-        outstr += '</a-plane>\n'
-
-    if data['PARAM3']:
-        length = len(data['PARAM3'])
-        if length <= 8:
-            wrapcount = length+1
-        elif length <= 30:
-            wrapcount = 10
-        else:
-            wrapcount = length/3
-        outstr += f'<a-entity id="stalker-{data["num"]}-balloon-ent" \n'
-        outstr += f'position="0 {data["43"]+data["41"]/4+.1} 0" \n'
-        outstr += f'text="width: {data["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {data["PARAM3"]}; wrap-count: {wrapcount};"> \n'
-        outstr += f'<a-cylinder id="stalker-{data["num"]}-balloon" \n'
-        outstr += f'position="0 0 -0.01" \n'
-        outstr += f'rotation="90 0 0" \n'
-        outstr += f'scale="{fabs(data["41"])/1.5} 0 {fabs(data["41"])/3}"> \n'
-        outstr += '</a-cylinder></a-entity>\n'
-        outstr += f'<a-triangle id="stalker-{data["num"]}-triangle" \n'
-        outstr += f'geometry="vertexA:0 {data["43"]+.1} 0.0005; \n'
-        outstr += f'vertexB:0 {data["43"]-.05} 0.0005; \n'
-        outstr += f'vertexC:{data["41"]/4} {data["43"]+.1} 0.0005"> \n'
-        outstr += '</a-triangle> \n'
-    if data['PARAM4']:
-        try:
-            outstr += f'<a-link id="stalker-link-{data["num"]}" \n'
-            outstr += f'position="{data["41"]*.7} {data["43"]*.5} 0.02" \n'
-            outstr += f'scale="{data["41"]*.35} {data["41"]*.35}"\n'
-            if data['PARAM4'] == 'parent':
-                target = page.get_parent()
-            elif data['PARAM4'] == 'child':
-                target = page.get_first_child()
-            elif data['PARAM4'] == 'previous' or data['PARAM4'] == 'prev':
-                target = page.get_prev_sibling()
-            else:#we default to next sibling
-                target = page.get_next_sibling()
-
-            outstr += f'href="{target.url}"\n'
-            outstr += f'title="{target.title}" on="click"\n'
-            try:
-                eq_image = target.specific.equirectangular_image
-                if eq_image:
-                    outstr += f'image="{eq_image.file.url}"'
-            except:
-                outstr += 'image="#default-sky"'
-            outstr += '>\n'
-            outstr += '</a-link>\n'
-        except:
-            pass
-
+    outstr += '</a-entity><!--close table01 reset--> \n'
     return outstr
 
 def make_door(data):
@@ -156,6 +171,8 @@ def make_door(data):
     data = prepare_material_values(values, data)
 
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     data['prefix'] = 'frame'
     data['rx'] = 1
     data['ry'] = 1
@@ -165,22 +182,23 @@ def make_door(data):
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
     #right frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
     outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
     outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
     #top frame
     outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
     outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
     outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
     outstr += object_material(data)
-    outstr += '></a-box>\n'
+    outstr += '"></a-box>\n'
 
     if data["TYPE"] == 'ghost':
+        outstr += '</a-entity><!--close door reset--> \n'
         return outstr
     else:
         data['prefix'] = 'panel'
@@ -212,6 +230,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated slide
@@ -224,6 +243,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
         else:#hinged
             if eval(data["DOUBLE"]):
@@ -248,6 +268,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated hinge
@@ -260,6 +281,7 @@ def make_door(data):
                 outstr += object_material(data)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
+                outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
 
 def make_slab(data):
@@ -275,6 +297,9 @@ def make_slab(data):
     )
     data = prepare_material_values(values, data)
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+
     data['prefix'] = 'floor'
     data['rx'] = fabs(data["41"])
     data['ry'] = fabs(data["42"])
@@ -291,6 +316,7 @@ def make_slab(data):
     outstr += f'scale="{data["rx"]} {fabs(data["43"])-0.01} {data["ry"]}" \n'
     outstr += object_material(data)
     outstr += '"></a-box>\n'
+    outstr += '</a-entity><!--close slab reset--> \n'
 
     return outstr
 
@@ -343,7 +369,11 @@ def make_wall(data):
     wall2_h = wall2_h - tile2_h
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
+
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
@@ -363,9 +393,45 @@ def make_wall(data):
             outstr += object_material(data)
             outstr += '"></a-box>\n'
 
+    outstr += '</a-entity><!--close wall reset--> \n'
     return outstr
 
-def make_w_plane(data):
+def make_openwall(data):
+    outstr = ''
+
+    #make left wall
+    data2 = data.copy()
+    data2['41'] = data2['door_off_1']
+    data2['2'] = 'a-openwall-left'
+    outstr += make_wall(data2)
+    #make part above door
+    data2 = data.copy()
+    data2['41'] = data2['door_off_2'] - data2['door_off_1']
+    data2['2'] = 'a-openwall-above'
+    outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
+    outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
+    outstr += make_wall(data2)
+    outstr += '</a-entity> \n'
+    #make right wall
+    data2 = data.copy()
+    data2['41'] = data2['41'] - data2['door_off_2']
+    data2['2'] = 'a-openwall-right'
+    outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
+    outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
+    outstr += make_wall(data2)
+    outstr += '</a-entity> \n'
+
+    return outstr
+
+def make_plane(page, d):
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="0 {-d["zg"]-d["zs"]} 0"> \n'
+    outstr += make_w_plane(page, d)
+    outstr += '</a-entity><!--close plane reset--> \n'
+    return outstr
+
+def make_w_plane(page, data):
     """Wall plane default BIM block.
 
     A vertical surface. Gets dimensions from plane scaling, TILING and
@@ -381,8 +447,14 @@ def make_w_plane(data):
     data = prepare_material_values(values, data)
     #prepare height values
     wall_h = fabs(data['43'])
-    tile_h = fabs(float(data['TILING']))
-    skirt_h = fabs(float(data['SKIRTING']))
+    if 'TILING' in data:
+        tile_h = fabs(float(data['TILING']))
+    else:
+        tile_h = 0
+    if 'SKIRTING' in data:
+        skirt_h = fabs(float(data['SKIRTING']))
+    else:
+        skirt_h = 0
     if tile_h > wall_h:
         tile_h = wall_h
     if skirt_h > wall_h:
@@ -392,10 +464,6 @@ def make_w_plane(data):
     wall_h = wall_h - tile_h
     tile_h = tile_h - skirt_h
     outstr = ''
-    #open displacement entity
-    if data['animation'] == False:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-disp" \n'
-        outstr += f'position="{data["41"]/2} 0 0"> \n'
     #prepare values for surfaces
     values = (
         (skirt_h, 'skirt', skirt_h/2,),
@@ -412,10 +480,90 @@ def make_w_plane(data):
             outstr += f'position="0 {v[2]*unit(data["43"])} 0" \n'
             outstr += f'width="{data["rx"]}" height="{v[0]}" \n'
             outstr += object_material(data)
+            if page.double_face:
+                outstr += 'side: double; '
             outstr += '"></a-plane>\n'
-    #close displacement entity
-    if data['animation'] == False:
-        outstr += '</a-entity> \n'
+
+    return outstr
+
+def make_light(page, data):
+    #set defaults
+    data['TYPE'] = data.get('TYPE', 'point')
+    data['INTENSITY'] = data.get('INTENSITY', 0.75)
+    data['DISTANCE'] = data.get('DISTANCE', 50)
+    data['DECAY'] = data.get('DECAY', 2)
+    outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+
+
+    outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
+    if data['TYPE'] != 'ambient':
+        if page.shadows:
+            outstr += 'castShadow: true; '
+    if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
+        outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
+    if data['TYPE'] == 'spot':
+        outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
+    if data['TYPE'] == 'directional':
+        outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
+        outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
+        outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
+        outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
+    if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
+        outstr += make_light_target(data)
+    else:
+        outstr += '">\n'
+
+    outstr += '</a-entity> \n'#close light entity
+    return outstr
+
+def make_light_target(data):
+    outstr = f'target: #light-{data["num"]}-target;"> \n'
+    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
+    return outstr
+
+def make_text(data):
+    values = (
+        ('pool', 0, 'text', 'MATERIAL'),
+    )
+    data = prepare_material_values(values, data)
+    outstr = ''
+    outstr += f'<a-entity id="a-text-{data["num"]}" \n'
+    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["text_color"]}; '
+    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
+    outstr += '">\n'
+    outstr += '</a-entity>\n'
+    return outstr
+
+def make_link(page, d):
+    outstr = f'<a-link id="a-link-{d["num"]}" \n'
+    outstr += f'scale="{d["41"]} {d["43"]} {d["42"]}"\n'
+    target = False
+    try:
+        if d['LINK'] == 'parent':
+            target = page.get_parent()
+        elif d['LINK'] == 'child':
+            target = page.get_first_child()
+        elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+            target = page.get_prev_sibling()
+        elif d['LINK'] == 'next':
+            target = page.get_next_sibling()
+    except:
+        d['LINK'] = ''
+    if target:
+        outstr += f'href="{target.url}" \n'
+        outstr += f'title="{target.title}" on="click" \n'
+        try:
+            eq_image = target.specific.equirectangular_image
+            if eq_image:
+                outstr += f'image="{eq_image.file.url}"'
+        except:
+            outstr += 'image="#default-sky"'
+    else:
+        outstr += f'href="{d["LINK"]}" \n'
+        outstr += 'title="Sorry, no title" on="click" \n'
+        outstr += 'image="#default-sky"'
+    outstr += '></a-link>\n'
     return outstr
 
 def unit(nounit):
@@ -431,9 +579,9 @@ def object_material(data):
     if data['wireframe']:
         outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data[data["prefix"]+"_color"]}; '
     else:
-        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]}'
+        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]};'
         if data[data['prefix']+'_repeat']:
-            outstr += f'; repeat:{data["rx"]} {data["ry"]}'
+            outstr += f' repeat:{data["rx"]} {data["ry"]};'
     return outstr
 
 def prepare_material_values(values, data):
@@ -453,23 +601,24 @@ def prepare_material_values(values, data):
 
     return data
 
-def make_object(data):
+def make_object(d):
     """Object block
 
     Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
     must be equal to *.obj and *.mtl filename (use lowercase extension). Files
     must share same filename and must be loaded in the media/document folder.
-    If PARAM2 is set to 'noscale', object will not be scaled.
+    If PARAM2 is set to 'scale', object will be scaled.
     """
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-object" \n'
-    outstr += f'obj-model="obj: #{data["PARAM1"]}-obj; \n'
-    outstr += f' mtl: #{data["PARAM1"]}-mtl" \n'
-    if data['PARAM2'] == 'noscale':
-        outstr += 'scale="1 1 1"> \n'
-    else:
-        outstr += f'scale="{fabs(data["41"])} {fabs(data["43"])} {fabs(data["42"])}"> \n'
-    outstr += '</a-entity>'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-object" \n'
+    outstr += f'obj-model="obj: #{d["PARAM1"]}-obj; \n'
+    outstr += f' mtl: #{d["PARAM1"]}-mtl" \n'
+    if d['PARAM2'] == 'scale':
+        outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    outstr += '></a-entity><!--close object--> \n'
+    outstr += '</a-entity><!--close object reset--> \n'
     return outstr
 
 def make_tree(data):
@@ -503,6 +652,8 @@ def make_tree(data):
     ang = gauss(0, 5)
     rot = random()*360
     outstr = ''
+    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
+    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
     data['prefix'] = 'trunk'
     data['rx'] = fabs(data["41"])
     data['ry'] = lt
@@ -562,7 +713,8 @@ def make_tree(data):
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
 
-    outstr += '</a-entity> \n'
+    outstr += '</a-entity><!--close tree--> \n'
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
 def make_branch(branch, lb, lp, angle, rotx, data):
@@ -594,67 +746,72 @@ def make_leaves(branch, lb, data):
     outstr += '</a-sphere> \n'#close branch
     return outstr
 
-def make_poly(data):
+def make_poly(page, d):
     outstr = ''
-    if data['39']:
-        data['animation'] = False
-        data['42'] = 0
-        data['43'] = data['39']
-        data['num1'] = data['num']
-        for i in range(data['90']-1):
-            data['num'] = str(data['num1']) + '-' + str(i)
-            dx = data['vx'][i]-data['vx'][i+1]
-            dy = data['vy'][i]-data['vy'][i+1]
-            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            data['50'] = 180-degrees(atan2(dy, dx))
-            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i]} 0 {data["vy"][i]}" \n'
-            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-            outstr += make_w_plane(data)
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    if d['39']:
+        d['42'] = 0
+        d['43'] = d['39']
+        d['num1'] = d['num']
+        for i in range(d['90']-1):
+            d['num'] = str(d['num1']) + '-' + str(i)
+            dx = d['vx'][i]-d['vx'][i+1]
+            dy = d['vy'][i]-d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+            outstr += f'position="{d["vx"][i]-dx/2} 0 {d["vy"][i]-dy/2}" \n'
+            outstr += f'rotation="0 {d["50"]} 0"> \n'
+            outstr += make_w_plane(page, d)
             outstr +='</a-entity>'
-        if data['70']:
-            data['num'] = str(data['num1']) + '-' + str(i+1)
-            dx = data['vx'][i+1]-data['vx'][0]
-            dy = data['vy'][i+1]-data['vy'][0]
-            data['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            data['50'] = 180-degrees(atan2(dy, dx))
-            outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-            outstr += f'position="{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}" \n'
-            outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-            outstr += make_w_plane(data)
+        if d['70']:
+            d['num'] = str(d['num1']) + '-' + str(i+1)
+            dx = d['vx'][i+1]
+            dy = d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+            outstr += f'position="{dx/2} 0 {dy/2}" \n'
+            outstr += f'rotation="0 {d["50"]} 0"> \n'
+            outstr += make_w_plane(page, d)
             outstr +='</a-entity>'
     else:
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
-        outstr += f'line="start:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
-        outstr += f'end:{data["vx"][1]} {data["38"]} {data["vy"][1]}; \n'
-        outstr += f'color: {data["color"]}" \n'
-        for i in range(1, data['90']-1):
-            outstr += f'line__{i+1}="start:{data["vx"][i]} {data["38"]} {data["vy"][i]}; \n'
-            outstr += f'end:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
-            outstr += f'color: {data["color"]}" \n'
-        if data['70']:
-            outstr += f'line__{i+2}=start:{data["vx"][i+1]} {data["38"]} {data["vy"][i+1]}; \n'
-            outstr += f'end:{data["vx"][0]} {data["38"]} {data["vy"][0]}; \n'
-            outstr += f'color: {data["color"]}" \n'
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
+        outstr += f'line="start:0 0 0; \n'
+        outstr += f'end:{d["vx"][1]} 0 {d["vy"][1]}; \n'
+        outstr += f'color: {d["color"]}" \n'
+        for i in range(1, d['90']-1):
+            outstr += f'line__{i+1}="start:{d["vx"][i]} 0 {d["vy"][i]}; \n'
+            outstr += f'end:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
+            outstr += f'color: {d["color"]}" \n'
+        if d['70']:
+            outstr += f'line__{i+2}=start:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
+            outstr += 'end:0 0 0; \n'
+            outstr += f'color: {d["color"]}" \n'
         outstr += '></a-entity>'
+    outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
-def make_line(data):
+def make_line(page, d):
     outstr = ''
-    if data['39']:
-        data['animation'] = False
-        data['42'] = 0
-        data['43'] = data['39']
-        data['41'] = sqrt(pow(data['11'], 2) + pow(data['21'], 2))
-        data['50'] = -degrees(atan2(data['21'], data['11']))
-        outstr += f'<a-entity id="{data["2"]}-{data["num"]}-wall-ent" \n'
-        outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}"> \n'
-        outstr += make_w_plane(data)
-        outstr +='</a-entity>'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    if d['39']:
+        d['42'] = 0
+        d['43'] = d['39']
+        d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))
+        d['50'] = -degrees(atan2(d['21'], d['11']))
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
+        outstr += f'position="{d["11"]/2} 0 {d["21"]/2}" \n'
+        outstr += f'rotation="0 {d["50"]} 0"> \n'
+        outstr += make_w_plane(page, d)
+        outstr +='</a-entity><!--close wall--> \n'
     else:
-        outstr = f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
         outstr += 'line="start:0 0 0; \n'
-        outstr += f'end:{data["11"]} {data["31"]} {data["21"]}; \n'
-        outstr += f'color: {data["color"]};"> \n'
-        outstr += '</a-entity> \n'
+        outstr += f'end:{d["11"]} {d["31"]} {d["21"]}; \n'
+        outstr += f'color: {d["color"]};"> \n'
+        outstr += '</a-entity><!--close line--> \n'
+    outstr += '</a-entity><!--close line reset--> \n'
     return outstr
