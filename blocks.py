@@ -507,6 +507,15 @@ def make_openwall(data):
 
     return outstr
 
+def make_plane(page, d):
+    outstr = ''
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="0 {-d["zg"]-d["zs"]} 0"> \n'
+    outstr += make_w_plane(page, d)
+    outstr += '</a-entity><!--close plane reset--> \n'
+    return outstr
+
+
 def make_w_plane(page, data):
     """Wall plane default BIM block.
 
@@ -523,8 +532,14 @@ def make_w_plane(page, data):
     data = prepare_material_values(values, data)
     #prepare height values
     wall_h = fabs(data['43'])
-    tile_h = fabs(float(data['TILING']))
-    skirt_h = fabs(float(data['SKIRTING']))
+    if 'TILING' in data:
+        tile_h = fabs(float(data['TILING']))
+    else:
+        tile_h = 0
+    if 'SKIRTING' in data:
+        skirt_h = fabs(float(data['SKIRTING']))
+    else:
+        skirt_h = 0
     if tile_h > wall_h:
         tile_h = wall_h
     if skirt_h > wall_h:
@@ -608,7 +623,7 @@ def make_object(d):
     if d['PARAM2'] == 'scale':
         outstr += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     outstr += '></a-entity><!--close object--> \n'
-    outstr += '</a-entity><!--close polyline reset--> \n'
+    outstr += '</a-entity><!--close object reset--> \n'
     return outstr
 
 def make_tree(data):

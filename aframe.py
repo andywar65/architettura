@@ -612,7 +612,7 @@ def make_html(page, collection, mode):
             entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-plane' or data['2'] == 'look-at':
-            entities_dict[x] = make_plane(page, data)
+            entities_dict[x] = make_entities(page, data)
 
         elif data['2'] == 'a-light':
             entities_dict[x] = make_light(page, data)
@@ -669,6 +669,8 @@ def make_entities(page, d):
         outstr += blocks.make_circular(d)
     elif d['2'] == 'a-curvedimage':
         outstr += blocks.make_curvedimage(d)
+    elif d['2'] == 'a-plane':
+        outstr += blocks.make_plane(page, d)
     elif d['2'] == 'a-triangle':
         outstr += blocks.make_triangle(page, d)
     elif d['2'] == 'a-line':
@@ -703,7 +705,7 @@ def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
     'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
     'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
-    'a-openwall': 'v',
+    'a-openwall': 'v', 'a-plane': 'pl',
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
@@ -717,6 +719,9 @@ def prepare_coordinates(d):
         d['xg'] = d['41']/2
         d['yg'] = -d['42']/2
         d['zg'] = -d['43']/2
+    elif insertion[d['2']] == 'pl':
+        d['xg'] = d['41']/2
+        d['zg'] = d['43']/2
     elif insertion[d['2']] == 'c':
         d['zg'] = d['43']/2
     elif insertion[d['2']] == 'c2':
@@ -1072,46 +1077,14 @@ def make_block(page, data):
             outstr += animation_wrapper(data, 0)
             outstr += blocks.make_tree(data)
 
-        elif data['2'] == 'a-door':
-            outstr += '> \n'
-            outstr += blocks.make_door(data)
 
-        elif data['2'] == 'a-slab':
-            outstr += '> \n'
-            outstr += blocks.make_slab(data)
-
-        elif data['2'] == 'a-wall':
-            outstr += '> \n'
-            outstr += blocks.make_wall(data)
 
         elif data['2'] == 'w-plane':
             outstr += '> \n'
             outstr += animation_wrapper(data, data['41']/2)
             outstr += blocks.make_w_plane(data)
 
-        elif data['2'] == 'a-openwall':
-            outstr += '> \n'
-            #make left wall
-            data2 = data.copy()
-            data2['41'] = data2['door_off_1']
-            data2['2'] = 'a-openwall-left'
-            outstr += blocks.make_wall(data2)
-            #make part above door
-            data2 = data.copy()
-            data2['41'] = data2['door_off_2'] - data2['door_off_1']
-            data2['2'] = 'a-openwall-above'
-            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-            outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
-            outstr += blocks.make_wall(data2)
-            outstr += '</a-entity> \n'
-            #make right wall
-            data2 = data.copy()
-            data2['41'] = data2['41'] - data2['door_off_2']
-            data2['2'] = 'a-openwall-right'
-            outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-            outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
-            outstr += blocks.make_wall(data2)
-            outstr += '</a-entity> \n'
+
 
         #other elifs here
     except:
