@@ -423,7 +423,12 @@ def reference_openings(collection):
             collection[x] = d
             for x2, d2 in collection2.items():
                 if d2['2'] == 'a-wall':
-                    if d['210']==0 and d['220']==0 and d2['210']==0 and d2['220']==0:
+                    flag = True
+                    values = [d['210'], d['220'], d2['210'], d2['220']]
+                    for v in values:
+                        if fabs(v)>1:
+                            flag = False
+                    if flag:
                         d2 = door_straight_case(d, d2)
                     else:
                         d2 = door_tilted_case(d, d2)
