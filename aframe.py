@@ -167,13 +167,13 @@ def parse_dxf(page, material_dict, layer_dict):
             return collection
 
         if flag == 'ent':#stores values for all entities (with arbitrary axis algorithm)
-            data = store_entity_values(data, key, value)
+            d = store_entity_values(d, key, value)
 
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
-                data[value] = attr_value
+                d[value] = attr_value
                 flag = 'ent'#restore block modality
 
         if key == '0':
@@ -183,205 +183,205 @@ def parse_dxf(page, material_dict, layer_dict):
                 flag = 'attrib'
 
             elif flag == 'ent':#close all other entities
-                layer = layer_dict[data['layer']]
+                layer = layer_dict[d['layer']]
                 invisible = layer[1]
                 if invisible:
                     flag = False
                 else:
                     layer_material = layer[0]#TO DELETE
-                    data['wireframe'] = layer[2]
-                    data['wf_width'] = layer[3]
-                    data['color'] = data.get('color', layer[4])
-                    data['8'] = data['image'] = 'default'#TO DELETE
-                    data['repeat'] = False#TO DELETE
-                    data['MATERIAL'] = data.get('MATERIAL', layer[0])
-                    data['pool'] = {}
-                    if data['MATERIAL'] == '':
-                        data['MATERIAL'] = layer[0]
-                    if data['MATERIAL'] != 'default':
-                        component_pool = material_dict[data['MATERIAL']]
+                    d['wireframe'] = layer[2]
+                    d['wf_width'] = layer[3]
+                    d['color'] = d.get('color', layer[4])
+                    d['8'] = d['image'] = 'default'#TO DELETE
+                    d['repeat'] = False#TO DELETE
+                    d['MATERIAL'] = d.get('MATERIAL', layer[0])
+                    d['pool'] = {}
+                    if d['MATERIAL'] == '':
+                        d['MATERIAL'] = layer[0]
+                    if d['MATERIAL'] != 'default':
+                        component_pool = material_dict[d['MATERIAL']]
                         if component_pool:
-                            data['pool'] = component_pool
+                            d['pool'] = component_pool
 
-                    if data['ent'] == 'a-triangle':
-                        data['2'] = 'a-triangle'#TO DELETE
+                    if d['ent'] == 'a-triangle':
+                        d['2'] = 'a-triangle'#TO DELETE
 
                         #normalize vertices
-                        data['11'] = data['11'] - data['10']
-                        data['12'] = data['12'] - data['10']
-                        data['13'] = data['13'] - data['10']
-                        data['21'] = data['21'] - data['20']
-                        data['22'] = data['22'] - data['20']
-                        data['23'] = data['23'] - data['20']
-                        data['31'] = data['31'] - data['30']
-                        data['32'] = data['32'] - data['30']
-                        data['33'] = data['33'] - data['30']
+                        d['11'] = d['11'] - d['10']
+                        d['12'] = d['12'] - d['10']
+                        d['13'] = d['13'] - d['10']
+                        d['21'] = d['21'] - d['20']
+                        d['22'] = d['22'] - d['20']
+                        d['23'] = d['23'] - d['20']
+                        d['31'] = d['31'] - d['30']
+                        d['32'] = d['32'] - d['30']
+                        d['33'] = d['33'] - d['30']
 
-                        data['num'] = x
-                        collection[x] = data
+                        d['num'] = x
+                        collection[x] = d
 
-                        if data['12']!=data['13'] or data['22']!=data['23'] or data['32']!=data['33']:
-                            data2 = data.copy()
-                            data2['11'] = data['12']
-                            data2['12'] = data['13']
-                            data2['21'] = data['22']
-                            data2['22'] = data['23']
-                            data2['31'] = data['32']
-                            data2['32'] = data['33']
+                        if d['12']!=d['13'] or d['22']!=d['23'] or d['32']!=d['33']:
+                            d2 = d.copy()
+                            d2['11'] = d['12']
+                            d2['12'] = d['13']
+                            d2['21'] = d['22']
+                            d2['22'] = d['23']
+                            d2['31'] = d['32']
+                            d2['32'] = d['33']
                             x += 1
-                            data2['num'] = x
-                            collection[x] = data2
+                            d2['num'] = x
+                            collection[x] = d2
 
                         flag = False
 
-                    elif data['ent'] == 'a-poly':#close polyline
-                        data['2'] = 'a-poly'
-                        data['10'] = data['vx'][0]
-                        data['20'] = data['vy'][0]
+                    elif d['ent'] == 'a-poly':#close polyline
+                        d['2'] = 'a-poly'
+                        d['10'] = d['vx'][0]
+                        d['20'] = d['vy'][0]
                         #normalize vertices
-                        for i in range(data['90']):
-                            data['vx'][i] = data['vx'][i]-data['10']
-                            data['vy'][i] = data['vy'][i]-data['20']
-                        data['30'] = data['38']
-                        data['num'] = x
-                        collection[x] = data
+                        for i in range(d['90']):
+                            d['vx'][i] = d['vx'][i]-d['10']
+                            d['vy'][i] = d['vy'][i]-d['20']
+                        d['30'] = d['38']
+                        d['num'] = x
+                        collection[x] = d
                         flag = False
 
-                    elif data['ent'] == 'a-line':#close line
-                        data['2'] = 'a-line'
+                    elif d['ent'] == 'a-line':#close line
+                        d['2'] = 'a-line'
                         #normalize vertices
-                        data['11'] = data['11'] - data['10']
-                        data['21'] = data['21'] - data['20']
-                        data['31'] = data['31'] - data['30']
-                        data['num'] = x
-                        collection[x] = data
+                        d['11'] = d['11'] - d['10']
+                        d['21'] = d['21'] - d['20']
+                        d['31'] = d['31'] - d['30']
+                        d['num'] = x
+                        collection[x] = d
                         flag = False
 
-                    elif data['ent'] == 'a-block':
+                    elif d['ent'] == 'a-block':
                         try:
-                            if data['2'] == 'a-wall' and data['MATERIAL2']:
-                                data['pool2'] = material_dict[data['MATERIAL2']]
+                            if d['2'] == 'a-wall' and d['MATERIAL2']:
+                                d['pool2'] = material_dict[d['MATERIAL2']]
                         except:
                             pass
 
-                        data['num'] = x
-                        collection[x] = data
+                        d['num'] = x
+                        collection[x] = d
 
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                data = {'50': 0, '210': 0, '220': 0, '230': 1,}#default values
+                d = {'50': 0, '210': 0, '220': 0, '230': 1,}#default values
                 flag = 'ent'
-                data['ent'] = 'a-triangle'
+                d['ent'] = 'a-triangle'
                 x += 1
 
             elif value == 'INSERT':#start block
-                data = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
+                d = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '',
                  'animation': False, 'checkpoint': False,}#default values
                 flag = 'ent'
-                data['ent'] = 'a-block'
+                d['ent'] = 'a-block'
                 x += 1
 
             elif value == 'LINE':#start line
-                data = {'30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
+                d = {'30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
                 'checkpoint': False, 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
-                data['ent'] = 'a-line'
+                d['ent'] = 'a-line'
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
                 #default values
-                data = {'38': 0,  '39': 0, '41': 1, '42': 1,
+                d = {'38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'vx': [], 'vy': [], 'checkpoint': False,
                 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
-                data['ent'] = 'a-poly'
+                d['ent'] = 'a-poly'
                 x += 1
 
     return collection
 
-def store_entity_values(data, key, value):
+def store_entity_values(d, key, value):
     if key == '2':#block name
-        data[key] = value
+        d[key] = value
     if key == '8':#layer name
-        data[key] = value
-        data['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
+        d[key] = value
+        d['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
     elif key == '10':#X position
-        if data['ent'] == 'a-poly':
-            data['vx'].append(round(float(value), 4))
+        if d['ent'] == 'a-poly':
+            d['vx'].append(round(float(value), 4))
         else:
-            data[key] = round(float(value), 4)
+            d[key] = round(float(value), 4)
     elif key == '20':#mirror Y position
-        if data['ent'] == 'a-poly':
-            data['vy'].append(-round(float(value), 4))
+        if d['ent'] == 'a-poly':
+            d['vy'].append(-round(float(value), 4))
         else:
-            data[key] = -round(float(value), 4)
+            d[key] = -round(float(value), 4)
     elif key == '11' or key == '12' or key == '13':#X position
-        data[key] = round(float(value), 4)
+        d[key] = round(float(value), 4)
     elif key == '21' or key == '22' or key == '23':#mirror Y position
-        data[key] = -round(float(value), 4)
+        d[key] = -round(float(value), 4)
     elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
-        data[key] = round(float(value), 4)
+        d[key] = round(float(value), 4)
     elif key == '38' or  key == '39':#elevation and thickness
-        data[key] = round(float(value), 4)
+        d[key] = round(float(value), 4)
     elif key == '41' or key == '42' or key == '43':#scale values
-        data[key] = round(float(value), 4)
+        d[key] = round(float(value), 4)
     elif key == '50':#Z rotation
-        data[key] = round(float(value), 4)
+        d[key] = round(float(value), 4)
     elif key == '62':#color
-        data['color'] = cad2hex(value)
+        d['color'] = cad2hex(value)
     elif key == '70' and value == '1':#closed
-        data['70'] = True
+        d['70'] = True
     elif key == '90':#vertex num
-        data[key] = int(value)
+        d[key] = int(value)
     elif key == '210':#X of OCS unitary vector
-        data['Az_1'] = float(value)
-        data['P_x'] = data['10']
+        d['Az_1'] = float(value)
+        d['P_x'] = d['10']
     elif key == '220':#Y of OCS unitary vector
-        data['Az_2'] = float(value)
-        data['P_y'] = -data['20']#reset original value
+        d['Az_2'] = float(value)
+        d['P_y'] = -d['20']#reset original value
     elif key == '230':#Z of OCS unitary vector
         Az_3 = float(value)
-        P_z = data['30']
+        P_z = d['30']
         #arbitrary axis algorithm
         #see if OCS z vector is close to world Z axis
-        if fabs(data['Az_1']) < (1/64) and fabs(data['Az_2']) < (1/64):
+        if fabs(d['Az_1']) < (1/64) and fabs(d['Az_2']) < (1/64):
             W = ('Y', 0, 1, 0)
         else:
             W = ('Z', 0, 0, 1)
         #cross product for OCS x arbitrary vector, normalized
-        Ax_1 = W[2]*Az_3-W[3]*data['Az_2']
-        Ax_2 = W[3]*data['Az_1']-W[1]*Az_3
-        Ax_3 = W[1]*data['Az_2']-W[2]*data['Az_1']
+        Ax_1 = W[2]*Az_3-W[3]*d['Az_2']
+        Ax_2 = W[3]*d['Az_1']-W[1]*Az_3
+        Ax_3 = W[1]*d['Az_2']-W[2]*d['Az_1']
         Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
         Ax_1 = Ax_1/Norm
         Ax_2 = Ax_2/Norm
         Ax_3 = Ax_3/Norm
         #cross product for OCS y arbitrary vector, normalized
-        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
-        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
-        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Ay_1 = d['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-d['Az_1']*Ax_3
+        Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
         Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
         Ay_1 = Ay_1/Norm
         Ay_2 = Ay_2/Norm
         Ay_3 = Ay_3/Norm
         #insertion world coordinates from OCS
-        data['10'] = round(data['P_x']*Ax_1+data['P_y']*Ay_1+P_z*data['Az_1'], 4)
-        data['20'] = round(data['P_x']*Ax_2+data['P_y']*Ay_2+P_z*data['Az_2'], 4)
-        data['30'] = round(data['P_x']*Ax_3+data['P_y']*Ay_3+P_z*Az_3, 4)
+        d['10'] = round(d['P_x']*Ax_1+d['P_y']*Ay_1+P_z*d['Az_1'], 4)
+        d['20'] = round(d['P_x']*Ax_2+d['P_y']*Ay_2+P_z*d['Az_2'], 4)
+        d['30'] = round(d['P_x']*Ax_3+d['P_y']*Ay_3+P_z*Az_3, 4)
         #OCS X vector translated into WCS
-        Ax_1 = ((data['P_x']+cos(radians(data['50'])))*Ax_1+(data['P_y']+sin(radians(data['50'])))*Ay_1+P_z*data['Az_1'])-data['10']
-        Ax_2 = ((data['P_x']+cos(radians(data['50'])))*Ax_2+(data['P_y']+sin(radians(data['50'])))*Ay_2+P_z*data['Az_2'])-data['20']
-        Ax_3 = ((data['P_x']+cos(radians(data['50'])))*Ax_3+(data['P_y']+sin(radians(data['50'])))*Ay_3+P_z*Az_3)-data['30']
+        Ax_1 = ((d['P_x']+cos(radians(d['50'])))*Ax_1+(d['P_y']+sin(radians(d['50'])))*Ay_1+P_z*d['Az_1'])-d['10']
+        Ax_2 = ((d['P_x']+cos(radians(d['50'])))*Ax_2+(d['P_y']+sin(radians(d['50'])))*Ay_2+P_z*d['Az_2'])-d['20']
+        Ax_3 = ((d['P_x']+cos(radians(d['50'])))*Ax_3+(d['P_y']+sin(radians(d['50'])))*Ay_3+P_z*Az_3)-d['30']
         #cross product for OCS y vector, normalized
-        Ay_1 = data['Az_2']*Ax_3-Az_3*Ax_2
-        Ay_2 = Az_3*Ax_1-data['Az_1']*Ax_3
-        Ay_3 = data['Az_1']*Ax_2-data['Az_2']*Ax_1
+        Ay_1 = d['Az_2']*Ax_3-Az_3*Ax_2
+        Ay_2 = Az_3*Ax_1-d['Az_1']*Ax_3
+        Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
         Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
         Ay_1 = Ay_1/Norm
         Ay_2 = Ay_2/Norm
@@ -396,20 +396,20 @@ def store_entity_values(data, key, value):
                 roll = atan2(-Ax_3, Az_3)
             else:
                 pitch = -pi/2
-                yaw = -atan2(data['Az_1'], Ax_1)
+                yaw = -atan2(d['Az_1'], Ax_1)
                 roll = 0
         else:
             pitch = pi/2
-            yaw = atan2(data['Az_1'], Ax_1)
+            yaw = atan2(d['Az_1'], Ax_1)
             roll = 0
 
         #Y position, mirrored
-        data['20'] = -data['20']
+        d['20'] = -d['20']
         #rotations from radians to degrees
-        data['210'] = round(degrees(pitch), 4)
-        data['50'] = round(degrees(yaw), 4)
-        data['220'] = -round(degrees(roll), 4)
-    return data
+        d['210'] = round(degrees(pitch), 4)
+        d['50'] = round(degrees(yaw), 4)
+        d['220'] = -round(degrees(roll), 4)
+    return d
 
 def reference_openings(collection):
     """Compares each door entity with each wall.
@@ -418,54 +418,54 @@ def reference_openings(collection):
     been implemented yet. Returns modified entity collection.
     """
     collection2 = collection.copy()
-    for x, data in collection.items():
-        if data['2'] == 'a-door':
-            collection[x] = data
-            for x2, data2 in collection2.items():
-                if data2['2'] == 'a-wall':
-                    if data['210']==0 and data['220']==0 and data2['210']==0 and data2['220']==0:
-                        data2 = door_straight_case(data, data2)
+    for x, d in collection.items():
+        if d['2'] == 'a-door':
+            collection[x] = d
+            for x2, d2 in collection2.items():
+                if d2['2'] == 'a-wall':
+                    if d['210']==0 and d['220']==0 and d2['210']==0 and d2['220']==0:
+                        d2 = door_straight_case(d, d2)
                     else:
-                        data2 = door_tilted_case(data, data2)
-                    collection[x2] = data2
+                        d2 = door_tilted_case(d, d2)
+                    collection[x2] = d2
 
     return collection
 
-def door_straight_case(data, data2):
+def door_straight_case(d, d2):
     """Cheks if door bounding box is inside wall bounding box.
 
     Works if both blocks are not rotated on X and Y axis and if insertion point
-    is on the same plane. Returns modified wall data.
+    is on the same plane. Returns modified wall info.
     """
-    if data['30']==data2['30'] and data['43']>0 and data2['43']>0:
-        rotd = round(data['50'], 0)
-        rotw = round(data2['50'], 0)
+    if d['30']==d2['30'] and d['43']>0 and d2['43']>0:
+        rotd = round(d['50'], 0)
+        rotw = round(d2['50'], 0)
         if rotd==rotw-180 or rotd-180==rotw:
             backwards = -1
         else:
             backwards = 1
         if rotd == rotw or backwards == -1:
             #translation
-            xt = data['10']-data2['10']
-            zt = data['20']-data2['20']
+            xt = d['10']-d2['10']
+            zt = d['20']-d2['20']
             #rotation
-            alfa = radians(data2['50'])
+            alfa = radians(d2['50'])
             xd = round(xt*cos(alfa)-zt*sin(alfa), 4)
             zd = round(xt*sin(alfa)+zt*cos(alfa), 4)
-            xde = xd + round(data['41'], 4)*backwards
-            zde = zd + round(data['42'], 4)
+            xde = xd + round(d['41'], 4)*backwards
+            zde = zd + round(d['42'], 4)
             #wall bounding box
-            if data2['41'] > 0:
-                xmaxw = round(data2['41'], 4)
+            if d2['41'] > 0:
+                xmaxw = round(d2['41'], 4)
                 xminw = 0
             else:
                 xmaxw = 0
-                xminw = round(data2['41'], 4)
-            if data2['42'] > 0:
+                xminw = round(d2['41'], 4)
+            if d2['42'] > 0:
                 zmaxw = 0
-                zminw = -round(data2['42'], 4)
+                zminw = -round(d2['42'], 4)
             else:
-                zmaxw = -round(data2['42'], 4)
+                zmaxw = -round(d2['42'], 4)
                 zminw = 0
             #door bounding box
             if xde > xd:
@@ -482,31 +482,31 @@ def door_straight_case(data, data2):
                 zmind = zde * ( - backwards)
             #door inclusion
             if xmaxw >= xmaxd and xminw <= xmind and zmaxw >= zmaxd and zminw <= zmind:
-                data2['door'] = data['num']
-                data2['2'] = 'a-openwall'
-                if data['43']>data2['43']:
-                    data2['door_height'] = data2['43']
+                d2['door'] = d['num']
+                d2['2'] = 'a-openwall'
+                if d['43']>d2['43']:
+                    d2['door_height'] = d2['43']
                 else:
-                    data2['door_height'] = data['43']
-                if data2['41']>0:
-                    data2['door_off_1'] = xmind
-                    data2['door_off_2'] = xmaxd
+                    d2['door_height'] = d['43']
+                if d2['41']>0:
+                    d2['door_off_1'] = xmind
+                    d2['door_off_2'] = xmaxd
                 else:
-                    data2['door_off_1'] = xmaxd - xmaxw
-                    data2['door_off_2'] = xmind - xmaxw
+                    d2['door_off_1'] = xmaxd - xmaxw
+                    d2['door_off_2'] = xmind - xmaxw
 
-    return data2
+    return d2
 
-def door_tilted_case(data, data2):
+def door_tilted_case(d, d2):
     """Not working yet.
     """
-    d210 = round(data['210']*fabs(data['41'])/data['41'], 4)
-    d220 = round(data['220']*fabs(data['42'])/data['42'], 4)
-    d50 = round(data['50']*fabs(data['43'])/data['43'], 4)
-    w210 = round(data2['210']*fabs(data2['41'])/data2['41'], 4)
-    w220 = round(data2['220']*fabs(data2['42'])/data2['42'], 4)
-    w50 = round(data2['50']*fabs(data2['43'])/data2['43'], 4)
-    return data2
+    d210 = round(d['210']*fabs(d['41'])/d['41'], 4)
+    d220 = round(d['220']*fabs(d['42'])/d['42'], 4)
+    d50 = round(d['50']*fabs(d['43'])/d['43'], 4)
+    w210 = round(d2['210']*fabs(d2['41'])/d2['41'], 4)
+    w220 = round(d2['220']*fabs(d2['42'])/d2['42'], 4)
+    w50 = round(d2['50']*fabs(d2['43'])/d2['43'], 4)
+    return d2
 
 def reference_animations(collection):
     """Assigns animations and masons.
@@ -516,36 +516,36 @@ def reference_animations(collection):
     selected block. Returns nested dictionary.
     """
     collection2 = collection.copy()
-    for x, data in collection.items():
-        if data['2'] == 'a-animation' or data['2'] == 'a-mason':
-            for x2, data2 in collection2.items():
+    for x, d in collection.items():
+        if d['2'] == 'a-animation' or d['2'] == 'a-mason':
+            for x2, d2 in collection2.items():
                 if x == x2:
                     pass
                 else:
-                    dx = fabs(data['10']-data2['10'])
-                    dy = fabs(data['20']-data2['20'])
-                    dz = fabs(data['30']-data2['30'])
+                    dx = fabs(d['10']-d2['10'])
+                    dy = fabs(d['20']-d2['20'])
+                    dz = fabs(d['30']-d2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
-                        if data['2'] == 'a-mason':
-                            data2['MATERIAL'] = data['MATERIAL']
-                            data2['pool'] = data['pool']
-                            data2['TILING'] = data['TILING']
-                            data2['SKIRTING'] = data['SKIRTING']
+                        if d['2'] == 'a-mason':
+                            d2['MATERIAL'] = d['MATERIAL']
+                            d2['pool'] = d['pool']
+                            d2['TILING'] = d['TILING']
+                            d2['SKIRTING'] = d['SKIRTING']
 
-                        elif data['2'] == 'a-animation':
-                            data2['animation'] = True#this should be eliminated
-                            data2['ATTRIBUTE'] = data['ATTRIBUTE']
-                            data2['FROM'] = data['FROM']
-                            data2['TO'] = data['TO']
-                            data2['BEGIN'] = data['BEGIN']
-                            data2['DIRECTION'] = data['DIRECTION']
-                            data2['REPEAT'] = data['REPEAT']
-                            data2['DURATION'] = data['DURATION']
-                            data2['TARGET'] = data['TARGET']
-                            data2['TEXT'] = data['TEXT']
-                            data2['LINK'] = data['LINK']
+                        elif d['2'] == 'a-animation':
+                            d2['animation'] = True#this should be eliminated
+                            d2['ATTRIBUTE'] = d['ATTRIBUTE']
+                            d2['FROM'] = d['FROM']
+                            d2['TO'] = d['TO']
+                            d2['BEGIN'] = d['BEGIN']
+                            d2['DIRECTION'] = d['DIRECTION']
+                            d2['REPEAT'] = d['REPEAT']
+                            d2['DURATION'] = d['DURATION']
+                            d2['TARGET'] = d['TARGET']
+                            d2['TEXT'] = d['TEXT']
+                            d2['LINK'] = d['LINK']
 
-                        collection[x2] = data2
+                        collection[x2] = d2
     return collection
 
 def make_html(page, collection, mode):
@@ -554,23 +554,23 @@ def make_html(page, collection, mode):
         no_camera = False
     else:
         no_camera = True
-    for x, data in collection.items():
+    for x, d in collection.items():
 
-        if data['2'] == 'a-camera' and no_camera:
+        if d['2'] == 'a-camera' and no_camera:
             no_camera = False
-            entities_dict[x] = make_camera(page, data, mode)
-        elif data['2'] == 'a-animation' or data['2'] == 'checkpoint' or data['2'] == 'a-mason':
+            entities_dict[x] = make_camera(page, d, mode)
+        elif d['2'] == 'a-animation' or d['2'] == 'checkpoint' or d['2'] == 'a-mason':
             pass
         else:
-            entities_dict[x] = make_entities(page, data)
+            entities_dict[x] = make_entities(page, d)
 
     if no_camera:
         x += 1
-        data = {
+        d = {
         '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
         'LIGHT-INT': 1,
         }
-        entities_dict[x] = make_camera(page, data, mode)
+        entities_dict[x] = make_camera(page, d, mode)
 
     return entities_dict
 
@@ -788,7 +788,7 @@ def add_stalker(page, d):
                 target = page.get_parent()
             elif d['LINK'] == 'child':
                 target = page.get_first_child()
-            elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+            elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
                 target = page.get_prev_sibling()
             elif d['LINK'] == 'next':
                 target = page.get_next_sibling()
@@ -811,39 +811,39 @@ def add_stalker(page, d):
         outstr += '</a-link>\n'
     return outstr
 
-def make_block(page, data):
+def make_block(page, d):
     outstr = ''
-    if data['TYPE'] == 'obj-mtl':
-        outstr += blocks.make_object(data)
-    if data['TYPE'] == 't01':
-        outstr += blocks.make_table_01(data)
-    if data['TYPE'] == 'tree':
-        outstr += blocks.make_tree(data)
+    if d['TYPE'] == 'obj-mtl':
+        outstr += blocks.make_object(d)
+    if d['TYPE'] == 't01':
+        outstr += blocks.make_table_01(d)
+    if d['TYPE'] == 'tree':
+        outstr += blocks.make_tree(d)
     return outstr
 
-def make_camera(page, data, mode):
-    outstr = f'<a-entity id="camera-ent" position="{data["10"]} {data["30"]} {data["20"]}" \n'
-    outstr += f'rotation="{data["210"]} {data["50"]} {data["220"]}" \n'
+def make_camera(page, d, mode):
+    outstr = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
     if mode == 'digkom':
         outstr += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         outstr += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
-        outstr += f' position="0 {data["43"]*1.6} 0"> \n'
+        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
         outstr += '<a-cursor color="black"></a-cursor> \n'
     else:
         outstr += '> \n'
         outstr += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-        outstr += f' position="0 {data["43"]*1.6} 0"> \n'
+        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
         outstr += '<a-cursor color="#2E3A87"></a-cursor> \n'
 
-    outstr += f'<a-light type="point" distance="10" intensity="{data["LIGHT-INT"]}"></a-light> \n'
-    outstr += f'<a-entity position="0 {-data["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
+    outstr += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
+    outstr += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     outstr += '</a-camera></a-entity> \n'
     return outstr
 
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
     if cad_color<0 or cad_color>255:
-        return 'white'
+        return '#ffffff'
     else:
         RGB_list = (
         		 (0, 0, 0),

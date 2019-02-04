@@ -100,7 +100,7 @@ def entity_geometry(d):
     outstr = 'geometry="'
     for attribute in attributes:
         try:
-            if data[attribute]:
+            if d[attribute]:
                 outstr += f'{attribute.lower()}: {d[attribute]};'
         except:
             pass
@@ -108,7 +108,7 @@ def entity_geometry(d):
     outstr += '" \n'
     return outstr
 
-def make_table_01(data):
+def make_table_01(d):
     """Table 01, default block (t01)
 
     A simple table with four legs. Gets dimensions from block scaling, except for
@@ -119,26 +119,26 @@ def make_table_01(data):
         ('pool', 0, 'top', 'MATERIAL'),
         ('pool', 2, 'leg', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
+    d = prepare_material_values(values, d)
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
-    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
     #table top
-    data['prefix'] = 'top'
-    data['rx'] = fabs(data["41"])
-    data['ry'] = fabs(data["42"])
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-table-top" \n'
-    outstr += f'position="0 {data["43"]-0.025*unit(data["43"])} 0" \n'
-    outstr += f'scale="{data["rx"]} 0.05 {data["ry"]}" \n'
-    outstr += object_material(data)
+    d['prefix'] = 'top'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-table-top" \n'
+    outstr += f'position="0 {d["43"]-0.025*unit(d["43"])} 0" \n'
+    outstr += f'scale="{d["rx"]} 0.05 {d["ry"]}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
     #prepare legs
-    data['prefix'] = 'leg'
-    scale_x = data["41"]/2-0.05*unit(data["41"])
-    scale_y = data["42"]/2-0.05*unit(data["42"])
-    height = data["43"]-0.025*unit(data["43"])
-    data['rx'] = 1
-    data['ry'] = 1
+    d['prefix'] = 'leg'
+    scale_x = d["41"]/2-0.05*unit(d["41"])
+    scale_y = d["42"]/2-0.05*unit(d["42"])
+    height = d["43"]-0.025*unit(d["43"])
+    d['rx'] = 1
+    d['ry'] = 1
     values = (
         (1, scale_x, scale_y),
         (2, scale_x, -scale_y),
@@ -147,16 +147,16 @@ def make_table_01(data):
     )
     #make legs
     for v in values:
-        outstr += f'<a-cylinder id="{data["2"]}-{data["num"]}-leg-{v[0]}" \n'
+        outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-leg-{v[0]}" \n'
         outstr += f'position="{v[1]} {height/2} {v[2]}" \n'
         outstr += 'radius="0.025" \n'
         outstr += f'height="{height}" \n'
-        outstr += object_material(data)
+        outstr += object_material(d)
         outstr += '"></a-cylinder>\n'
     outstr += '</a-entity><!--close table01 reset--> \n'
     return outstr
 
-def make_door(data):
+def make_door(d):
     """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
@@ -168,123 +168,123 @@ def make_door(data):
         ('pool', 0, 'panel', 'MATERIAL'),
         ('pool', 2, 'frame', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
+    d = prepare_material_values(values, d)
 
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
-    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
-    data['prefix'] = 'frame'
-    data['rx'] = 1
-    data['ry'] = 1
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    d['prefix'] = 'frame'
+    d['rx'] = 1
+    d['ry'] = 1
     #left frame
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-left-frame" \n'
-    outstr += f'position="{-0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-left-frame" \n'
+    outstr += f'position="{-0.049*unit(d["41"])} {(d["43"]+0.099*unit(d["43"]))/2} {-d["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
-    outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += object_material(data)
+    outstr += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
     #right frame
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-right-frame" \n'
-    outstr += f'position="{data["41"]+0.049*unit(data["41"])} {(data["43"]+0.099*unit(data["43"]))/2} {-data["42"]/2}" \n'
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-right-frame" \n'
+    outstr += f'position="{d["41"]+0.049*unit(d["41"])} {(d["43"]+0.099*unit(d["43"]))/2} {-d["42"]/2}" \n'
     outstr += 'rotation="0 0 90" \n'
-    outstr += f'scale="{fabs(data["43"])+0.099} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += object_material(data)
+    outstr += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
     #top frame
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-top-frame" \n'
-    outstr += f'position="{data["41"]/2} {data["43"]+0.049*unit(data["43"])} {-data["42"]/2}" \n'
-    outstr += f'scale="{fabs(data["41"])-0.002} 0.1 {fabs(data["42"])+0.02}" \n'
-    outstr += object_material(data)
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-top-frame" \n'
+    outstr += f'position="{d["41"]/2} {d["43"]+0.049*unit(d["43"])} {-d["42"]/2}" \n'
+    outstr += f'scale="{fabs(d["41"])-0.002} 0.1 {fabs(d["42"])+0.02}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
 
-    if data["TYPE"] == 'ghost':
+    if d["TYPE"] == 'ghost':
         outstr += '</a-entity><!--close door reset--> \n'
         return outstr
     else:
-        data['prefix'] = 'panel'
-        if eval(data["DOUBLE"]):
-            data['rx'] = fabs(data["41"])/2-0.002
+        d['prefix'] = 'panel'
+        if eval(d["DOUBLE"]):
+            d['rx'] = fabs(d["41"])/2-0.002
         else:
-            data['rx'] = fabs(data["41"])-0.002
-        data['ry'] = data["43"]-0.001*unit(data["43"])
-        if eval(data["SLIDING"]):
-            if eval(data["DOUBLE"]):
+            d['rx'] = fabs(d["41"])-0.002
+        d['ry'] = d["43"]-0.001*unit(d["43"])
+        if eval(d["SLIDING"]):
+            if eval(d["DOUBLE"]):
                 #animated slide 1
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide-1"> \n'
-                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-(data["41"])/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-slide-1"> \n'
+                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-(d["41"])/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
-                outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
-                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
+                outstr += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                outstr += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated slide 2
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide-2" \n'
-                outstr += f'position="{data["41"]} 0 0"> \n'
-                outstr += f'<a-animation attribute="position" from="{data["41"]} 0 0" to="{(data["41"])*3/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-slide-2" \n'
+                outstr += f'position="{d["41"]} 0 0"> \n'
+                outstr += f'<a-animation attribute="position" from="{d["41"]} 0 0" to="{(d["41"])*3/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
-                outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
-                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
+                outstr += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                outstr += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated slide
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-slide"> \n'
-                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-data["41"]} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-slide"> \n'
+                outstr += f'<a-animation attribute="position" from="0 0 0" to="{-d["41"]} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
-                outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-data["42"]/2}" \n'
-                outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
+                outstr += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                outstr += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
         else:#hinged
-            if eval(data["DOUBLE"]):
+            if eval(d["DOUBLE"]):
                 #animated hinge 1
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge-1"> \n'
-                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-1"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-1" \n'
-                outstr += f'position="{data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
-                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
+                outstr += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
+                outstr += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 #animated hinge 2
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge-2" '
-                outstr += f'position="{data["41"]} 0 0"> \n'
-                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-2" '
+                outstr += f'position="{d["41"]} 0 0"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part-2" \n'
-                outstr += f'position="{-data["41"]/4} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
-                outstr += f'scale="{(fabs(data["41"]))/2-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
+                outstr += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
+                outstr += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
             else:#single
                 #animated hinge
-                outstr += f'<a-entity id="{data["2"]}-{data["num"]}-hinge"> \n'
-                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(data["41"])*unit(data["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                outstr += f'<a-entity id="{d["2"]}-{d["num"]}-hinge"> \n'
+                outstr += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
-                outstr += f'<a-box id="{data["2"]}-{data["num"]}-moving-part" \n'
-                outstr += f'position="{data["41"]/2} {(data["43"]-0.001*unit(data["43"]))/2} {-0.025*unit(data["42"])}" \n'
-                outstr += f'scale="{fabs(data["41"])-0.002} {data["43"]-0.001*unit(data["43"])} 0.05" \n'
-                outstr += object_material(data)
+                outstr += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
+                outstr += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
+                outstr += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
+                outstr += object_material(d)
                 outstr += '"></a-box>\n'
                 outstr += '</a-entity>\n'
                 outstr += '</a-entity><!--close door reset--> \n'
                 return outstr
 
-def make_slab(data):
+def make_slab(d):
     """Slab default BIM block.
 
     An horizontal partition. Gets dimensions from block scaling. TYPE sets
@@ -295,32 +295,32 @@ def make_slab(data):
         ('pool', 0, 'ceiling', 'MATERIAL'),
         ('pool', 2, 'floor', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
+    d = prepare_material_values(values, d)
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
-    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
 
-    data['prefix'] = 'floor'
-    data['rx'] = fabs(data["41"])
-    data['ry'] = fabs(data["42"])
+    d['prefix'] = 'floor'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
     #floor
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-floor" \n'
-    outstr += f'position="{data["41"]/2} {-0.005*unit(data["43"])} {-data["42"]/2}" \n'
-    outstr += f'scale="{data["rx"]} 0.01 {data["ry"]}" \n'
-    outstr += object_material(data)
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-floor" \n'
+    outstr += f'position="{d["41"]/2} {-0.005*unit(d["43"])} {-d["42"]/2}" \n'
+    outstr += f'scale="{d["rx"]} 0.01 {d["ry"]}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
     #ceiling
-    data['prefix'] = 'ceiling'
-    outstr += f'<a-box id="{data["2"]}-{data["num"]}-ceiling" \n'
-    outstr += f'position="{data["41"]/2} {-data["43"]/2-0.005*unit(data["43"])} {-data["42"]/2}" \n'
-    outstr += f'scale="{data["rx"]} {fabs(data["43"])-0.01} {data["ry"]}" \n'
-    outstr += object_material(data)
+    d['prefix'] = 'ceiling'
+    outstr += f'<a-box id="{d["2"]}-{d["num"]}-ceiling" \n'
+    outstr += f'position="{d["41"]/2} {-d["43"]/2-0.005*unit(d["43"])} {-d["42"]/2}" \n'
+    outstr += f'scale="{d["rx"]} {fabs(d["43"])-0.01} {d["ry"]}" \n'
+    outstr += object_material(d)
     outstr += '"></a-box>\n'
     outstr += '</a-entity><!--close slab reset--> \n'
 
     return outstr
 
-def make_wall(data):
+def make_wall(d):
     """Wall default BIM block.
 
     A vertical partition. Gets dimensions from block scaling, TILING and
@@ -337,14 +337,14 @@ def make_wall(data):
         ('pool2', 1, 'tile2', 'MATERIAL2'),
         ('pool2', 2, 'skirt2', 'MATERIAL2'),
     )
-    data = prepare_material_values(values, data)
-    wall_h = wall2_h = fabs(data['43'])
-    tile_h = fabs(float(data['TILING']))
-    skirt_h = fabs(float(data['SKIRTING']))
-    tile2_h = fabs(float(data['TILING2']))
-    skirt2_h = fabs(float(data['SKIRTING2']))
-    if data['2'] == 'a-openwall-above':
-        door_h = data['door_height']
+    d = prepare_material_values(values, d)
+    wall_h = wall2_h = fabs(d['43'])
+    tile_h = fabs(float(d['TILING']))
+    skirt_h = fabs(float(d['SKIRTING']))
+    tile2_h = fabs(float(d['TILING2']))
+    skirt2_h = fabs(float(d['SKIRTING2']))
+    if d['2'] == 'a-openwall-above':
+        door_h = d['door_height']
     else:
         door_h = 0
     if tile_h > wall_h:
@@ -371,54 +371,54 @@ def make_wall(data):
     skirt2_h = skirt2_h - door_h
 
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
-    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
 
     values = (
-        (skirt_h, 'int-skirt', skirt_h/2, data["42"]/2, fabs(data["42"]), 'skirt'),
-        (tile_h, 'int-tile', tile_h/2+skirt_h, data["42"]/2, fabs(data["42"]), 'tile'),
-        (wall_h, 'int-wall', wall_h/2+tile_h+skirt_h, data["42"]/2, fabs(data["42"]), 'wall'),
-        (skirt2_h, 'ext-skirt', skirt2_h/2, data["42"], 0.02, 'skirt2'),
-        (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, data["42"], 0.02, 'tile2'),
-        (wall2_h, 'ext-wall', wall2_h/2+tile2_h+skirt2_h, data["42"], 0.02, 'wall2'),
+        (skirt_h, 'int-skirt', skirt_h/2, d["42"]/2, fabs(d["42"]), 'skirt'),
+        (tile_h, 'int-tile', tile_h/2+skirt_h, d["42"]/2, fabs(d["42"]), 'tile'),
+        (wall_h, 'int-wall', wall_h/2+tile_h+skirt_h, d["42"]/2, fabs(d["42"]), 'wall'),
+        (skirt2_h, 'ext-skirt', skirt2_h/2, d["42"], 0.02, 'skirt2'),
+        (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, d["42"], 0.02, 'tile2'),
+        (wall2_h, 'ext-wall', wall2_h/2+tile2_h+skirt2_h, d["42"], 0.02, 'wall2'),
     )
     for v in values:
         if v[0]:
-            data['prefix'] = v[5]
-            data['rx'] = fabs(data["41"])
-            data['ry'] = v[0]
-            outstr += f'<a-box id="{data["2"]}-{data["num"]}-{v[1]}" \n'
-            outstr += f'position="{data["41"]/2} {v[2]*unit(data["43"])} {-v[3]+0.005*unit(data["42"])}" \n'
-            outstr += f'scale="{data["rx"]} {v[0]} {v[4]-0.01}" \n'
-            outstr += object_material(data)
+            d['prefix'] = v[5]
+            d['rx'] = fabs(d["41"])
+            d['ry'] = v[0]
+            outstr += f'<a-box id="{d["2"]}-{d["num"]}-{v[1]}" \n'
+            outstr += f'position="{d["41"]/2} {v[2]*unit(d["43"])} {-v[3]+0.005*unit(d["42"])}" \n'
+            outstr += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
+            outstr += object_material(d)
             outstr += '"></a-box>\n'
 
     outstr += '</a-entity><!--close wall reset--> \n'
     return outstr
 
-def make_openwall(data):
+def make_openwall(d):
     outstr = ''
 
     #make left wall
-    data2 = data.copy()
-    data2['41'] = data2['door_off_1']
-    data2['2'] = 'a-openwall-left'
-    outstr += make_wall(data2)
+    d2 = d.copy()
+    d2['41'] = d2['door_off_1']
+    d2['2'] = 'a-openwall-left'
+    outstr += make_wall(d2)
     #make part above door
-    data2 = data.copy()
-    data2['41'] = data2['door_off_2'] - data2['door_off_1']
-    data2['2'] = 'a-openwall-above'
-    outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-    outstr += f'position="{data2["door_off_1"]} {data2["door_height"]} 0"> \n'
-    outstr += make_wall(data2)
+    d2 = d.copy()
+    d2['41'] = d2['door_off_2'] - d2['door_off_1']
+    d2['2'] = 'a-openwall-above'
+    outstr += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    outstr += f'position="{d2["door_off_1"]} {d2["door_height"]} 0"> \n'
+    outstr += make_wall(d2)
     outstr += '</a-entity> \n'
     #make right wall
-    data2 = data.copy()
-    data2['41'] = data2['41'] - data2['door_off_2']
-    data2['2'] = 'a-openwall-right'
-    outstr += f'<a-entity id="{data2["2"]}-{data2["num"]}-ent" \n'
-    outstr += f'position="{data2["door_off_2"]} 0 0"> \n'
-    outstr += make_wall(data2)
+    d2 = d.copy()
+    d2['41'] = d2['41'] - d2['door_off_2']
+    d2['2'] = 'a-openwall-right'
+    outstr += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    outstr += f'position="{d2["door_off_2"]} 0 0"> \n'
+    outstr += make_wall(d2)
     outstr += '</a-entity> \n'
 
     return outstr
@@ -431,7 +431,7 @@ def make_plane(page, d):
     outstr += '</a-entity><!--close plane reset--> \n'
     return outstr
 
-def make_w_plane(page, data):
+def make_w_plane(page, d):
     """Wall plane default BIM block.
 
     A vertical surface. Gets dimensions from plane scaling, TILING and
@@ -444,15 +444,15 @@ def make_w_plane(page, data):
         ('pool', 1, 'tile', 'MATERIAL'),
         ('pool', 2, 'skirt', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
+    d = prepare_material_values(values, d)
     #prepare height values
-    wall_h = fabs(data['43'])
-    if 'TILING' in data:
-        tile_h = fabs(float(data['TILING']))
+    wall_h = fabs(d['43'])
+    if 'TILING' in d:
+        tile_h = fabs(float(d['TILING']))
     else:
         tile_h = 0
-    if 'SKIRTING' in data:
-        skirt_h = fabs(float(data['SKIRTING']))
+    if 'SKIRTING' in d:
+        skirt_h = fabs(float(d['SKIRTING']))
     else:
         skirt_h = 0
     if tile_h > wall_h:
@@ -471,66 +471,66 @@ def make_w_plane(page, data):
         (wall_h, 'wall', wall_h/2+tile_h+skirt_h,),
     )
     #loop surfaces
-    data['rx'] = fabs(data["41"])
+    d['rx'] = fabs(d["41"])
     for v in values:
         if v[0]:
-            data['prefix'] = v[1]
-            data['ry'] = v[0]
-            outstr += f'<a-plane id="{data["2"]}-{data["num"]}-{v[1]}" \n'
-            outstr += f'position="0 {v[2]*unit(data["43"])} 0" \n'
-            outstr += f'width="{data["rx"]}" height="{v[0]}" \n'
-            outstr += object_material(data)
+            d['prefix'] = v[1]
+            d['ry'] = v[0]
+            outstr += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
+            outstr += f'position="0 {v[2]*unit(d["43"])} 0" \n'
+            outstr += f'width="{d["rx"]}" height="{v[0]}" \n'
+            outstr += object_material(d)
             if page.double_face:
                 outstr += 'side: double; '
             outstr += '"></a-plane>\n'
 
     return outstr
 
-def make_light(page, data):
+def make_light(page, d):
     #set defaults
-    data['TYPE'] = data.get('TYPE', 'point')
-    data['INTENSITY'] = data.get('INTENSITY', 0.75)
-    data['DISTANCE'] = data.get('DISTANCE', 50)
-    data['DECAY'] = data.get('DECAY', 2)
+    d['TYPE'] = d.get('TYPE', 'point')
+    d['INTENSITY'] = d.get('INTENSITY', 0.75)
+    d['DISTANCE'] = d.get('DISTANCE', 50)
+    d['DECAY'] = d.get('DECAY', 2)
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}" \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
 
 
-    outstr += f'light="type: {data["TYPE"]}; color: {data["color"]}; intensity: {data["INTENSITY"]}; '
-    if data['TYPE'] != 'ambient':
+    outstr += f'light="type: {d["TYPE"]}; color: {d["color"]}; intensity: {d["INTENSITY"]}; '
+    if d['TYPE'] != 'ambient':
         if page.shadows:
             outstr += 'castShadow: true; '
-    if data['TYPE'] == 'point' or data['TYPE'] == 'spot':
-        outstr += f'decay: {data["DECAY"]}; distance: {data["DISTANCE"]}; '
-    if data['TYPE'] == 'spot':
-        outstr += f'angle: {data["ANGLE"]}; penumbra: {data["PENUMBRA"]}; '
-    if data['TYPE'] == 'directional':
-        outstr += f'shadowCameraBottom: {-5*fabs(data["42"])}; \n'
-        outstr += f'shadowCameraLeft: {-5*fabs(data["41"])}; \n'
-        outstr += f'shadowCameraTop: {5*fabs(data["42"])}; \n'
-        outstr += f'shadowCameraRight: {5*fabs(data["41"])}; \n'
-    if data['TYPE'] == 'directional' or data['TYPE'] == 'spot':
-        outstr += make_light_target(data)
+    if d['TYPE'] == 'point' or d['TYPE'] == 'spot':
+        outstr += f'decay: {d["DECAY"]}; distance: {d["DISTANCE"]}; '
+    if d['TYPE'] == 'spot':
+        outstr += f'angle: {d["ANGLE"]}; penumbra: {d["PENUMBRA"]}; '
+    if d['TYPE'] == 'directional':
+        outstr += f'shadowCameraBottom: {-5*fabs(d["42"])}; \n'
+        outstr += f'shadowCameraLeft: {-5*fabs(d["41"])}; \n'
+        outstr += f'shadowCameraTop: {5*fabs(d["42"])}; \n'
+        outstr += f'shadowCameraRight: {5*fabs(d["41"])}; \n'
+    if d['TYPE'] == 'directional' or d['TYPE'] == 'spot':
+        outstr += make_light_target(d)
     else:
         outstr += '">\n'
 
     outstr += '</a-entity> \n'#close light entity
     return outstr
 
-def make_light_target(data):
-    outstr = f'target: #light-{data["num"]}-target;"> \n'
-    outstr += f'<a-entity id="light-{data["num"]}-target" position="0 -1 0"> </a-entity> \n'
+def make_light_target(d):
+    outstr = f'target: #light-{d["num"]}-target;"> \n'
+    outstr += f'<a-entity id="light-{d["num"]}-target" position="0 -1 0"> </a-entity> \n'
     return outstr
 
-def make_text(data):
+def make_text(d):
     values = (
         ('pool', 0, 'text', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
+    d = prepare_material_values(values, d)
     outstr = ''
-    outstr += f'<a-entity id="a-text-{data["num"]}" \n'
-    outstr += f'text="width: {data["41"]}; align: {data["ALIGN"]}; color: {data["text_color"]}; '
-    outstr += f'value: {data["TEXT"]}; wrap-count: {data["WRAP-COUNT"]}; '
+    outstr += f'<a-entity id="a-text-{d["num"]}" \n'
+    outstr += f'text="width: {d["41"]}; align: {d["ALIGN"]}; color: {d["text_color"]}; '
+    outstr += f'value: {d["TEXT"]}; wrap-count: {d["WRAP-COUNT"]}; '
     outstr += '">\n'
     outstr += '</a-entity>\n'
     return outstr
@@ -544,7 +544,7 @@ def make_link(page, d):
             target = page.get_parent()
         elif d['LINK'] == 'child':
             target = page.get_first_child()
-        elif d['LINK'] == 'previous' or data['LINK'] == 'prev':
+        elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
             target = page.get_prev_sibling()
         elif d['LINK'] == 'next':
             target = page.get_next_sibling()
@@ -573,33 +573,33 @@ def unit(nounit):
     unit = fabs(nounit)/nounit
     return unit
 
-def object_material(data):
+def object_material(d):
     #returns object material
     outstr = ''
-    if data['wireframe']:
-        outstr += f'material="wireframe: true; wireframe-linewidth: {data["wf_width"]}; color: {data[data["prefix"]+"_color"]}; '
+    if d['wireframe']:
+        outstr += f'material="wireframe: true; wireframe-linewidth: {d["wf_width"]}; color: {d[d["prefix"]+"_color"]}; '
     else:
-        outstr += f'material="src: #{data[data["prefix"]+"_image"]}; color: {data[data["prefix"]+"_color"]};'
-        if data[data['prefix']+'_repeat']:
-            outstr += f' repeat:{data["rx"]} {data["ry"]};'
+        outstr += f'material="src: #{d[d["prefix"]+"_image"]}; color: {d[d["prefix"]+"_color"]};'
+        if d[d['prefix']+'_repeat']:
+            outstr += f' repeat:{d["rx"]} {d["ry"]};'
     return outstr
 
-def prepare_material_values(values, data):
+def prepare_material_values(values, d):
 
     for v in values:
         try:
-            component_pool = data[v[0]]
+            component_pool = d[v[0]]
             component = component_pool[v[1]]
-            data[v[2]+'_color'] = component[1]
-            data[v[2]+'_image'] = data[v[3]] + '-' + component[0]
-            data[v[2]+'_repeat'] = component[2]
+            d[v[2]+'_color'] = component[1]
+            d[v[2]+'_image'] = d[v[3]] + '-' + component[0]
+            d[v[2]+'_repeat'] = component[2]
 
         except:
-            data[v[2]+'_color'] = data['color']
-            data[v[2]+'_image'] = data['8']
-            data[v[2]+'_repeat'] = data['repeat']
+            d[v[2]+'_color'] = d['color']
+            d[v[2]+'_image'] = d['8']
+            d[v[2]+'_repeat'] = d['repeat']
 
-    return data
+    return d
 
 def make_object(d):
     """Object block
@@ -621,7 +621,7 @@ def make_object(d):
     outstr += '</a-entity><!--close object reset--> \n'
     return outstr
 
-def make_tree(data):
+def make_tree(d):
     """Tree block
 
     Gets dimensions from block scaling. Gets trunk material from first
@@ -632,8 +632,8 @@ def make_tree(data):
         ('pool', 1, 'branch', 'MATERIAL'),
         ('pool', 2, 'leaf', 'MATERIAL'),
     )
-    data = prepare_material_values(values, data)
-    ht = 0.7172 * data['43'] * gauss(1, .1)
+    d = prepare_material_values(values, d)
+    ht = 0.7172 * d['43'] * gauss(1, .1)
     lt = ht * gauss(1, .1)
     l0 = 0.7172 * lt * gauss(1, .1)
     l00 = 0.7172 * l0 * gauss(1, .1)
@@ -652,20 +652,20 @@ def make_tree(data):
     ang = gauss(0, 5)
     rot = random()*360
     outstr = ''
-    outstr += f'<a-entity id="{data["2"]}-{data["num"]}-reset" \n'
-    outstr += f'position="{-data["xg"]-data["xs"]} {-data["zg"]-data["zs"]} {-data["yg"]-data["ys"]}"> \n'
-    data['prefix'] = 'trunk'
-    data['rx'] = fabs(data["41"])
-    data['ry'] = lt
-    outstr += f'<a-entity id="{data["TYPE"]}-{data["num"]}-trunk-ent" \n'
+    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    outstr += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    d['prefix'] = 'trunk'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = lt
+    outstr += f'<a-entity id="{d["TYPE"]}-{d["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
     #outstr += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '
     #outstr += f'to="{ang*gauss(1, .1)} {rot} 0" dur="{int(5000*gauss(1, .5))}" repeat="indefinite" direction="alternate"></a-animation>'
-    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-trunk" \n'
+    outstr += f'<a-cone id="{d["TYPE"]}-{d["num"]}-trunk" \n'
     outstr += f'position="0 {lt/2} 0" \n'
     outstr += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
-    outstr += object_material(data)
+    outstr += object_material(d)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close trunk
     osc = 30 * gauss(1, .1)
@@ -676,39 +676,39 @@ def make_tree(data):
     rot10 = random()*360
     rot100 = random()*360
     rot110 = random()*360
-    outstr += make_branch('0', l0, lt, osc, rot0, data)
-    outstr += make_branch('00', l00, l0, osc, rot00, data)
-    outstr += make_branch('000', l000, l00, osc, rot000, data)
-    outstr += make_leaves('000', l000, data)
+    outstr += make_branch('0', l0, lt, osc, rot0, d)
+    outstr += make_branch('00', l00, l0, osc, rot00, d)
+    outstr += make_branch('000', l000, l00, osc, rot000, d)
+    outstr += make_leaves('000', l000, d)
     outstr += '</a-entity> \n'
-    outstr += make_branch('001', l001, l00, -osc, 180-rot000, data)
-    outstr += make_leaves('001', l001, data)
-    outstr += '</a-entity> \n'
-    outstr += '</a-entity> \n'
-    outstr += make_branch('01', l01, l0, -osc, 180-rot00, data)
-    outstr += make_branch('010', l010, l01, osc, rot010, data)
-    outstr += make_leaves('010', l010, data)
-    outstr += '</a-entity> \n'
-    outstr += make_branch('011', l011, l01, -osc, 180-rot010, data)
-    outstr += make_leaves('011', l011, data)
+    outstr += make_branch('001', l001, l00, -osc, 180-rot000, d)
+    outstr += make_leaves('001', l001, d)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
+    outstr += make_branch('01', l01, l0, -osc, 180-rot00, d)
+    outstr += make_branch('010', l010, l01, osc, rot010, d)
+    outstr += make_leaves('010', l010, d)
     outstr += '</a-entity> \n'
-    outstr += make_branch('1', l1, lt, -osc, 180-rot0, data)
-    outstr += make_branch('10', l10, l1, osc, rot10, data)
-    outstr += make_branch('100', l100, l10, osc, rot100, data)
-    outstr += make_leaves('100', l100, data)
-    outstr += '</a-entity> \n'
-    outstr += make_branch('101', l101, l10, -osc, 180-rot100, data)
-    outstr += make_leaves('101', l101, data)
+    outstr += make_branch('011', l011, l01, -osc, 180-rot010, d)
+    outstr += make_leaves('011', l011, d)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
-    outstr += make_branch('11', l11, l1, -osc, 180-rot10, data)
-    outstr += make_branch('110', l110, l11, osc, rot110, data)
-    outstr += make_leaves('110', l110, data)
     outstr += '</a-entity> \n'
-    outstr += make_branch('111', l111, l11, -osc, 180-rot110, data)
-    outstr += make_leaves('111', l111, data)
+    outstr += make_branch('1', l1, lt, -osc, 180-rot0, d)
+    outstr += make_branch('10', l10, l1, osc, rot10, d)
+    outstr += make_branch('100', l100, l10, osc, rot100, d)
+    outstr += make_leaves('100', l100, d)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('101', l101, l10, -osc, 180-rot100, d)
+    outstr += make_leaves('101', l101, d)
+    outstr += '</a-entity> \n'
+    outstr += '</a-entity> \n'
+    outstr += make_branch('11', l11, l1, -osc, 180-rot10, d)
+    outstr += make_branch('110', l110, l11, osc, rot110, d)
+    outstr += make_leaves('110', l110, d)
+    outstr += '</a-entity> \n'
+    outstr += make_branch('111', l111, l11, -osc, 180-rot110, d)
+    outstr += make_leaves('111', l111, d)
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
     outstr += '</a-entity> \n'
@@ -717,31 +717,31 @@ def make_tree(data):
     outstr += '</a-entity><!--close polyline reset--> \n'
     return outstr
 
-def make_branch(branch, lb, lp, angle, rotx, data):
-    data['prefix'] = 'branch'
-    data['rx'] = fabs(data["41"])
-    data['ry'] = lb
+def make_branch(branch, lb, lp, angle, rotx, d):
+    d['prefix'] = 'branch'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = lb
     ang = gauss(angle, 10)
     rot = gauss(rotx, 20)
-    outstr = f'<a-entity id="{data["TYPE"]}-{data["num"]}-branch-{branch}-ent" \n'
+    outstr = f'<a-entity id="{d["TYPE"]}-{d["num"]}-branch-{branch}-ent" \n'
     outstr += f'position="0 {lp*.95-lp*fabs(gauss(0, .2))} 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
-    outstr += f'<a-cone id="{data["TYPE"]}-{data["num"]}-branch-{branch}" \n'
+    outstr += f'<a-cone id="{d["TYPE"]}-{d["num"]}-branch-{branch}" \n'
     outstr += f'position="0 {lb/2} 0" \n'
     outstr += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
-    outstr += object_material(data)
+    outstr += object_material(d)
     outstr += '">\n'
     outstr += '</a-cone> \n'#close branch
     return outstr
 
-def make_leaves(branch, lb, data):
-    data['prefix'] = 'leaf'
-    data['rx'] = lb
-    data['ry'] = lb
-    outstr = f'<a-sphere id="{data["TYPE"]}-{data["num"]}-leaves-{branch}" \n'
+def make_leaves(branch, lb, d):
+    d['prefix'] = 'leaf'
+    d['rx'] = lb
+    d['ry'] = lb
+    outstr = f'<a-sphere id="{d["TYPE"]}-{d["num"]}-leaves-{branch}" \n'
     outstr += f'position="0 {lb} 0" \n'
     outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
-    outstr += object_material(data)
+    outstr += object_material(d)
     outstr += 'side: back;">\n'
     outstr += '</a-sphere> \n'#close branch
     return outstr
