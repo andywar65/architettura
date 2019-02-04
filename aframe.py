@@ -442,63 +442,77 @@ def door_straight_case(d, d2):
     Works if both blocks are not rotated on X and Y axis and if insertion point
     is on the same plane. Returns modified wall info.
     """
-    if d['30']==d2['30'] and d['43']>0 and d2['43']>0:
-        rotd = round(d['50'], 0)
-        rotw = round(d2['50'], 0)
-        if rotd==rotw-180 or rotd-180==rotw:
-            backwards = -1
+    flag = False
+    if fabs(d['50'] - d2['50'])<1:
+        flag = True
+        back = 1
+    elif fabs(d['50'] - 180 - d2['50'])<1:
+        flag = True
+        back = -1
+    elif fabs(d['50'] + 180 - d2['50'])<1:
+        flag = True
+        back = -1
+    if fabs(d['30'] - d2['30'])>.01:
+        flag = False
+    if d['43']<0 or d2['43']<0:
+        flag = False
+    if flag:
+        #translation
+        xt = d['10']-d2['10']
+        zt = d['20']-d2['20']
+        #rotation
+        alfa = radians(d2['50'])
+        xd = xt*cos(alfa)-zt*sin(alfa)
+        zd = (xt*sin(alfa)+zt*cos(alfa))*back*fabs(d2['42'])/d2['42']*fabs(d['42'])/d['42']
+        xde = xd + d['41']*back
+        zde = zd + d['42']*back
+        xwe = d2['41']
+        zwe = d2['42']
+        if xde > xd:
+            xdmax = xde
+            xdmin = xd
         else:
-            backwards = 1
-        if rotd == rotw or backwards == -1:
-            #translation
-            xt = d['10']-d2['10']
-            zt = d['20']-d2['20']
-            #rotation
-            alfa = radians(d2['50'])
-            xd = round(xt*cos(alfa)-zt*sin(alfa), 4)
-            zd = round(xt*sin(alfa)+zt*cos(alfa), 4)
-            xde = xd + round(d['41'], 4)*backwards
-            zde = zd + round(d['42'], 4)
-            #wall bounding box
-            if d2['41'] > 0:
-                xmaxw = round(d2['41'], 4)
-                xminw = 0
+            xdmax = xd
+            xdmin = xde
+        if zde > zd:
+            zdmax = zde
+            zdmin = zd
+        else:
+            zdmax = zd
+            zdmin = zde
+        if xwe > 0:
+            xwmax = xwe
+            xwmin = 0
+        else:
+            xwmax = 0
+            xwmin = xwe
+        if zwe > 0:
+            zwmax = zwe
+            zwmin = 0
+        else:
+            zwmax = 0
+            zwmin = zwe
+        if xdmin - xwmin < -0.01:
+            flag = False
+        elif zdmin -zwmin < -0.01:
+            flag = False
+        elif xwmax - xdmax < -0.01:
+            flag = False
+        elif zwmax - zdmax < -0.01:
+            flag = False
+        if flag:
+            d2['door'] = d['num']
+            d2['2'] = 'a-openwall'
+            if d['43']>d2['43']:
+                d2['door_height'] = d2['43']
             else:
-                xmaxw = 0
-                xminw = round(d2['41'], 4)
-            if d2['42'] > 0:
-                zmaxw = 0
-                zminw = -round(d2['42'], 4)
+                d2['door_height'] = d['43']
+            if d2['41']>0:
+                d2['door_off_1'] = xdmin
+                d2['door_off_2'] = xdmax
             else:
-                zmaxw = -round(d2['42'], 4)
-                zminw = 0
-            #door bounding box
-            if xde > xd:
-                xmaxd = xde
-                xmind = xd
-            else:
-                xmaxd = xd
-                xmind = xde
-            if zde > zd:
-                zmaxd = zde * ( - backwards)
-                zmind = zd * ( - backwards)
-            else:
-                zmaxd = zd * ( - backwards)
-                zmind = zde * ( - backwards)
-            #door inclusion
-            if xmaxw >= xmaxd and xminw <= xmind and zmaxw >= zmaxd and zminw <= zmind:
-                d2['door'] = d['num']
-                d2['2'] = 'a-openwall'
-                if d['43']>d2['43']:
-                    d2['door_height'] = d2['43']
-                else:
-                    d2['door_height'] = d['43']
-                if d2['41']>0:
-                    d2['door_off_1'] = xmind
-                    d2['door_off_2'] = xmaxd
-                else:
-                    d2['door_off_1'] = xmaxd - xmaxw
-                    d2['door_off_2'] = xmind - xmaxw
+                d2['door_off_1'] = xdmax - xwmax
+                d2['door_off_2'] = xdmin - xwmax
 
     return d2
 
