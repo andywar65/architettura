@@ -1,4 +1,4 @@
-import os
+import os, html
 from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
@@ -171,7 +171,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
-                attr_value = value
+                attr_value = html.escape(value)
             elif key == '2':#attribute key
                 d[value] = attr_value
                 flag = 'ent'#restore block modality
@@ -1123,3 +1123,15 @@ def cad2hex(cad_color):
         b = RGB_list[cad_color][2]
         hex = "#{:02x}{:02x}{:02x}".format(r,g,b)
         return hex
+
+#html_escape_table = {
+    #"&": "&amp;",
+    #'"': "&quot;",
+    #"'": "&apos;",
+    #">": "&gt;",
+    #"<": "&lt;",
+#}
+
+#def html_escape(text):
+    #"""Produce entities within text."""
+    #return "".join(html_escape_table.get(c,c) for c in text)
