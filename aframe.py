@@ -63,8 +63,8 @@ def get_object_dict(page):
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
-                if value == 'TYPE':
-                    if attr_value == 'obj-mtl' or attr_value == 'obj-stalker':
+                if value == 'NAME':
+                    if attr_value == 'obj-mtl':
                         flag = 'object'
         elif flag == 'object':#stores values for attributes within object block
             if key == '1':#attribute value
@@ -280,7 +280,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'INSERT':#start block
                 d = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'TYPE': '',
+                 '230': 1,'repeat': False, 'TYPE': '','NAME': '',
                  'animation': False, 'checkpoint': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-block'
@@ -619,7 +619,7 @@ def make_entities(page, d):
     elif d['2'] == 'a-poly':
         outstr += blocks.make_poly(page, d)
     elif d['2'] == 'a-block':
-        d['TYPE'] = d.get('TYPE', 't01')
+        d['NAME'] = d.get('NAME', 't01')
         outstr += make_block(page, d)
     elif d['2'] == 'a-door':
         outstr += blocks.make_door(d)
@@ -828,11 +828,11 @@ def add_stalker(page, d):
 
 def make_block(page, d):
     outstr = ''
-    if d['TYPE'] == 'obj-mtl':
+    if d['NAME'] == 'obj-mtl':
         outstr += blocks.make_object(d)
-    if d['TYPE'] == 't01':
+    if d['NAME'] == 't01':
         outstr += blocks.make_table_01(d)
-    if d['TYPE'] == 'tree':
+    if d['NAME'] == 'tree':
         outstr += blocks.make_tree(d)
     return outstr
 

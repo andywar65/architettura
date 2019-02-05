@@ -1,11 +1,10 @@
 """Collection of functions for writing HTML of blocks.
 
 Functions are referenced from architettura.aframe.make_block, a-block CAD blocks
-have TYPE attribute that are essentially block names except for BIM blocks,
-that use TYPE attribute for setting 'partition type'. Block appearance is
-determined by MATERIAL attribute (multiple components may be used depending on
-TYPE), other features depend on PARAM attributes. Some blocks may have
-parameters of their own.
+have NAME attribute that are essentially block names, while BIM blocks use TYPE
+attribute for setting 'partition type'. Block appearance is determined by
+MATERIAL attribute (multiple components may be used depending on NAME), other
+features depend on PARAM attributes.
 """
 
 from math import degrees, sqrt, pow, fabs, atan2
@@ -657,12 +656,12 @@ def make_tree(d):
     d['prefix'] = 'trunk'
     d['rx'] = fabs(d["41"])
     d['ry'] = lt
-    outstr += f'<a-entity id="{d["TYPE"]}-{d["num"]}-trunk-ent" \n'
+    outstr += f'<a-entity id="{d["NAME"]}-{d["num"]}-trunk-ent" \n'
     outstr += f'position="0 0 0" \n'
     outstr += f'rotation="{ang} {rot} 0"> \n'
     #outstr += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '
     #outstr += f'to="{ang*gauss(1, .1)} {rot} 0" dur="{int(5000*gauss(1, .5))}" repeat="indefinite" direction="alternate"></a-animation>'
-    outstr += f'<a-cone id="{d["TYPE"]}-{d["num"]}-trunk" \n'
+    outstr += f'<a-cone id="{d["NAME"]}-{d["num"]}-trunk" \n'
     outstr += f'position="0 {lt/2} 0" \n'
     outstr += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
     outstr += object_material(d)
@@ -738,7 +737,7 @@ def make_leaves(branch, lb, d):
     d['prefix'] = 'leaf'
     d['rx'] = lb
     d['ry'] = lb
-    outstr = f'<a-sphere id="{d["TYPE"]}-{d["num"]}-leaves-{branch}" \n'
+    outstr = f'<a-sphere id="{d["NAME"]}-{d["num"]}-leaves-{branch}" \n'
     outstr += f'position="0 {lb} 0" \n'
     outstr += f'geometry="radius: {gauss(lb, lb/5)};" \n'
     outstr += object_material(d)
