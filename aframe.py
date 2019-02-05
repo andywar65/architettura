@@ -313,26 +313,26 @@ def store_entity_values(d, key, value):
         d['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
     elif key == '10':#X position
         if d['ent'] == 'a-poly':
-            d['vx'].append(round(float(value), 4))
+            d['vx'].append(float(value))
         else:
-            d[key] = round(float(value), 4)
+            d[key] = float(value)
     elif key == '20':#mirror Y position
         if d['ent'] == 'a-poly':
-            d['vy'].append(-round(float(value), 4))
+            d['vy'].append(-float(value))
         else:
-            d[key] = -round(float(value), 4)
+            d[key] = -float(value)
     elif key == '11' or key == '12' or key == '13':#X position
-        d[key] = round(float(value), 4)
+        d[key] = float(value)
     elif key == '21' or key == '22' or key == '23':#mirror Y position
-        d[key] = -round(float(value), 4)
+        d[key] = -float(value)
     elif key == '30' or key == '31' or key == '32' or key == '33':#Z position
-        d[key] = round(float(value), 4)
+        d[key] = float(value)
     elif key == '38' or  key == '39':#elevation and thickness
-        d[key] = round(float(value), 4)
+        d[key] = float(value)
     elif key == '41' or key == '42' or key == '43':#scale values
-        d[key] = round(float(value), 4)
+        d[key] = float(value)
     elif key == '50':#Z rotation
-        d[key] = round(float(value), 4)
+        d[key] = float(value)
     elif key == '62':#color
         d['color'] = cad2hex(value)
     elif key == '70' and value == '1':#closed
@@ -371,9 +371,9 @@ def store_entity_values(d, key, value):
         Ay_2 = Ay_2/Norm
         Ay_3 = Ay_3/Norm
         #insertion world coordinates from OCS
-        d['10'] = round(d['P_x']*Ax_1+d['P_y']*Ay_1+P_z*d['Az_1'], 4)
-        d['20'] = round(d['P_x']*Ax_2+d['P_y']*Ay_2+P_z*d['Az_2'], 4)
-        d['30'] = round(d['P_x']*Ax_3+d['P_y']*Ay_3+P_z*Az_3, 4)
+        d['10'] = d['P_x']*Ax_1+d['P_y']*Ay_1+P_z*d['Az_1']
+        d['20'] = d['P_x']*Ax_2+d['P_y']*Ay_2+P_z*d['Az_2']
+        d['30'] = d['P_x']*Ax_3+d['P_y']*Ay_3+P_z*Az_3
         #OCS X vector translated into WCS
         Ax_1 = ((d['P_x']+cos(radians(d['50'])))*Ax_1+(d['P_y']+sin(radians(d['50'])))*Ay_1+P_z*d['Az_1'])-d['10']
         Ax_2 = ((d['P_x']+cos(radians(d['50'])))*Ax_2+(d['P_y']+sin(radians(d['50'])))*Ay_2+P_z*d['Az_2'])-d['20']
@@ -406,9 +406,9 @@ def store_entity_values(d, key, value):
         #Y position, mirrored
         d['20'] = -d['20']
         #rotations from radians to degrees
-        d['210'] = round(degrees(pitch), 4)
-        d['50'] = round(degrees(yaw), 4)
-        d['220'] = -round(degrees(roll), 4)
+        d['210'] = degrees(pitch)
+        d['50'] = degrees(yaw)
+        d['220'] = -degrees(roll)
     return d
 
 def reference_openings(collection):
@@ -519,12 +519,12 @@ def door_straight_case(d, d2):
 def door_tilted_case(d, d2):
     """Not working yet.
     """
-    d210 = round(d['210']*fabs(d['41'])/d['41'], 4)
-    d220 = round(d['220']*fabs(d['42'])/d['42'], 4)
-    d50 = round(d['50']*fabs(d['43'])/d['43'], 4)
-    w210 = round(d2['210']*fabs(d2['41'])/d2['41'], 4)
-    w220 = round(d2['220']*fabs(d2['42'])/d2['42'], 4)
-    w50 = round(d2['50']*fabs(d2['43'])/d2['43'], 4)
+    d210 = d['210']*fabs(d['41'])/d['41']
+    d220 = d['220']*fabs(d['42'])/d['42']
+    d50 = d['50']*fabs(d['43'])/d['43']
+    w210 = d2['210']*fabs(d2['41'])/d2['41']
+    w220 = d2['220']*fabs(d2['42'])/d2['42']
+    w50 = d2['50']*fabs(d2['43'])/d2['43']
     return d2
 
 def reference_animations(collection):
@@ -716,13 +716,6 @@ def prepare_coordinates(d):
             d['xg'] = d['yg'] = d['zg'] = 0
     else:
         d['ATTRIBUTE'] = False
-    #round off
-    d['xg'] = round(d['xg'], 4)
-    d['yg'] = round(d['yg'], 4)
-    d['zg'] = round(d['zg'], 4)
-    d['xs'] = round(d['xs'], 4)
-    d['ys'] = round(d['ys'], 4)
-    d['zs'] = round(d['zs'], 4)
 
     return d
 
