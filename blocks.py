@@ -487,15 +487,19 @@ def make_w_plane(page, d):
 
 def make_light(page, d):
     #set defaults
-    d['TYPE'] = d.get('TYPE', 'point')
-    d['INTENSITY'] = d.get('INTENSITY', 0.75)
-    d['DISTANCE'] = d.get('DISTANCE', 50)
-    d['DECAY'] = d.get('DECAY', 2)
+    if d['TYPE'] == '':
+        d['TYPE'] = 'point'
+        d['INTENSITY'] = 0.75
+        d['DISTANCE'] = 50
+        d['DECAY'] = 2
+    if d['COLOR'] == '':
+        d['COLOR'] = d['color']
+
     outstr = ''
     outstr += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
 
 
-    outstr += f'light="type: {d["TYPE"]}; color: {d["color"]}; intensity: {d["INTENSITY"]}; '
+    outstr += f'light="type: {d["TYPE"]}; color: {d["COLOR"]}; intensity: {d["INTENSITY"]}; '
     if d['TYPE'] != 'ambient':
         if page.shadows:
             outstr += 'castShadow: true; '
