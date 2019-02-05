@@ -272,13 +272,13 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                d = {'50': 0, '210': 0, '220': 0, '230': 1,}#default values
+                d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-triangle'
                 x += 1
 
             elif value == 'INSERT':#start block
-                d = {'41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
+                d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '',
                  'animation': False, 'checkpoint': False,}#default values
                 flag = 'ent'
@@ -286,7 +286,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 x += 1
 
             elif value == 'LINE':#start line
-                d = {'30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
+                d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
                 'checkpoint': False, 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
@@ -296,7 +296,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'LWPOLYLINE':#start polyline
                 #default values
-                d = {'38': 0,  '39': 0, '41': 1, '42': 1,
+                d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'vx': [], 'vy': [], 'checkpoint': False,
                 'animation': False, 'color': '','repeat': False,
@@ -553,7 +553,13 @@ def reference_animations(collection):
                             d2['SKIRTING'] = d['SKIRTING']
 
                         elif d['2'] == 'a-animation':
-                            d2['animation'] = True#this should be eliminated
+                            d2['animation'] = True
+                            if d['ATTRIBUTE'] == 'stalker':
+                                d2['animation'] = False
+                            elif d['ATTRIBUTE'] == 'look-at':
+                                d2['animation'] = False
+                            elif d['ATTRIBUTE'] == 'checkpoint':
+                                d2['animation'] = False
                             d2['ATTRIBUTE'] = d['ATTRIBUTE']
                             d2['FROM'] = d['FROM']
                             d2['TO'] = d['TO']
@@ -579,7 +585,7 @@ def make_html(page, collection, mode):
         if d['2'] == 'a-camera' and no_camera:
             no_camera = False
             entities_dict[x] = make_camera(page, d, mode)
-        elif d['2'] == 'a-animation' or d['2'] == 'checkpoint' or d['2'] == 'a-mason':
+        elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
         else:
             entities_dict[x] = make_entities(page, d)
@@ -654,7 +660,6 @@ def prepare_coordinates(d):
     }
     d['xg'] = d['yg'] = d['zg'] = 0
     d['xs'] = d['ys'] = d['zs'] = 0
-    d['animation'] = False
     #position of gravity center from insertion point
     if insertion[d['2']] == 'v':
         d['xg'] = d['41']/2
@@ -707,10 +712,9 @@ def prepare_coordinates(d):
             d['xs'] = d['xg']
             d['ys'] = d['yg']
             d['xg'] = d['yg'] = 0
-        elif d['ATTRIBUTE'] == 'look-out':
+        elif d['ATTRIBUTE'] == 'look-at':
             pass
         else:
-            d['animation'] = True
             d['xs'] = d['xg']
             d['ys'] = d['yg']
             d['zs'] = d['zg']
@@ -737,7 +741,10 @@ def prepare_insertion(page, d):
         outstr += 'checkpoint \n'
         outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
     #handle
-    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
+    if d['ID']:
+        outstr += f'<a-entity id="{d["ID"]}" \n'
+    else:
+        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
     outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
     if page.shadows:
         if d['2'] == 'a-curvedimage':
@@ -748,7 +755,7 @@ def prepare_insertion(page, d):
             outstr += 'shadow="receive: true; cast: true" \n'
     if d['ATTRIBUTE'] == 'look-at':
         if d['TARGET']:
-            outstr += f'look-at="#{d["ID"]}" \n'
+            outstr += f'look-at="#{d["TARGET"]}" \n'
         else:
             outstr += 'look-at="#camera" \n'
     outstr += '> \n'
