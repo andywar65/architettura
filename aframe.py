@@ -258,11 +258,14 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
                     elif d['ent'] == 'a-block':
-                        try:
-                            if d['2'] == 'a-wall' and d['MATERIAL2']:
+                        if d['2'] == 'a-wall':
+                            if d['MATERIAL2']:
                                 d['pool2'] = material_dict[d['MATERIAL2']]
-                        except:
-                            pass
+                            else:
+                                d['MATERIAL2'] = d['MATERIAL']
+                                d['pool2'] = d['pool']
+                                d['TILING2'] = d['TILING']
+                                d['SKIRTING2'] = d['SKIRTING']
 
                         d['num'] = x
                         collection[x] = d
