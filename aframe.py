@@ -131,9 +131,9 @@ def parse_dxf(page, material_dict, layer_dict):
     """Collects entities from DXF file.
 
     This function does too many things and maybe should be cut down. Scans
-    file for 3Dfaces, lines and blocks. Assigns values to each entity, including
-    geometric and appearance values plus functional attributes. Returns a
-    nested dictionary.
+    file for 3Dfaces, lines, polylines and blocks. Assigns values to each
+    entity, including geometric and appearance values plus functional
+    attributes. Returns a nested dictionary.
     """
     path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
     dxf_f = open(path_to_dxf, encoding = 'utf-8')
@@ -171,7 +171,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
         elif flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
-                attr_value = html.escape(value)
+                attr_value = html.escape(value, quote=True)
             elif key == '2':#attribute key
                 d[value] = attr_value
                 flag = 'ent'#restore block modality
@@ -188,12 +188,11 @@ def parse_dxf(page, material_dict, layer_dict):
                 if invisible:
                     flag = False
                 else:
-                    layer_material = layer[0]#TO DELETE
                     d['wireframe'] = layer[2]
                     d['wf_width'] = layer[3]
                     d['color'] = d.get('color', layer[4])
-                    d['8'] = d['image'] = 'default'#TO DELETE
-                    d['repeat'] = False#TO DELETE
+                    d['8'] = d['image'] = layer[0]
+                    d['repeat'] = False#TO DELETE?
                     d['MATERIAL'] = d.get('MATERIAL', layer[0])
                     d['pool'] = {}
                     if d['MATERIAL'] == '':
@@ -310,10 +309,9 @@ def parse_dxf(page, material_dict, layer_dict):
 
 def store_entity_values(d, key, value):
     if key == '2':#block name
-        d[key] = value
+        d[key] =  html.escape(value, quote=True)
     if key == '8':#layer name
-        d[key] = value
-        d['layer'] = value#sometimes key 8 is replaced, so I need the original layer value
+        d['layer'] = d[key] =  html.escape(value, quote=True)
     elif key == '10':#X position
         if d['ent'] == 'a-poly':
             d['vx'].append(float(value))
@@ -1123,15 +1121,3 @@ def cad2hex(cad_color):
         b = RGB_list[cad_color][2]
         hex = "#{:02x}{:02x}{:02x}".format(r,g,b)
         return hex
-
-#html_escape_table = {
-    #"&": "&amp;",
-    #'"': "&quot;",
-    #"'": "&apos;",
-    #">": "&gt;",
-    #"<": "&lt;",
-#}
-
-#def html_escape(text):
-    #"""Produce entities within text."""
-    #return "".join(html_escape_table.get(c,c) for c in text)
