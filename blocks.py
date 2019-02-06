@@ -866,12 +866,22 @@ def make_line(page, d):
     oput += '</a-entity><!--close line reset--> \n'
     return oput
 
-def add_animation(d):
+def add_animation(d):#DIFFERENT FROM THE ONE IN aframe.py!!!!
     oput = ''
     oput += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
     oput += f'attribute="{d["ATTRIBUTE"]}"\n'
-    oput += f'from="{d["FROM"]}"\n'
-    oput += f'to="{d["TO"]}"\n'
+    if d['FROM'] == '':
+        if d['ATTRIBUTE'] == 'rotation':
+            oput += f'from="{d["210"]} {d["50"]} {d["220"]}"\n'
+            l = d['TO'].split()
+            oput += f'to="{d["210"]+float(l[0])} {d["50"]+float(l[1])} {d["220"]+float(l[2])}"\n'
+        elif d['ATTRIBUTE'] == 'position':
+            oput += f'from="{d["10"]} {d["30"]} {d["20"]}"\n'
+            l = d['TO'].split()
+            oput += f'to="{d["10"]+float(l[0])} {d["30"]+float(l[1])} {d["20"]+float(l[2])}"\n'
+    else:
+        oput += f'from="{d["FROM"]}"\n'
+        oput += f'to="{d["TO"]}"\n'
     oput += f'begin="{d["BEGIN"]}"\n'
     oput += f'direction="{d["DIRECTION"]}"\n'
     oput += f'repeat="{d["REPEAT"]}"\n'
