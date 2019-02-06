@@ -280,7 +280,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'INSERT':#start block
                 d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '',
-                 'animation': False, 'checkpoint': False,}#default values
+                 'animation': False, 'ATTRIBUTE': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-block'
                 x += 1
@@ -288,7 +288,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'LINE':#start line
                 d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
-                'checkpoint': False, 'animation': False, 'color': '','repeat': False,
+                'ATTRIBUTE': False, 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'a-line'
@@ -298,7 +298,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 #default values
                 d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
-                'vx': [], 'vy': [], 'checkpoint': False,
+                'vx': [], 'vy': [], 'ATTRIBUTE': False,
                 'animation': False, 'color': '','repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
@@ -602,61 +602,60 @@ def make_html(page, collection, mode):
 
 def make_entities(page, d):
 
-    outstr = ''
+    oput = ''
 
     if d['2'] == 'a-box':
-        d = prepare_new_coordinates(d)
-        outstr += blocks.make_box(d)
-        return outstr
+        oput += blocks.make_box(page, d)
+        return oput
 
     d = prepare_coordinates(d)
 
-    outstr += prepare_insertion(page, d)
+    oput += prepare_insertion(page, d)
 
     #finally make entities
     #if d['2'] == 'a-box':
-        #outstr += blocks.make_box(d)
+        #oput += blocks.make_box(d)
     if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
-        outstr += blocks.make_circular(d)
+        oput += blocks.make_circular(d)
     elif d['2'] == 'a-curvedimage':
-        outstr += blocks.make_curvedimage(d)
+        oput += blocks.make_curvedimage(d)
     elif d['2'] == 'a-plane':
-        outstr += blocks.make_plane(page, d)
+        oput += blocks.make_plane(page, d)
     elif d['2'] == 'a-triangle':
-        outstr += blocks.make_triangle(page, d)
+        oput += blocks.make_triangle(page, d)
     elif d['2'] == 'a-line':
-        outstr += blocks.make_line(page, d)
+        oput += blocks.make_line(page, d)
     elif d['2'] == 'a-poly':
-        outstr += blocks.make_poly(page, d)
+        oput += blocks.make_poly(page, d)
     elif d['2'] == 'a-block':
         d['NAME'] = d.get('NAME', 't01')
-        outstr += make_block(page, d)
+        oput += make_block(page, d)
     elif d['2'] == 'a-door':
-        outstr += blocks.make_door(d)
+        oput += blocks.make_door(d)
     elif d['2'] == 'a-wall':
-        outstr += blocks.make_wall(d)
+        oput += blocks.make_wall(d)
     elif d['2'] == 'a-openwall':
-        outstr += blocks.make_openwall(d)
+        oput += blocks.make_openwall(d)
     elif d['2'] == 'a-slab':
-        outstr += blocks.make_slab(d)
+        oput += blocks.make_slab(d)
     elif d['2'] == 'a-light':
-        outstr += blocks.make_light(page, d)
+        oput += blocks.make_light(page, d)
     elif d['2'] == 'a-link':
-        outstr += blocks.make_link(page, d)
+        oput += blocks.make_link(page, d)
     elif d['2'] == 'a-text':
-        outstr += blocks.make_text(d)
+        oput += blocks.make_text(d)
     #make animations (is animation)
     if d['animation']:
-        outstr += add_animation(d)
+        oput += add_animation(d)
     #make stalker balloon and link
     if d['ATTRIBUTE'] == 'stalker':
-        outstr += add_stalker(page, d)
+        oput += add_stalker(page, d)
 
-    outstr += '</a-entity> <!--close handle-->\n'
+    oput += '</a-entity> <!--close handle-->\n'
     if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-        outstr += '</a-entity> <!--close animation rig-->\n'
-    outstr += '</a-entity> <!--close insertion-->\n'
-    return outstr
+        oput += '</a-entity> <!--close animation rig-->\n'
+    oput += '</a-entity> <!--close insertion-->\n'
+    return oput
 
 def prepare_coordinates(d):
     insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
@@ -731,57 +730,57 @@ def prepare_coordinates(d):
     return d
 
 def prepare_insertion(page, d):
-    outstr = ''
-    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
-    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
+    oput = ''
+    oput += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
+    oput += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
     if d['animation']:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
-        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
+        oput += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'stalker':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
-        outstr += 'look-at="#camera-foot" \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
+        oput += 'look-at="#camera-foot" \n'
+        oput += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
     elif d['ATTRIBUTE'] == 'checkpoint':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
-        outstr += 'checkpoint \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
+        oput += 'checkpoint \n'
+        oput += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
     #handle
     if d['ID']:
-        outstr += f'<a-entity id="{d["ID"]}" \n'
+        oput += f'<a-entity id="{d["ID"]}" \n'
     else:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
-    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
+    oput += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
     if page.shadows:
         if d['2'] == 'a-curvedimage':
-            outstr += 'shadow="receive: false; cast: false" \n'
+            oput += 'shadow="receive: false; cast: false" \n'
         elif d['2'] == 'a-light':
             pass
         else:
-            outstr += 'shadow="receive: true; cast: true" \n'
+            oput += 'shadow="receive: true; cast: true" \n'
     if d['ATTRIBUTE'] == 'look-at':
         if d['TARGET']:
-            outstr += f'look-at="#{d["TARGET"]}" \n'
+            oput += f'look-at="#{d["TARGET"]}" \n'
         else:
-            outstr += 'look-at="#camera" \n'
-    outstr += '> \n'
-    return outstr
+            oput += 'look-at="#camera" \n'
+    oput += '> \n'
+    return oput
 
 def add_animation(d):
-    outstr = ''
-    outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
-    outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
-    outstr += f'from="{d["FROM"]}"\n'
-    outstr += f'to="{d["TO"]}"\n'
-    outstr += f'begin="{d["BEGIN"]}"\n'
-    outstr += f'direction="{d["DIRECTION"]}"\n'
-    outstr += f'repeat="{d["REPEAT"]}"\n'
-    outstr += f'dur="{d["DURATION"]}"\n'
-    outstr += '></a-animation>\n'
-    return outstr
+    oput = ''
+    oput += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
+    oput += f'attribute="{d["ATTRIBUTE"]}"\n'
+    oput += f'from="{d["FROM"]}"\n'
+    oput += f'to="{d["TO"]}"\n'
+    oput += f'begin="{d["BEGIN"]}"\n'
+    oput += f'direction="{d["DIRECTION"]}"\n'
+    oput += f'repeat="{d["REPEAT"]}"\n'
+    oput += f'dur="{d["DURATION"]}"\n'
+    oput += '></a-animation>\n'
+    return oput
 
 def add_stalker(page, d):
-    outstr = ''
+    oput = ''
     if d['TEXT']:
         length = len(d['TEXT'])
         if length <= 8:
@@ -790,24 +789,24 @@ def add_stalker(page, d):
             wrapcount = 10
         else:
             wrapcount = length/3
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
-        outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
-        outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
-        outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
-        outstr += f'position="0 0 -0.01" \n'
-        outstr += f'rotation="90 0 0" \n'
-        outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
-        outstr += '</a-cylinder></a-entity>\n'
-        outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
-        outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
-        outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
-        outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
-        outstr += '</a-triangle> \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
+        oput += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
+        oput += f'text="width: {d["41"]*.9}; align: center; color: black; '
+        oput += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
+        oput += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
+        oput += f'position="0 0 -0.01" \n'
+        oput += f'rotation="90 0 0" \n'
+        oput += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
+        oput += '</a-cylinder></a-entity>\n'
+        oput += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
+        oput += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
+        oput += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
+        oput += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
+        oput += '</a-triangle> \n'
     if d['LINK']:
-        outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
-        outstr += f'position="{d["41"]*.7} 0 0.02" \n'
-        outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
+        oput += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
+        oput += f'position="{d["41"]*.7} 0 0.02" \n'
+        oput += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
         target = False
         try:
             if d['LINK'] == 'parent':
@@ -821,50 +820,50 @@ def add_stalker(page, d):
         except:
             d['LINK'] = ''
         if target:
-            outstr += f'href="{target.url}" \n'
-            outstr += f'title="{target.title}" on="click" \n'
+            oput += f'href="{target.url}" \n'
+            oput += f'title="{target.title}" on="click" \n'
             try:
                 eq_image = target.specific.equirectangular_image
                 if eq_image:
-                    outstr += f'image="{eq_image.file.url}"'
+                    oput += f'image="{eq_image.file.url}"'
             except:
-                outstr += 'image="#default-sky"'
+                oput += 'image="#default-sky"'
         else:
-            outstr += f'href="{d["LINK"]}" \n'
-            outstr += 'title="Sorry, no title" on="click" \n'
-            outstr += 'image="#default-sky"'
-        outstr += '>\n'
-        outstr += '</a-link>\n'
-    return outstr
+            oput += f'href="{d["LINK"]}" \n'
+            oput += 'title="Sorry, no title" on="click" \n'
+            oput += 'image="#default-sky"'
+        oput += '>\n'
+        oput += '</a-link>\n'
+    return oput
 
 def make_block(page, d):
-    outstr = ''
+    oput = ''
     if d['NAME'] == 'obj-mtl':
-        outstr += blocks.make_object(d)
+        oput += blocks.make_object(d)
     if d['NAME'] == 't01':
-        outstr += blocks.make_table_01(d)
+        oput += blocks.make_table_01(d)
     if d['NAME'] == 'tree':
-        outstr += blocks.make_tree(d)
-    return outstr
+        oput += blocks.make_tree(d)
+    return oput
 
 def make_camera(page, d, mode):
-    outstr = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
+    oput = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
     if mode == 'digkom':
-        outstr += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        outstr += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
-        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
-        outstr += '<a-cursor color="black"></a-cursor> \n'
+        oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
+        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
+        oput += f' position="0 {d["43"]*1.6} 0"> \n'
+        oput += '<a-cursor color="black"></a-cursor> \n'
     else:
-        outstr += '> \n'
-        outstr += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
-        outstr += '<a-cursor color="#2E3A87"></a-cursor> \n'
+        oput += '> \n'
+        oput += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
+        oput += f' position="0 {d["43"]*1.6} 0"> \n'
+        oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
 
-    outstr += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
-    outstr += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
-    outstr += '</a-camera></a-entity> \n'
-    return outstr
+    oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
+    oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
+    oput += '</a-camera></a-entity> \n'
+    return oput
 
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
