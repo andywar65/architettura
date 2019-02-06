@@ -20,6 +20,8 @@ def make_box(d):
     d['ry'] = fabs(d["42"])
     outstr = ''
     outstr += f'<a-box id="{d["2"]}-{d["num"]}" \n'
+    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
     outstr += f'scale="{d["rx"]} {d["43"]} {d["ry"]}" \n'
     outstr += object_material(d)
     outstr += '"> \n'

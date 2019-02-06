@@ -602,15 +602,21 @@ def make_html(page, collection, mode):
 
 def make_entities(page, d):
 
+    outstr = ''
+
+    if d['2'] == 'a-box':
+        d = prepare_new_coordinates(d)
+        outstr += blocks.make_box(d)
+        return outstr
+
     d = prepare_coordinates(d)
 
-    outstr = ''
     outstr += prepare_insertion(page, d)
 
     #finally make entities
-    if d['2'] == 'a-box':
-        outstr += blocks.make_box(d)
-    elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+    #if d['2'] == 'a-box':
+        #outstr += blocks.make_box(d)
+    if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
         outstr += blocks.make_circular(d)
     elif d['2'] == 'a-curvedimage':
         outstr += blocks.make_curvedimage(d)
@@ -1128,3 +1134,20 @@ def cad2hex(cad_color):
         b = RGB_list[cad_color][2]
         hex = "#{:02x}{:02x}{:02x}".format(r,g,b)
         return hex
+
+def prepare_new_coordinates(d):
+    sx = sin(radians(-d['210']))
+    cx = cos(radians(-d['210']))
+    sy = sin(radians(-d['220']))
+    cy = cos(radians(-d['220']))
+    sz = sin(radians(-d['50']))
+    cz = cos(radians(-d['50']))
+    dx = d['41']/2
+    dy = -d['42']/2
+    dz = d['43']/2
+    #Euler angles, yaw (Z), pitch (X), roll (Y)
+    d['10'] = d['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
+    d['20'] = d['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
+    d['30'] = d['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+
+    return d
