@@ -270,7 +270,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'LINE':#start line
                 d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
-                'ATTRIBUTE': False, 'animation': False, 'color': '','repeat': False,
+                'ATTRIBUTE': False, 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'a-line'
@@ -281,7 +281,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
                 'vx': [], 'vy': [], 'ATTRIBUTE': False,
-                'animation': False, 'color': '','repeat': False,
+                'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'a-poly'

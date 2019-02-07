@@ -200,12 +200,13 @@ def make_line(page, d):
         d[value[1]] = d[value[1]] - d[key]
     if d['39']:
         d['30'] = d['30'] + d['39']/2
+    d['dx'] = d['dy'] = d['dz'] = 0
     d['prefix'] = 'line'
     d['ent'] = 'a-entity'
     oput = ''
-    oput += make_insertion(page, d)
-    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
+    oput += open_entity(page, d)
     if d['39']:
+        oput += '> \n'
         d['42'] = 0
         d['43'] = d['39']
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
@@ -216,17 +217,11 @@ def make_line(page, d):
         oput += make_w_plane(page, d)
         oput +='</a-entity><!--close wall--> \n'
     else:
-        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}" \n'
         oput += f'line="start:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
         oput += f'end:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
         oput += f'color: {d["color"]};"> \n'
-        oput += '</a-entity><!--close line--> \n'
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-    if d['animation']:
-        d['RIG'] = 'True'
-        oput += add_animation(d)
-    oput += f'</{d["ent"]}> \n'
+    oput += close_entity(page, d)
+    
     return oput
 
 def make_poly(page, d):
