@@ -11,11 +11,12 @@ from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
 def make_box(page, d):
+    d['prefix'] = 'box'
     values = (
-        ('pool', 0, 'box', 'MATERIAL'),
+        ('pool', 0, d['prefix'], 'MATERIAL'),
     )
     d = prepare_material_values(values, d)
-    d['prefix'] = 'box'
+
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     d['dx'] = d['41']/2
@@ -32,11 +33,12 @@ def make_box(page, d):
     return oput
 
 def make_circular(page, d):
+    d['prefix'] = d['2'].replace('a-', '')
     values = (
-        ('pool', 0, d['2'].replace('a-', ''), 'MATERIAL'),
+        ('pool', 0, d['prefix'], 'MATERIAL'),
     )
     d = prepare_material_values(values, d)
-    d['prefix'] = d['2'].replace('a-', '')
+
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     d['dx'] = 0
@@ -58,6 +60,28 @@ def make_circular(page, d):
     oput += close_entity(page, d)
 
     return oput
+
+def make_curvedimage(page, d):
+    d['prefix'] = 'curvedim'
+    values = (
+        ('pool', 0, d['prefix'], 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['rx'] = 1
+    d['ry'] = 1
+    d['dx'] = 0
+    d['dy'] = 0
+    d['dz'] = d['43']/2
+    d['ent'] = d['2']
+    oput = ''
+    oput += open_entity(page, d)
+    oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    oput += entity_geometry(d)
+    oput += object_material(d)
+    oput += '"> \n'
+    oput += close_entity(page, d)
+    return oput
+
 
 def open_entity(page, d):
     oput = ''
@@ -146,21 +170,6 @@ def make_triangle(page, d):
     if page.double_face:
         oput += 'side: double; '
     oput += '">\n</a-triangle></a-entity><!--close triangle reset--> \n'
-    return oput
-
-def make_curvedimage(d):
-    values = (
-        ('pool', 0, 'curved', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    d['prefix'] = 'curved'
-    oput = ''
-    oput += f'<a-curvedimage id="{d["2"]}-{d["num"]}" \n'
-    oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
-    oput += entity_geometry(d)
-    oput += object_material(d)
-    oput += '"> \n'
-    oput += '</a-curvedimage> \n'
     return oput
 
 def entity_geometry(d):
