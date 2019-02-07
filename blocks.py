@@ -144,8 +144,8 @@ def make_w_plane(page, d):
             d['prefix'] = v[1]
             d['ry'] = v[0]
             oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="0 {v[2]*unit(d["43"])} 0" \n'
-            oput += f'width="{d["rx"]}" height="{v[0]}" \n'
+            oput += f'position="0 {round(v[2]*unit(d["43"]), 4)} 0" \n'
+            oput += f'width="{round(d["rx"], 4)}" height="{v[0]}" \n'
             oput += object_material(d)
             if page.double_face:
                 oput += 'side: double; '
@@ -289,7 +289,7 @@ def make_poly(page, d):
             oput += make_w_plane(page, d)
             oput +='</a-entity>'
     else:
-        oput += f'<a-entity id="{d["prefix"]}-{d["num1"]}" \n'
+        oput += f'<a-entity id="{d["prefix"]}-{d["num1"]}-coords" \n'
         for i in range(d['90']-1):
             oput += f'line__{i+1}="start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; \n'
             oput += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
