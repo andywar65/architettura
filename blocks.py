@@ -154,6 +154,17 @@ def make_w_plane(page, d):
     return oput
 
 def make_triangle(page, d):
+    d['10b'] = d['10']
+    d['20b'] = d['20']
+    d['30b'] = d['30']
+    d['10'] = (d['10b']+d['11']+d['12'])/3
+    d['20'] = (d['20b']+d['21']+d['22'])/3
+    d['30'] = (d['30b']+d['31']+d['32'])/3
+    dict = {'10':('10b', '11', '12'), '20':('20b', '21', '22'), '30':('30b', '31', '32')}
+    for key, value in dict.items():
+        d[value[0]] = d[value[0]] - d[key]
+        d[value[1]] = d[value[1]] - d[key]
+        d[value[2]] = d[value[2]] - d[key]
     d['prefix'] = 'triangle'
     values = (
         ('pool', 0, d['prefix'], 'MATERIAL'),
@@ -161,22 +172,24 @@ def make_triangle(page, d):
     d = prepare_material_values(values, d)
     d['rx'] = 1
     d['ry'] = 1
-    d['dx'] = (d['11'] + d['12'])/3
-    d['dy'] = -(d['21'] + d['22'])/3
-    d['dz'] = (d['11'] + d['12'])/3
     d['ent'] = 'a-entity'
     oput = ''
-    oput += open_entity(page, d)
-    oput += '> \n'
-    oput += f'<a-triangle id="{d["prefix"]}-{d["num"]}-reset" \n'
-    oput += f'geometry="vertexA:{round(-d["dx"], 4)} {round(-d["dz"], 4)} {round(-d["dy"], 4)}; \n'
-    oput += f'vertexB:{round(d["11"]-d["dx"], 4)} {round(d["31"]-d["dz"], 4)} {round(d["21"]-d["dy"], 4)}; \n'
-    oput += f'vertexC:{round(d["12"]-d["dx"], 4)} {round(d["32"]-d["dz"], 4)} {round(d["22"]-d["dy"], 4)}" \n'
+    oput += make_insertion(page, d)
+    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
+    oput += f'<a-triangle id="{d["prefix"]}-{d["num"]}-coords" \n'
+    oput += f'geometry="vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
+    oput += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
+    oput += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}" \n'
     oput += object_material(d)
     if page.double_face:
         oput += 'side: double; '
     oput += '"></a-triangle> \n'
-    oput += close_entity(page, d)
+    if d['ATTRIBUTE'] == 'stalker':
+        oput += add_stalker(page, d)
+    if d['animation']:
+        d['RIG'] = 'True'
+        oput += add_animation(d)
+    oput += f'</{d["ent"]}> \n'
     return oput
 
 def open_entity(page, d):
