@@ -23,6 +23,16 @@ def make_box(page, d):
     d['dz'] = d['43']/2
     d['ent'] = 'a-box'
     oput = ''
+    oput += open_entity(page, d)
+    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
+    oput += object_material(d)
+    oput += '"> \n'
+    oput += close_entity(page, d)
+
+    return oput
+
+def open_entity(page, d):
+    oput = ''
     if d['animation']:
         oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
@@ -32,22 +42,6 @@ def make_box(page, d):
         oput += make_insertion(page, d)
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
-    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
-    oput += object_material(d)
-    oput += '"> \n'
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-    if d['animation']:
-        if eval(d['RIG']):
-            oput += f'</{d["ent"]}> \n'
-            oput += add_animation(d)
-            oput += '</a-entity> \n'
-        else:
-            oput += add_animation(d)
-            oput += f'</{d["ent"]}></a-entity> \n'
-    else:
-        oput += f'</{d["ent"]}> \n'
-
     return oput
 
 def make_insertion(page, d):
@@ -87,6 +81,22 @@ def make_position(d):
     d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy']+            (cx*cy)*d['dz']
     oput = ''
     oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
+    return oput
+
+def close_entity(page, d):
+    oput = ''
+    if d['ATTRIBUTE'] == 'stalker':
+        oput += add_stalker(page, d)
+    if d['animation']:
+        if eval(d['RIG']):
+            oput += f'</{d["ent"]}> \n'
+            oput += add_animation(d)
+            oput += '</a-entity> \n'
+        else:
+            oput += add_animation(d)
+            oput += f'</{d["ent"]}></a-entity> \n'
+    else:
+        oput += f'</{d["ent"]}> \n'
     return oput
 
 def make_triangle(page, d):
