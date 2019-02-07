@@ -881,24 +881,30 @@ def make_line(page, d):
     oput += '</a-entity><!--close line reset--> \n'
     return oput
 
-def add_animation(d):
+def add_animation(d):#careful, this is different from the one in aframe.py
     oput = ''
-    oput += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
+    oput += f'<a-animation id="{d["prefix"]}-{d["num"]}-animation" \n'
     oput += f'attribute="{d["ATTRIBUTE"]}"\n'
     if eval(d['RIG']):
-        print(f'RIG is {d["RIG"]}')
         if d['ATTRIBUTE'] == 'rotation':
             l = d['FROM'].split()
-            oput += f'from="{d["210"]+float(l[0])} {d["50"]+float(l[1])} {d["220"]+float(l[2])}"\n'
+            oput += f'from="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'{round(d["50"]+float(l[1]), 4)} '
+            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
             l = d['TO'].split()
-            oput += f'to="{d["210"]+float(l[0])} {d["50"]+float(l[1])} {d["220"]+float(l[2])}"\n'
+            oput += f'to="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'{round(d["50"]+float(l[1]), 4)} '
+            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
         elif d['ATTRIBUTE'] == 'position':
             l = d['FROM'].split()
-            oput += f'from="{d["10"]+float(l[0])} {d["30"]+float(l[1])} {d["20"]+float(l[2])}"\n'
+            oput += f'from="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'{round(d["30"]+float(l[1]), 4)} '
+            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
             l = d['TO'].split()
-            oput += f'to="{d["10"]+float(l[0])} {d["30"]+float(l[1])} {d["20"]+float(l[2])}"\n'
+            oput += f'to="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'{round(d["30"]+float(l[1]), 4)} '
+            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
     else:
-        print(f'RIG is {d["RIG"]}')
         oput += f'from="{d["FROM"]}"\n'
         oput += f'to="{d["TO"]}"\n'
     oput += f'begin="{d["BEGIN"]}"\n'
