@@ -199,6 +199,7 @@ def make_line(page, d):
     d['10'] = (d['10b']+d['11'])/2
     d['20'] = (d['20b']+d['21'])/2
     d['30'] = (d['30b']+d['31'])/2
+    #normalize vertices
     dict = {'10':('10b', '11'), '20':('20b', '21'), '30':('30b', '31')}
     for key, value in dict.items():
         d[value[0]] = d[value[0]] - d[key]
@@ -226,6 +227,78 @@ def make_line(page, d):
         oput += f'end:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
         oput += f'color: {d["color"]};"> \n'
         oput += '</a-entity><!--close line--> \n'
+    if d['ATTRIBUTE'] == 'stalker':
+        oput += add_stalker(page, d)
+    if d['animation']:
+        d['RIG'] = 'True'
+        oput += add_animation(d)
+    oput += f'</{d["ent"]}> \n'
+    return oput
+
+def make_poly(page, d):
+    #find gravity center
+    xmax = xmin = 0
+    ymax = ymin = 0
+    for i in range(1, d['90']):
+        if d['vx'][i] < xmin:
+            xmin = d['vx'][i]
+        elif d['vx'][i] > xmax:
+            xmax = d['vx'][i]
+        if d['vy'][i] < ymin:
+            ymin = d['vy'][i]
+        elif d['vy'][i] > ymax:
+            ymax = d['vy'][i]
+    d['10'] = (xmax + xmin)/2
+    d['20'] = (ymax + ymin)/2
+    d['39'] = d.get('39', 0)
+    if d['39']:#it has thickness?
+        d['30'] = d['30'] + d['39']/2
+    #normalize vertices
+    for i in range(d['90']):
+        d['vx'][i] = d['vx'][i]-d['10']
+        d['vy'][i] = d['vy'][i]-d['20']
+    d['prefix'] = 'poly'
+    d['ent'] = 'a-entity'
+    d['num1'] = d['num']
+    oput = ''
+    oput += make_insertion(page, d)
+    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
+    if d['39']:
+        d['42'] = 0
+        d['43'] = d['39']
+        for i in range(d['90']-1):
+            d['num'] = str(d['num1']) + '-' + str(i)
+            dx = d['vx'][i]-d['vx'][i+1]
+            dy = d['vy'][i]-d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
+            oput += f'position="{round(d["vx"][i]-dx/2, 4)} {round(-d["43"]/2, 4)} {round(d["vy"][i]-dy/2, 4)}" \n'
+            oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
+            oput += make_w_plane(page, d)
+            oput +='</a-entity>'
+        if d['70']:
+            d['num'] = str(d['num1']) + '-' + str(i+1)
+            dx = d['vx'][i+1]-d['vx'][0]
+            dy = d['vy'][i+1]-d['vy'][0]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            d['50'] = 180-degrees(atan2(dy, dx))
+            oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
+            oput += f'position="{round(d["vx"][i+1]-dx/2, 4)} {round(-d["43"]/2, 4)} {round(d["vy"][i+1]-dy/2, 4)}" \n'
+            oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
+            oput += make_w_plane(page, d)
+            oput +='</a-entity>'
+    else:
+        oput += f'<a-entity id="{d["prefix"]}-{d["num1"]}" \n'
+        for i in range(d['90']-1):
+            oput += f'line__{i+1}="start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; \n'
+            oput += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
+            oput += f'color: {d["color"]}" \n'
+        if d['70']:
+            oput += f'line__{i+2}=start:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
+            oput += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; \n'
+            oput += f'color: {d["color"]}" \n'
+        oput += '></a-entity>'
     if d['ATTRIBUTE'] == 'stalker':
         oput += add_stalker(page, d)
     if d['animation']:
@@ -900,53 +973,6 @@ def make_leaves(branch, lb, d):
     oput += object_material(d)
     oput += 'side: back;">\n'
     oput += '</a-sphere> \n'#close branch
-    return oput
-
-def make_poly(page, d):
-    oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
-    if d['39']:
-        d['42'] = 0
-        d['43'] = d['39']
-        d['num1'] = d['num']
-        for i in range(d['90']-1):
-            d['num'] = str(d['num1']) + '-' + str(i)
-            dx = d['vx'][i]-d['vx'][i+1]
-            dy = d['vy'][i]-d['vy'][i+1]
-            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{d["vx"][i]-dx/2} 0 {d["vy"][i]-dy/2}" \n'
-            oput += f'rotation="0 {d["50"]} 0"> \n'
-            oput += make_w_plane(page, d)
-            oput +='</a-entity>'
-        if d['70']:
-            d['num'] = str(d['num1']) + '-' + str(i+1)
-            dx = d['vx'][i+1]
-            dy = d['vy'][i+1]
-            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{dx/2} 0 {dy/2}" \n'
-            oput += f'rotation="0 {d["50"]} 0"> \n'
-            oput += make_w_plane(page, d)
-            oput +='</a-entity>'
-    else:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
-        oput += f'line="start:0 0 0; \n'
-        oput += f'end:{d["vx"][1]} 0 {d["vy"][1]}; \n'
-        oput += f'color: {d["color"]}" \n'
-        for i in range(1, d['90']-1):
-            oput += f'line__{i+1}="start:{d["vx"][i]} 0 {d["vy"][i]}; \n'
-            oput += f'end:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
-            oput += f'color: {d["color"]}" \n'
-        if d['70']:
-            oput += f'line__{i+2}=start:{d["vx"][i+1]} 0 {d["vy"][i+1]}; \n'
-            oput += 'end:0 0 0; \n'
-            oput += f'color: {d["color"]}" \n'
-        oput += '></a-entity>'
-    oput += '</a-entity><!--close polyline reset--> \n'
     return oput
 
 def add_animation(d):#careful, this is different from the one in aframe.py
