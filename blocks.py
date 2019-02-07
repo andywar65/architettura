@@ -172,24 +172,18 @@ def make_triangle(page, d):
     d = prepare_material_values(values, d)
     d['rx'] = 1
     d['ry'] = 1
-    d['ent'] = 'a-entity'
+    d['dx'] = d['dy'] = d['dz'] = 0
+    d['ent'] = 'a-triangle'
     oput = ''
-    oput += make_insertion(page, d)
-    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
-    oput += f'<a-triangle id="{d["prefix"]}-{d["num"]}-coords" \n'
+    oput += open_entity(page, d)
     oput += f'geometry="vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
     oput += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
     oput += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}" \n'
     oput += object_material(d)
     if page.double_face:
         oput += 'side: double; '
-    oput += '"></a-triangle> \n'
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-    if d['animation']:
-        d['RIG'] = 'True'
-        oput += add_animation(d)
-    oput += f'</{d["ent"]}> \n'
+    oput += '"> \n'
+    oput += close_entity(page, d)
     return oput
 
 def make_line(page, d):
