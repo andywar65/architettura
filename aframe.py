@@ -586,6 +586,10 @@ def make_html(page, collection, mode):
         if d['2'] == 'a-camera' and no_camera:
             no_camera = False
             entities_dict[x] = make_camera(page, d, mode)
+        elif d['2'] == 'a-box':
+            entities_dict[x] = blocks.make_box(page, d)
+        elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+            entities_dict[x] = blocks.make_circular(page, d)
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
         else:
@@ -605,10 +609,6 @@ def make_entities(page, d):
 
     oput = ''
 
-    if d['2'] == 'a-box':
-        oput += blocks.make_box(page, d)
-        return oput
-
     d = prepare_coordinates(d)
 
     oput += prepare_insertion(page, d)
@@ -616,9 +616,8 @@ def make_entities(page, d):
     #finally make entities
     #if d['2'] == 'a-box':
         #oput += blocks.make_box(d)
-    if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
-        oput += blocks.make_circular(d)
-    elif d['2'] == 'a-curvedimage':
+
+    if d['2'] == 'a-curvedimage':
         oput += blocks.make_curvedimage(d)
     elif d['2'] == 'a-plane':
         oput += blocks.make_plane(page, d)

@@ -31,6 +31,34 @@ def make_box(page, d):
 
     return oput
 
+def make_circular(page, d):
+    values = (
+        ('pool', 0, d['2'].replace('a-', ''), 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['prefix'] = d['2'].replace('a-', '')
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    d['dx'] = 0
+    d['dy'] = 0
+    if d['2'] == 'a-sphere':
+        d['dz'] = d['43']
+    else:
+        d['dz'] = d['43']/2
+    d['ent'] = d['2']
+    oput = ''
+    oput += open_entity(page, d)
+    if d['2'] == 'a-circle':
+        oput += f'radius="{fabs(d["41"])}" \n'
+    else:
+        oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
+    oput += entity_geometry(d)
+    oput += object_material(d)
+    oput += '"> \n'
+    oput += close_entity(page, d)
+
+    return oput
+
 def open_entity(page, d):
     oput = ''
     if d['animation']:
@@ -118,30 +146,6 @@ def make_triangle(page, d):
     if page.double_face:
         oput += 'side: double; '
     oput += '">\n</a-triangle></a-entity><!--close triangle reset--> \n'
-    return oput
-
-def make_circular(d):
-    values = (
-        ('pool', 0, d['2'], 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    d['prefix'] = d['2']
-    d['rx'] = fabs(d["41"])
-    d['ry'] = fabs(d["42"])
-    oput = ''
-    oput += f'<{d["2"]} id="{d["2"]}-{d["num"]}" \n'
-    if d['2'] == 'a-circle':
-        oput += f'radius="{fabs(d["41"])}" \n'
-    else:
-        oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
-    if float(d['43']) < 0:
-        if d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-sphere':
-            oput += 'rotation="180 0 0" \n'
-    oput += entity_geometry(d)
-    oput += object_material(d)
-    oput += '"> \n'
-    oput += f'</{d["2"]}> \n'
-
     return oput
 
 def make_curvedimage(d):
