@@ -24,7 +24,7 @@ def make_box(page, d):
     d['ent'] = 'a-box'
     oput = ''
     if d['animation']:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-rig" \n'
+        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
         oput += make_insertion(page, d)
@@ -38,8 +38,13 @@ def make_box(page, d):
     if d['ATTRIBUTE'] == 'stalker':
         oput += add_stalker(page, d)
     if d['animation']:
-        oput += add_animation(d)
-        oput += f'</{d["ent"]}></a-entity> \n'
+        if eval(d['RIG']):
+            oput += f'</{d["ent"]}> \n'
+            oput += add_animation(d)
+            oput += '</a-entity> \n'
+        else:
+            oput += add_animation(d)
+            oput += f'</{d["ent"]}></a-entity> \n'
     else:
         oput += f'</{d["ent"]}> \n'
 
@@ -50,7 +55,7 @@ def make_insertion(page, d):
     if d['ID']:
         oput += f'<{d["ent"]} id="{d["ID"]}" \n'
     else:
-        oput += f'<{d["ent"]} id="{d["2"]}-{d["num"]}" \n'
+        oput += f'<{d["ent"]} id="{d["prefix"]}-{d["num"]}" \n'
     if d['ATTRIBUTE'] == 'checkpoint':
         oput += 'checkpoint '
     elif d['ATTRIBUTE'] == 'look-at':
@@ -61,9 +66,9 @@ def make_insertion(page, d):
     elif d['ATTRIBUTE'] == 'stalker':
         oput += 'look-at="#camera" '
     if page.shadows:
-        if d['2'] == 'a-curvedimage':
+        if d['ent'] == 'a-curvedimage':
             oput += 'shadow="receive: false; cast: false" \n'
-        elif d['2'] == 'a-light':
+        elif d['ent'] == 'a-light':
             pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
@@ -880,8 +885,22 @@ def add_animation(d):
     oput = ''
     oput += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
     oput += f'attribute="{d["ATTRIBUTE"]}"\n'
-    oput += f'from="{d["FROM"]}"\n'
-    oput += f'to="{d["TO"]}"\n'
+    if eval(d['RIG']):
+        print(f'RIG is {d["RIG"]}')
+        if d['ATTRIBUTE'] == 'rotation':
+            l = d['FROM'].split()
+            oput += f'from="{d["210"]+float(l[0])} {d["50"]+float(l[1])} {d["220"]+float(l[2])}"\n'
+            l = d['TO'].split()
+            oput += f'to="{d["210"]+float(l[0])} {d["50"]+float(l[1])} {d["220"]+float(l[2])}"\n'
+        elif d['ATTRIBUTE'] == 'position':
+            l = d['FROM'].split()
+            oput += f'from="{d["10"]+float(l[0])} {d["30"]+float(l[1])} {d["20"]+float(l[2])}"\n'
+            l = d['TO'].split()
+            oput += f'to="{d["10"]+float(l[0])} {d["30"]+float(l[1])} {d["20"]+float(l[2])}"\n'
+    else:
+        print(f'RIG is {d["RIG"]}')
+        oput += f'from="{d["FROM"]}"\n'
+        oput += f'to="{d["TO"]}"\n'
     oput += f'begin="{d["BEGIN"]}"\n'
     oput += f'direction="{d["DIRECTION"]}"\n'
     oput += f'repeat="{d["REPEAT"]}"\n'

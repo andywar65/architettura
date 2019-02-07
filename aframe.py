@@ -570,6 +570,7 @@ def reference_animations(collection):
                             d2['TARGET'] = d['TARGET']
                             d2['TEXT'] = d['TEXT']
                             d2['LINK'] = d['LINK']
+                            d2['RIG'] = d['RIG']
 
                         collection[x2] = d2
     return collection
