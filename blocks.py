@@ -82,6 +82,76 @@ def make_curvedimage(page, d):
     oput += close_entity(page, d)
     return oput
 
+def make_plane(page, d):
+    d['prefix'] = 'plane'
+    d['dx'] = d['41']/2
+    d['dy'] = 0
+    d['dz'] = d['43']/2
+    d['ent'] = 'a-entity'
+    oput = ''
+    oput += open_entity(page, d)
+    oput += '"> \n'
+    oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-reset" \n'
+    oput += f'position="0 {-d["dz"]} 0"> \n'
+    oput += make_w_plane(page, d)
+    oput += '</a-entity><!--close plane reset--> \n'
+    oput += close_entity(page, d)
+    return oput
+
+def make_w_plane(page, d):
+    """Wall plane default BIM block.
+
+    A vertical surface. Gets dimensions from plane scaling, TILING and
+    SKIRTING height from respective attributes. Gets MATERIAL with 3 components,
+    first for wall, second for tiling and third for skirting.
+    """
+    #prepare values for materials
+    values = (
+        ('pool', 0, 'wall', 'MATERIAL'),
+        ('pool', 1, 'tile', 'MATERIAL'),
+        ('pool', 2, 'skirt', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    #prepare height values
+    wall_h = fabs(d['43'])
+    if 'TILING' in d:
+        tile_h = fabs(float(d['TILING']))
+    else:
+        tile_h = 0
+    if 'SKIRTING' in d:
+        skirt_h = fabs(float(d['SKIRTING']))
+    else:
+        skirt_h = 0
+    if tile_h > wall_h:
+        tile_h = wall_h
+    if skirt_h > wall_h:
+        skirt_h = wall_h
+    if skirt_h > tile_h:
+        tile_h = skirt_h
+    wall_h = wall_h - tile_h
+    tile_h = tile_h - skirt_h
+    oput = ''
+    #prepare values for surfaces
+    values = (
+        (skirt_h, 'skirt', skirt_h/2,),
+        (tile_h, 'tile', tile_h/2+skirt_h,),
+        (wall_h, 'wall', wall_h/2+tile_h+skirt_h,),
+    )
+    #loop surfaces
+    d['rx'] = fabs(d["41"])
+    for v in values:
+        if v[0]:
+            d['prefix'] = v[1]
+            d['ry'] = v[0]
+            oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
+            oput += f'position="0 {v[2]*unit(d["43"])} 0" \n'
+            oput += f'width="{d["rx"]}" height="{v[0]}" \n'
+            oput += object_material(d)
+            if page.double_face:
+                oput += 'side: double; '
+            oput += '"></a-plane>\n'
+
+    return oput
 
 def open_entity(page, d):
     oput = ''
@@ -504,69 +574,6 @@ def make_openwall(d):
     oput += f'position="{d2["door_off_2"]} 0 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
-
-    return oput
-
-def make_plane(page, d):
-    oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="0 {-d["zg"]-d["zs"]} 0"> \n'
-    oput += make_w_plane(page, d)
-    oput += '</a-entity><!--close plane reset--> \n'
-    return oput
-
-def make_w_plane(page, d):
-    """Wall plane default BIM block.
-
-    A vertical surface. Gets dimensions from plane scaling, TILING and
-    SKIRTING height from respective attributes. Gets MATERIAL with 3 components,
-    first for wall, second for tiling and third for skirting.
-    """
-    #prepare values for materials
-    values = (
-        ('pool', 0, 'wall', 'MATERIAL'),
-        ('pool', 1, 'tile', 'MATERIAL'),
-        ('pool', 2, 'skirt', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    #prepare height values
-    wall_h = fabs(d['43'])
-    if 'TILING' in d:
-        tile_h = fabs(float(d['TILING']))
-    else:
-        tile_h = 0
-    if 'SKIRTING' in d:
-        skirt_h = fabs(float(d['SKIRTING']))
-    else:
-        skirt_h = 0
-    if tile_h > wall_h:
-        tile_h = wall_h
-    if skirt_h > wall_h:
-        skirt_h = wall_h
-    if skirt_h > tile_h:
-        tile_h = skirt_h
-    wall_h = wall_h - tile_h
-    tile_h = tile_h - skirt_h
-    oput = ''
-    #prepare values for surfaces
-    values = (
-        (skirt_h, 'skirt', skirt_h/2,),
-        (tile_h, 'tile', tile_h/2+skirt_h,),
-        (wall_h, 'wall', wall_h/2+tile_h+skirt_h,),
-    )
-    #loop surfaces
-    d['rx'] = fabs(d["41"])
-    for v in values:
-        if v[0]:
-            d['prefix'] = v[1]
-            d['ry'] = v[0]
-            oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="0 {v[2]*unit(d["43"])} 0" \n'
-            oput += f'width="{d["rx"]}" height="{v[0]}" \n'
-            oput += object_material(d)
-            if page.double_face:
-                oput += 'side: double; '
-            oput += '"></a-plane>\n'
 
     return oput
 
