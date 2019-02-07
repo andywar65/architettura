@@ -90,7 +90,7 @@ def make_plane(page, d):
     d['ent'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
-    oput += '"> \n'
+    oput += '> \n'
     oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-reset" \n'
     oput += f'position="0 {-d["dz"]} 0"> \n'
     oput += make_w_plane(page, d)
@@ -151,6 +151,32 @@ def make_w_plane(page, d):
                 oput += 'side: double; '
             oput += '"></a-plane>\n'
 
+    return oput
+
+def make_triangle(page, d):
+    d['prefix'] = 'triangle'
+    values = (
+        ('pool', 0, d['prefix'], 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    d['rx'] = 1
+    d['ry'] = 1
+    d['dx'] = (d['11'] + d['12'])/3
+    d['dy'] = -(d['21'] + d['22'])/3
+    d['dz'] = (d['11'] + d['12'])/3
+    d['ent'] = 'a-entity'
+    oput = ''
+    oput += open_entity(page, d)
+    oput += '> \n'
+    oput += f'<a-triangle id="{d["prefix"]}-{d["num"]}-reset" \n'
+    oput += f'geometry="vertexA:{round(-d["dx"], 4)} {round(-d["dz"], 4)} {round(-d["dy"], 4)}; \n'
+    oput += f'vertexB:{round(d["11"]-d["dx"], 4)} {round(d["31"]-d["dz"], 4)} {round(d["21"]-d["dy"], 4)}; \n'
+    oput += f'vertexC:{round(d["12"]-d["dx"], 4)} {round(d["32"]-d["dz"], 4)} {round(d["22"]-d["dy"], 4)}" \n'
+    oput += object_material(d)
+    if page.double_face:
+        oput += 'side: double; '
+    oput += '"></a-triangle> \n'
+    oput += close_entity(page, d)
     return oput
 
 def open_entity(page, d):
@@ -219,27 +245,6 @@ def close_entity(page, d):
             oput += f'</{d["ent"]}></a-entity> \n'
     else:
         oput += f'</{d["ent"]}> \n'
-    return oput
-
-def make_triangle(page, d):
-    values = (
-        ('pool', 0, 'triangle', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    d['prefix'] = 'triangle'
-    d['rx'] = 1
-    d['ry'] = 1
-    oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
-    oput += f'<a-triangle id="a-triangle-{d["num"]}" \n'
-    oput += 'geometry="vertexA:0 0 0; \n'
-    oput += f'vertexB:{d["11"]} {d["31"]} {d["21"]}; \n'
-    oput += f'vertexC:{d["12"]} {d["32"]} {d["22"]}" \n'
-    oput += object_material(d)
-    if page.double_face:
-        oput += 'side: double; '
-    oput += '">\n</a-triangle></a-entity><!--close triangle reset--> \n'
     return oput
 
 def entity_geometry(d):

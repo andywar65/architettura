@@ -272,7 +272,8 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,}#default values
+                d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
+                'ATTRIBUTE': False, 'animation': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-triangle'
                 x += 1
@@ -594,6 +595,9 @@ def make_html(page, collection, mode):
             entities_dict[x] = blocks.make_curvedimage(page, d)
         elif d['2'] == 'a-plane':
             entities_dict[x] = blocks.make_plane(page, d)
+        elif d['2'] == 'a-triangle':
+            entities_dict[x] = blocks.make_triangle(page, d)
+
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
         else:
@@ -621,9 +625,7 @@ def make_entities(page, d):
     #if d['2'] == 'a-box':
         #oput += blocks.make_box(d)
 
-    if d['2'] == 'a-triangle':
-        oput += blocks.make_triangle(page, d)
-    elif d['2'] == 'a-line':
+    if d['2'] == 'a-line':
         oput += blocks.make_line(page, d)
     elif d['2'] == 'a-poly':
         oput += blocks.make_poly(page, d)
