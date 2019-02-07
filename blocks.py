@@ -192,6 +192,49 @@ def make_triangle(page, d):
     oput += f'</{d["ent"]}> \n'
     return oput
 
+def make_line(page, d):
+    d['10b'] = d['10']
+    d['20b'] = d['20']
+    d['30b'] = d['30']
+    d['10'] = (d['10b']+d['11'])/2
+    d['20'] = (d['20b']+d['21'])/2
+    d['30'] = (d['30b']+d['31'])/2
+    dict = {'10':('10b', '11'), '20':('20b', '21'), '30':('30b', '31')}
+    for key, value in dict.items():
+        d[value[0]] = d[value[0]] - d[key]
+        d[value[1]] = d[value[1]] - d[key]
+    if d['39']:
+        d['30'] = d['30'] + d['39']/2
+    d['prefix'] = 'line'
+    d['ent'] = 'a-entity'
+    oput = ''
+    oput += make_insertion(page, d)
+    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
+    if d['39']:
+        d['42'] = 0
+        d['43'] = d['39']
+        d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
+        d['50'] = -degrees(atan2(d['21'], d['11']))
+        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
+        oput += f'position="0 {round(-d["43"]/2, 4)} 0" \n'
+        oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
+        oput += make_w_plane(page, d)
+        oput +='</a-entity><!--close wall--> \n'
+    else:
+        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}" \n'
+        oput += f'line="start:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
+        oput += f'end:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
+        oput += f'color: {d["color"]};"> \n'
+        oput += '</a-entity><!--close line--> \n'
+    if d['ATTRIBUTE'] == 'stalker':
+        oput += add_stalker(page, d)
+    if d['animation']:
+        d['RIG'] = 'True'
+        oput += add_animation(d)
+    oput += f'</{d["ent"]}> \n'
+    return oput
+
+
 def open_entity(page, d):
     oput = ''
     if d['animation']:
@@ -904,29 +947,6 @@ def make_poly(page, d):
             oput += f'color: {d["color"]}" \n'
         oput += '></a-entity>'
     oput += '</a-entity><!--close polyline reset--> \n'
-    return oput
-
-def make_line(page, d):
-    oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
-    if d['39']:
-        d['42'] = 0
-        d['43'] = d['39']
-        d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))
-        d['50'] = -degrees(atan2(d['21'], d['11']))
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-wall-ent" \n'
-        oput += f'position="{d["11"]/2} 0 {d["21"]/2}" \n'
-        oput += f'rotation="0 {d["50"]} 0"> \n'
-        oput += make_w_plane(page, d)
-        oput +='</a-entity><!--close wall--> \n'
-    else:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
-        oput += 'line="start:0 0 0; \n'
-        oput += f'end:{d["11"]} {d["31"]} {d["21"]}; \n'
-        oput += f'color: {d["color"]};"> \n'
-        oput += '</a-entity><!--close line--> \n'
-    oput += '</a-entity><!--close line reset--> \n'
     return oput
 
 def add_animation(d):#careful, this is different from the one in aframe.py

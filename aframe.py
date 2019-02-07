@@ -237,10 +237,6 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     elif d['ent'] == 'a-line':#close line
                         d['2'] = 'a-line'
-                        #normalize vertices
-                        d['11'] = d['11'] - d['10']
-                        d['21'] = d['21'] - d['20']
-                        d['31'] = d['31'] - d['30']
                         d['num'] = x
                         collection[x] = d
                         flag = False
@@ -586,6 +582,8 @@ def make_html(page, collection, mode):
             entities_dict[x] = blocks.make_plane(page, d)
         elif d['2'] == 'a-triangle':
             entities_dict[x] = blocks.make_triangle(page, d)
+        elif d['2'] == 'a-line':
+            entities_dict[x] = blocks.make_line(page, d)
 
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
@@ -610,13 +608,7 @@ def make_entities(page, d):
 
     oput += prepare_insertion(page, d)
 
-    #finally make entities
-    #if d['2'] == 'a-box':
-        #oput += blocks.make_box(d)
-
-    if d['2'] == 'a-line':
-        oput += blocks.make_line(page, d)
-    elif d['2'] == 'a-poly':
+    if d['2'] == 'a-poly':
         oput += blocks.make_poly(page, d)
     elif d['2'] == 'a-block':
         d['NAME'] = d.get('NAME', 't01')
