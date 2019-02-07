@@ -205,17 +205,6 @@ def parse_dxf(page, material_dict, layer_dict):
                     if d['ent'] == 'a-triangle':
                         d['2'] = 'a-triangle'#TO DELETE
 
-                        #normalize vertices
-                        #d['11'] = d['11'] - d['10']
-                        #d['12'] = d['12'] - d['10']
-                        #d['13'] = d['13'] - d['10']
-                        #d['21'] = d['21'] - d['20']
-                        #d['22'] = d['22'] - d['20']
-                        #d['23'] = d['23'] - d['20']
-                        #d['31'] = d['31'] - d['30']
-                        #d['32'] = d['32'] - d['30']
-                        #d['33'] = d['33'] - d['30']
-
                         d['num'] = x
                         collection[x] = d
 
@@ -853,7 +842,7 @@ def make_camera(page, d, mode):
     oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
     if mode == 'digkom':
         oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
+        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: true" '
         oput += f' position="0 {d["43"]*1.6} 0"> \n'
         oput += '<a-cursor color="black"></a-cursor> \n'
     else:
