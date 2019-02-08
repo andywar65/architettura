@@ -221,14 +221,14 @@ def make_line(page, d):
         oput += f'end:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
         oput += f'color: {d["color"]};"> \n'
     oput += close_entity(page, d)
-    
+
     return oput
 
 def make_poly(page, d):
     #find gravity center
     xmax = xmin = 0
     ymax = ymin = 0
-    for i in range(1, d['90']):
+    for i in range(d['90']):
         if d['vx'][i] < xmin:
             xmin = d['vx'][i]
         elif d['vx'][i] > xmax:
@@ -240,19 +240,19 @@ def make_poly(page, d):
     d['10'] = (xmax + xmin)/2
     d['20'] = (ymax + ymin)/2
     d['39'] = d.get('39', 0)
-    if d['39']:#it has thickness?
-        d['30'] = d['30'] + d['39']/2
     #normalize vertices
     for i in range(d['90']):
         d['vx'][i] = d['vx'][i]-d['10']
         d['vy'][i] = d['vy'][i]-d['20']
+    d['dx'] = d['dy'] = 0
+    d['dz'] = d['39']/2
     d['prefix'] = 'poly'
     d['ent'] = 'a-entity'
     d['num1'] = d['num']
     oput = ''
-    oput += make_insertion(page, d)
-    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}"> \n'
+    oput += open_entity(page, d)
     if d['39']:
+        oput += '> \n'
         d['42'] = 0
         d['43'] = d['39']
         for i in range(d['90']-1):
@@ -277,23 +277,18 @@ def make_poly(page, d):
             oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
             oput += make_w_plane(page, d)
             oput +='</a-entity>'
+        d['num'] = d['num1']
     else:
-        oput += f'<a-entity id="{d["prefix"]}-{d["num1"]}-coords" \n'
         for i in range(d['90']-1):
             oput += f'line__{i+1}="start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; \n'
             oput += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
             oput += f'color: {d["color"]}" \n'
         if d['70']:
-            oput += f'line__{i+2}=start:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
+            oput += f'line__{i+2}="start:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
             oput += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; \n'
             oput += f'color: {d["color"]}" \n'
-        oput += '></a-entity>'
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-    if d['animation']:
-        d['RIG'] = 'True'
-        oput += add_animation(d)
-    oput += f'</{d["ent"]}> \n'
+        oput += '>'
+    oput += close_entity(page, d)
     return oput
 
 

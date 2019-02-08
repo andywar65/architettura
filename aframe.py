@@ -227,6 +227,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         d['10'] = d['vx'][0]
                         d['20'] = d['vy'][0]
                         d['30'] = d['38']
+                        print(d['vx'], d['vy'], d['10'], d['30'], d['20'])
                         d['num'] = x
                         collection[x] = d
                         flag = False
@@ -330,7 +331,7 @@ def store_entity_values(d, key, value):
     elif key == '220':#Y of OCS unitary vector
         d['Az_2'] = float(value)
         if d['ent'] == 'a-poly':
-            d['20'] = d['vy'][0]
+            d['20'] = -d['vy'][0]
         d['P_y'] = -d['20']#reset original value
     elif key == '230':#Z of OCS unitary vector
         Az_3 = float(value)
