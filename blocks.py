@@ -32,6 +32,32 @@ def make_box(page, d):
 
     return oput
 
+def make_bim_block(page, d):
+
+    d['dx'] = d['41']/2
+    d['dy'] = -d['42']/2
+    if d['2'] == 'a-slab':
+        d['dz'] = -d['43']/2
+    else:
+        d['dz'] = d['43']/2
+    d['ent'] = 'a-entity'
+    oput = ''
+    oput += open_entity(page, d)
+    oput += '> \n'
+
+    if d['2'] == 'a-wall':
+        oput += make_wall(d)
+    elif d['2'] == 'a-slab':
+        oput += make_slab(d)
+    elif d['2'] == 'a-door':
+        oput += make_door(d)
+    elif d['2'] == 'a-openwall':
+        oput += make_openwall(d)
+
+    oput += close_entity(page, d)
+
+    return oput
+
 def make_circular(page, d):
     d['prefix'] = d['2'].replace('a-', '')
     values = (
@@ -291,11 +317,10 @@ def make_poly(page, d):
     oput += close_entity(page, d)
     return oput
 
-
 def open_entity(page, d):
     oput = ''
     if d['animation']:
-        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-rig" \n'
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
         oput += make_insertion(page, d)
@@ -310,7 +335,7 @@ def make_insertion(page, d):
     if d['ID']:
         oput += f'<{d["ent"]} id="{d["ID"]}" \n'
     else:
-        oput += f'<{d["ent"]} id="{d["prefix"]}-{d["num"]}" \n'
+        oput += f'<{d["ent"]} id="{d["2"]}-{d["num"]}" \n'
     if d['ATTRIBUTE'] == 'checkpoint':
         oput += 'checkpoint '
     elif d['ATTRIBUTE'] == 'look-at':
@@ -643,9 +668,6 @@ def make_wall(d):
     skirt2_h = skirt2_h - door_h
 
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
-
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, d["42"]/2, fabs(d["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, d["42"]/2, fabs(d["42"]), 'tile'),
@@ -660,12 +682,11 @@ def make_wall(d):
             d['rx'] = fabs(d["41"])
             d['ry'] = v[0]
             oput += f'<a-box id="{d["2"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="{d["41"]/2} {v[2]*unit(d["43"])} {-v[3]+0.005*unit(d["42"])}" \n'
+            oput += f'position="0 {v[2]*unit(d["43"])-d["43"]/2} {-v[3]+0.005*unit(d["42"])+d["42"]/2}" \n'
             oput += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
             oput += object_material(d)
             oput += '"></a-box>\n'
 
-    oput += '</a-entity><!--close wall reset--> \n'
     return oput
 
 def make_openwall(d):

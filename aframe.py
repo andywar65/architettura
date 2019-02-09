@@ -589,6 +589,17 @@ def make_html(page, collection, mode):
             entities_dict[x] = blocks.make_line(page, d)
         elif d['2'] == 'a-poly':
             entities_dict[x] = blocks.make_poly(page, d)
+        elif d['2'] == 'a-wall':
+            entities_dict[x] = blocks.make_bim_block(page, d)
+        elif d['2'] == 'a-door':
+            entities_dict[x] = blocks.make_bim_block(page, d)
+        elif d['2'] == 'a-slab':
+            entities_dict[x] = blocks.make_bim_block(page, d)
+        elif d['2'] == 'a-openwall':
+            entities_dict[x] = blocks.make_bim_block(page, d)
+        elif d['2'] == 'a-block':
+            d['NAME'] = d.get('NAME', 't01')
+            entities_dict[x] = blocks.make_block(page, d)
 
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
@@ -613,18 +624,7 @@ def make_entities(page, d):
 
     oput += prepare_insertion(page, d)
 
-    if d['2'] == 'a-block':
-        d['NAME'] = d.get('NAME', 't01')
-        oput += make_block(page, d)
-    elif d['2'] == 'a-door':
-        oput += blocks.make_door(d)
-    elif d['2'] == 'a-wall':
-        oput += blocks.make_wall(d)
-    elif d['2'] == 'a-openwall':
-        oput += blocks.make_openwall(d)
-    elif d['2'] == 'a-slab':
-        oput += blocks.make_slab(d)
-    elif d['2'] == 'a-light':
+    if d['2'] == 'a-light':
         oput += blocks.make_light(page, d)
     elif d['2'] == 'a-link':
         oput += blocks.make_link(page, d)
