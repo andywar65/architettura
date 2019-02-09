@@ -59,7 +59,7 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `a-camera` standard block lets you choose the position of the camera. Only first camera will be rendered, if no camera is found a standard one will be placed at (0, 0, 0).
 
-`a-link` standard block allows you to link different pages on a click. The `TREE` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link. You can also write an URL in the `TREE` field.
+`a-link` standard block allows you to link different pages on a click. The `LINK` attribute lets you select among parent, previous, next and first child page. If target has an equirectangular image (see backend paragraph) it will appear in the link. You can also write an URL in the `LINK` field.
 
 `a-curvedimage` standard block is an open cylinder where you can project panoramic images.
 

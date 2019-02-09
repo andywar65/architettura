@@ -15,15 +15,12 @@ def make_camera(page, d, mode):
     oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
     if mode == 'digkom':
         oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: true" '
-        oput += f' position="0 {d["43"]*1.6} 0"> \n'
-        oput += '<a-cursor color="black"></a-cursor> \n'
+        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
     else:
         oput += '> \n'
-        oput += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-        oput += f' position="0 {d["43"]*1.6} 0"> \n'
-        oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
-
+        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="fly: {str(page.fly_camera).lower() }" '
+    oput += f' position="0 {d["43"]*1.6} 0"> \n'
+    oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
     oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
     oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     oput += '</a-camera></a-entity> \n'
