@@ -2,7 +2,7 @@ import os, html
 from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
-from architettura import blocks
+from architettura import entities
 
 def get_layer_list(page):
     """Gets layer list from DXF file.
@@ -205,17 +205,6 @@ def parse_dxf(page, material_dict, layer_dict):
                     if d['ent'] == 'a-triangle':
                         d['2'] = 'a-triangle'#TO DELETE
 
-                        #normalize vertices
-                        d['11'] = d['11'] - d['10']
-                        d['12'] = d['12'] - d['10']
-                        d['13'] = d['13'] - d['10']
-                        d['21'] = d['21'] - d['20']
-                        d['22'] = d['22'] - d['20']
-                        d['23'] = d['23'] - d['20']
-                        d['31'] = d['31'] - d['30']
-                        d['32'] = d['32'] - d['30']
-                        d['33'] = d['33'] - d['30']
-
                         d['num'] = x
                         collection[x] = d
 
@@ -237,21 +226,14 @@ def parse_dxf(page, material_dict, layer_dict):
                         d['2'] = 'a-poly'
                         d['10'] = d['vx'][0]
                         d['20'] = d['vy'][0]
-                        #normalize vertices
-                        for i in range(d['90']):
-                            d['vx'][i] = d['vx'][i]-d['10']
-                            d['vy'][i] = d['vy'][i]-d['20']
                         d['30'] = d['38']
+                        print(d['vx'], d['vy'], d['10'], d['30'], d['20'])
                         d['num'] = x
                         collection[x] = d
                         flag = False
 
                     elif d['ent'] == 'a-line':#close line
                         d['2'] = 'a-line'
-                        #normalize vertices
-                        d['11'] = d['11'] - d['10']
-                        d['21'] = d['21'] - d['20']
-                        d['31'] = d['31'] - d['30']
                         d['num'] = x
                         collection[x] = d
                         flag = False
@@ -272,7 +254,8 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
             if value == '3DFACE':#start 3D face
-                d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,}#default values
+                d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
+                'ATTRIBUTE': False, 'animation': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-triangle'
                 x += 1
@@ -280,7 +263,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'INSERT':#start block
                 d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '',
-                 'animation': False, 'checkpoint': False,}#default values
+                 'animation': False, 'ATTRIBUTE': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'a-block'
                 x += 1
@@ -288,7 +271,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'LINE':#start line
                 d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1,
-                'checkpoint': False, 'animation': False, 'color': '','repeat': False,
+                'ATTRIBUTE': False, 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'a-line'
@@ -298,8 +281,8 @@ def parse_dxf(page, material_dict, layer_dict):
                 #default values
                 d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
-                'vx': [], 'vy': [], 'checkpoint': False,
-                'animation': False, 'color': '','repeat': False,
+                'vx': [], 'vy': [], 'ATTRIBUTE': False,
+                'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'a-poly'
@@ -342,12 +325,18 @@ def store_entity_values(d, key, value):
         d[key] = int(value)
     elif key == '210':#X of OCS unitary vector
         d['Az_1'] = float(value)
+        if d['ent'] == 'a-poly':
+            d['10'] = d['vx'][0]
         d['P_x'] = d['10']
     elif key == '220':#Y of OCS unitary vector
         d['Az_2'] = float(value)
+        if d['ent'] == 'a-poly':
+            d['20'] = -d['vy'][0]
         d['P_y'] = -d['20']#reset original value
     elif key == '230':#Z of OCS unitary vector
         Az_3 = float(value)
+        if d['ent'] == 'a-poly':
+            d['30'] = d.get('38', 0)
         P_z = d['30']
         #arbitrary axis algorithm
         #see if OCS z vector is close to world Z axis
@@ -570,6 +559,7 @@ def reference_animations(collection):
                             d2['TARGET'] = d['TARGET']
                             d2['TEXT'] = d['TEXT']
                             d2['LINK'] = d['LINK']
+                            d2['RIG'] = d['RIG']
 
                         collection[x2] = d2
     return collection
@@ -584,11 +574,41 @@ def make_html(page, collection, mode):
 
         if d['2'] == 'a-camera' and no_camera:
             no_camera = False
-            entities_dict[x] = make_camera(page, d, mode)
+            entities_dict[x] = entities.make_camera(page, d, mode)
+        elif d['2'] == 'a-box':
+            entities_dict[x] = entities.make_box(page, d)
+        elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+            entities_dict[x] = entities.make_circular(page, d)
+        elif d['2'] == 'a-curvedimage':
+            entities_dict[x] = entities.make_curvedimage(page, d)
+        elif d['2'] == 'a-plane':
+            entities_dict[x] = entities.make_plane(page, d)
+        elif d['2'] == 'a-triangle':
+            entities_dict[x] = entities.make_triangle(page, d)
+        elif d['2'] == 'a-line':
+            entities_dict[x] = entities.make_line(page, d)
+        elif d['2'] == 'a-poly':
+            entities_dict[x] = entities.make_poly(page, d)
+        elif d['2'] == 'a-light':
+            entities_dict[x] = entities.make_light(page, d)
+        elif d['2'] == 'a-link':
+            entities_dict[x] = entities.make_link(page, d)
+        elif d['2'] == 'a-text':
+            entities_dict[x] = entities.make_text(page, d)
+        elif d['2'] == 'a-wall':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-door':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-slab':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-openwall':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-block':
+            d['NAME'] = d.get('NAME', 't01')
+            entities_dict[x] = entities.make_block(page, d)
+
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
-        else:
-            entities_dict[x] = make_entities(page, d)
 
     if no_camera:
         x += 1
@@ -596,269 +616,9 @@ def make_html(page, collection, mode):
         '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
         'LIGHT-INT': 1,
         }
-        entities_dict[x] = make_camera(page, d, mode)
+        entities_dict[x] = entities.make_camera(page, d, mode)
 
     return entities_dict
-
-def make_entities(page, d):
-
-    d = prepare_coordinates(d)
-
-    outstr = ''
-    outstr += prepare_insertion(page, d)
-
-    #finally make entities
-    if d['2'] == 'a-box':
-        outstr += blocks.make_box(d)
-    elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
-        outstr += blocks.make_circular(d)
-    elif d['2'] == 'a-curvedimage':
-        outstr += blocks.make_curvedimage(d)
-    elif d['2'] == 'a-plane':
-        outstr += blocks.make_plane(page, d)
-    elif d['2'] == 'a-triangle':
-        outstr += blocks.make_triangle(page, d)
-    elif d['2'] == 'a-line':
-        outstr += blocks.make_line(page, d)
-    elif d['2'] == 'a-poly':
-        outstr += blocks.make_poly(page, d)
-    elif d['2'] == 'a-block':
-        d['NAME'] = d.get('NAME', 't01')
-        outstr += make_block(page, d)
-    elif d['2'] == 'a-door':
-        outstr += blocks.make_door(d)
-    elif d['2'] == 'a-wall':
-        outstr += blocks.make_wall(d)
-    elif d['2'] == 'a-openwall':
-        outstr += blocks.make_openwall(d)
-    elif d['2'] == 'a-slab':
-        outstr += blocks.make_slab(d)
-    elif d['2'] == 'a-light':
-        outstr += blocks.make_light(page, d)
-    elif d['2'] == 'a-link':
-        outstr += blocks.make_link(page, d)
-    elif d['2'] == 'a-text':
-        outstr += blocks.make_text(d)
-    #make animations (is animation)
-    if d['animation']:
-        outstr += add_animation(d)
-    #make stalker balloon and link
-    if d['ATTRIBUTE'] == 'stalker':
-        outstr += add_stalker(page, d)
-
-    outstr += '</a-entity> <!--close handle-->\n'
-    if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-        outstr += '</a-entity> <!--close animation rig-->\n'
-    outstr += '</a-entity> <!--close insertion-->\n'
-    return outstr
-
-def prepare_coordinates(d):
-    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
-    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
-    'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
-    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0', 'a-link': '0', 'a-text': '0',
-    }
-    d['xg'] = d['yg'] = d['zg'] = 0
-    d['xs'] = d['ys'] = d['zs'] = 0
-    #position of gravity center from insertion point
-    if insertion[d['2']] == 'v':
-        d['xg'] = d['41']/2
-        d['yg'] = -d['42']/2
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'v2':
-        d['xg'] = d['41']/2
-        d['yg'] = -d['42']/2
-        d['zg'] = -d['43']/2
-    elif insertion[d['2']] == 'pl':
-        d['xg'] = d['41']/2
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'c':
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'c2':
-        d['zg'] = d['43']
-    elif insertion[d['2']] == 'l':
-        d['xg'] = d['11']/2
-        d['yg'] = d['21']/2
-        d['39'] = d.get('39', 0)
-        if d['39']:#it has thickness?
-            d['zg'] = d['39']/2
-        else:
-            d['zg'] = d['31']/2
-    elif insertion[d['2']] == 't':
-        d['xg'] = (d['11'] + d['12'])/3
-        d['yg'] = (d['21'] + d['22'])/3
-        d['zg'] = (d['31'] + d['32'])/3
-    elif insertion[d['2']] == 'p':
-        xmax = xmin = 0
-        ymax = ymin = 0
-        for i in range(1, d['90']):
-            if d['vx'][i] < xmin:
-                xmin = d['vx'][i]
-            elif d['vx'][i] > xmax:
-                xmax = d['vx'][i]
-            if d['vy'][i] < ymin:
-                ymin = d['vy'][i]
-            elif d['vy'][i] > ymax:
-                ymax = d['vy'][i]
-
-        d['xg'] = (xmax + xmin)/2
-        d['yg'] = (ymax + ymin)/2
-        d['39'] = d.get('39', 0)
-        if d['39']:#it has thickness?
-            d['zg'] = d['39']/2
-
-    if 'ATTRIBUTE' in d:
-        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-            d['xs'] = d['xg']
-            d['ys'] = d['yg']
-            d['xg'] = d['yg'] = 0
-        elif d['ATTRIBUTE'] == 'look-at':
-            pass
-        else:
-            d['xs'] = d['xg']
-            d['ys'] = d['yg']
-            d['zs'] = d['zg']
-            d['xg'] = d['yg'] = d['zg'] = 0
-    else:
-        d['ATTRIBUTE'] = False
-
-    return d
-
-def prepare_insertion(page, d):
-    outstr = ''
-    outstr += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
-    outstr += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
-    if d['animation']:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
-        outstr += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'stalker':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
-        outstr += 'look-at="#camera-foot" \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'checkpoint':
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
-        outstr += 'checkpoint \n'
-        outstr += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    #handle
-    if d['ID']:
-        outstr += f'<a-entity id="{d["ID"]}" \n'
-    else:
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
-    outstr += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
-    if page.shadows:
-        if d['2'] == 'a-curvedimage':
-            outstr += 'shadow="receive: false; cast: false" \n'
-        elif d['2'] == 'a-light':
-            pass
-        else:
-            outstr += 'shadow="receive: true; cast: true" \n'
-    if d['ATTRIBUTE'] == 'look-at':
-        if d['TARGET']:
-            outstr += f'look-at="#{d["TARGET"]}" \n'
-        else:
-            outstr += 'look-at="#camera" \n'
-    outstr += '> \n'
-    return outstr
-
-def add_animation(d):
-    outstr = ''
-    outstr += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
-    outstr += f'attribute="{d["ATTRIBUTE"]}"\n'
-    outstr += f'from="{d["FROM"]}"\n'
-    outstr += f'to="{d["TO"]}"\n'
-    outstr += f'begin="{d["BEGIN"]}"\n'
-    outstr += f'direction="{d["DIRECTION"]}"\n'
-    outstr += f'repeat="{d["REPEAT"]}"\n'
-    outstr += f'dur="{d["DURATION"]}"\n'
-    outstr += '></a-animation>\n'
-    return outstr
-
-def add_stalker(page, d):
-    outstr = ''
-    if d['TEXT']:
-        length = len(d['TEXT'])
-        if length <= 8:
-            wrapcount = length+1
-        elif length <= 30:
-            wrapcount = 10
-        else:
-            wrapcount = length/3
-        outstr += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
-        outstr += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
-        outstr += f'text="width: {d["41"]*.9}; align: center; color: black; '
-        outstr += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
-        outstr += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
-        outstr += f'position="0 0 -0.01" \n'
-        outstr += f'rotation="90 0 0" \n'
-        outstr += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
-        outstr += '</a-cylinder></a-entity>\n'
-        outstr += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
-        outstr += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
-        outstr += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
-        outstr += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
-        outstr += '</a-triangle> \n'
-    if d['LINK']:
-        outstr += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
-        outstr += f'position="{d["41"]*.7} 0 0.02" \n'
-        outstr += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
-        target = False
-        try:
-            if d['LINK'] == 'parent':
-                target = page.get_parent()
-            elif d['LINK'] == 'child':
-                target = page.get_first_child()
-            elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
-                target = page.get_prev_sibling()
-            elif d['LINK'] == 'next':
-                target = page.get_next_sibling()
-        except:
-            d['LINK'] = ''
-        if target:
-            outstr += f'href="{target.url}" \n'
-            outstr += f'title="{target.title}" on="click" \n'
-            try:
-                eq_image = target.specific.equirectangular_image
-                if eq_image:
-                    outstr += f'image="{eq_image.file.url}"'
-            except:
-                outstr += 'image="#default-sky"'
-        else:
-            outstr += f'href="{d["LINK"]}" \n'
-            outstr += 'title="Sorry, no title" on="click" \n'
-            outstr += 'image="#default-sky"'
-        outstr += '>\n'
-        outstr += '</a-link>\n'
-    return outstr
-
-def make_block(page, d):
-    outstr = ''
-    if d['NAME'] == 'obj-mtl':
-        outstr += blocks.make_object(d)
-    if d['NAME'] == 't01':
-        outstr += blocks.make_table_01(d)
-    if d['NAME'] == 'tree':
-        outstr += blocks.make_tree(d)
-    return outstr
-
-def make_camera(page, d, mode):
-    outstr = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    outstr += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
-    if mode == 'digkom':
-        outstr += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        outstr += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
-        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
-        outstr += '<a-cursor color="black"></a-cursor> \n'
-    else:
-        outstr += '> \n'
-        outstr += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-        outstr += f' position="0 {d["43"]*1.6} 0"> \n'
-        outstr += '<a-cursor color="#2E3A87"></a-cursor> \n'
-
-    outstr += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
-    outstr += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
-    outstr += '</a-camera></a-entity> \n'
-    return outstr
 
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
