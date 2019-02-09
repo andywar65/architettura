@@ -594,26 +594,23 @@ def make_slab(d):
     )
     d = prepare_material_values(values, d)
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
 
     d['prefix'] = 'floor'
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     #floor
     oput += f'<a-box id="{d["2"]}-{d["num"]}-floor" \n'
-    oput += f'position="{d["41"]/2} {-0.005*unit(d["43"])} {-d["42"]/2}" \n'
+    oput += f'position="0 {-0.005*unit(d["43"])+d["43"]/2} 0" \n'
     oput += f'scale="{d["rx"]} 0.01 {d["ry"]}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
     #ceiling
     d['prefix'] = 'ceiling'
     oput += f'<a-box id="{d["2"]}-{d["num"]}-ceiling" \n'
-    oput += f'position="{d["41"]/2} {-d["43"]/2-0.005*unit(d["43"])} {-d["42"]/2}" \n'
+    oput += f'position="0 {-0.005*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} {fabs(d["43"])-0.01} {d["ry"]}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
-    oput += '</a-entity><!--close slab reset--> \n'
 
     return oput
 
