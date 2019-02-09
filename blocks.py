@@ -32,6 +32,26 @@ def make_box(page, d):
 
     return oput
 
+def make_block(page, d):
+
+    d['dx'] = d['dy'] = 0
+    d['dz'] = d['43']/2
+    d['ent'] = 'a-entity'
+    oput = ''
+    oput += open_entity(page, d)
+    oput += '> \n'
+
+    if d['NAME'] == 'obj-mtl':
+        oput += make_object(d)
+    if d['NAME'] == 't01':
+        oput += make_table_01(d)
+    if d['NAME'] == 'tree':
+        oput += make_tree(d)
+
+    oput += close_entity(page, d)
+
+    return oput
+
 def make_bim_block(page, d):
 
     d['dx'] = d['41']/2
@@ -418,14 +438,13 @@ def make_table_01(d):
     )
     d = prepare_material_values(values, d)
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+
     #table top
     d['prefix'] = 'top'
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     oput += f'<a-box id="{d["2"]}-{d["num"]}-table-top" \n'
-    oput += f'position="0 {d["43"]-0.025*unit(d["43"])} 0" \n'
+    oput += f'position="0 {d["43"]/2-0.025*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} 0.05 {d["ry"]}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
@@ -445,12 +464,12 @@ def make_table_01(d):
     #make legs
     for v in values:
         oput += f'<a-cylinder id="{d["2"]}-{d["num"]}-leg-{v[0]}" \n'
-        oput += f'position="{v[1]} {height/2} {v[2]}" \n'
+        oput += f'position="{v[1]} {(height-d["43"])/2} {v[2]}" \n'
         oput += 'radius="0.025" \n'
         oput += f'height="{height}" \n'
         oput += object_material(d)
         oput += '"></a-cylinder>\n'
-    oput += '</a-entity><!--close table01 reset--> \n'
+
     return oput
 
 def make_door(d):
@@ -852,15 +871,15 @@ def make_object(d):
     If PARAM2 is set to 'scale', object will be scaled.
     """
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+
     oput += f'<a-entity id="{d["2"]}-{d["num"]}-object" \n'
+    oput += f'position="0 {-d["43"]/2} 0" \n'
     oput += f'obj-model="obj: #{d["PARAM1"]}-obj; \n'
     oput += f' mtl: #{d["PARAM1"]}-mtl" \n'
     if d['PARAM2'] == 'scale':
         oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     oput += '></a-entity><!--close object--> \n'
-    oput += '</a-entity><!--close object reset--> \n'
+
     return oput
 
 def make_tree(d):
@@ -894,13 +913,12 @@ def make_tree(d):
     ang = gauss(0, 5)
     rot = random()*360
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+
     d['prefix'] = 'trunk'
     d['rx'] = fabs(d["41"])
     d['ry'] = lt
     oput += f'<a-entity id="{d["NAME"]}-{d["num"]}-trunk-ent" \n'
-    oput += f'position="0 0 0" \n'
+    oput += f'position="0 {-d["43"]/2} 0" \n'
     oput += f'rotation="{ang} {rot} 0"> \n'
     #oput += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '
     #oput += f'to="{ang*gauss(1, .1)} {rot} 0" dur="{int(5000*gauss(1, .5))}" repeat="indefinite" direction="alternate"></a-animation>'
@@ -956,7 +974,7 @@ def make_tree(d):
     oput += '</a-entity> \n'
 
     oput += '</a-entity><!--close tree--> \n'
-    oput += '</a-entity><!--close polyline reset--> \n'
+
     return oput
 
 def make_branch(branch, lb, lp, angle, rotx, d):
