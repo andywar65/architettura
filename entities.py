@@ -10,6 +10,25 @@ features depend on PARAM attributes.
 from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
+def make_camera(page, d, mode):
+    oput = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
+    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
+    if mode == 'digkom':
+        oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
+        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: true" '
+        oput += f' position="0 {d["43"]*1.6} 0"> \n'
+        oput += '<a-cursor color="black"></a-cursor> \n'
+    else:
+        oput += '> \n'
+        oput += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
+        oput += f' position="0 {d["43"]*1.6} 0"> \n'
+        oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
+
+    oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
+    oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
+    oput += '</a-camera></a-entity> \n'
+    return oput
+
 def make_box(page, d):
     d['prefix'] = 'box'
     values = (
@@ -337,94 +356,6 @@ def make_poly(page, d):
             oput += f'color: {d["color"]}" \n'
         oput += '>'
     oput += close_entity(page, d)
-    return oput
-
-def open_entity(page, d):
-    oput = ''
-    if d['animation']:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-rig" \n'
-        oput += make_position(d)
-        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
-        oput += make_insertion(page, d)
-    else:
-        oput += make_insertion(page, d)
-        oput += make_position(d)
-        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
-    return oput
-
-def make_insertion(page, d):
-    oput = ''
-    if d['ID']:
-        oput += f'<{d["ent"]} id="{d["ID"]}" \n'
-    else:
-        oput += f'<{d["ent"]} id="{d["2"]}-{d["num"]}" \n'
-    if d['ATTRIBUTE'] == 'checkpoint':
-        oput += 'checkpoint '
-    elif d['ATTRIBUTE'] == 'look-at':
-        if d['TARGET']:
-            oput += f'look-at="#{d["TARGET"]}" '
-        else:
-            oput += 'look-at="#camera" '
-    elif d['ATTRIBUTE'] == 'stalker':
-        oput += 'look-at="#camera" '
-    if page.shadows:
-        if d['ent'] == 'a-curvedimage':
-            oput += 'shadow="receive: false; cast: false" \n'
-        elif d['ent'] == 'a-light':
-            pass
-        else:
-            oput += 'shadow="receive: true; cast: true" \n'
-    return oput
-
-def make_position(d):
-    sx = sin(radians(-d['210']))
-    cx = cos(radians(-d['210']))
-    sy = sin(radians(-d['220']))
-    cy = cos(radians(-d['220']))
-    sz = sin(radians(-d['50']))
-    cz = cos(radians(-d['50']))
-    #Euler angles, yaw (Z), pitch (X), roll (Y)
-    d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
-    d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
-    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy']+            (cx*cy)*d['dz']
-    oput = ''
-    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
-    return oput
-
-def close_entity(page, d):
-    oput = ''
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-    if d['animation']:
-        if eval(d['RIG']):
-            oput += f'</{d["ent"]}> \n'
-            oput += add_animation(d)
-            oput += '</a-entity> \n'
-        else:
-            oput += add_animation(d)
-            oput += f'</{d["ent"]}></a-entity> \n'
-    else:
-        oput += f'</{d["ent"]}> \n'
-    return oput
-
-def entity_geometry(d):
-    attr_dict = {
-        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
-        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
-        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
-        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
-    }
-    attributes = attr_dict[d['2']]
-    oput = 'geometry="'
-    for attribute in attributes:
-        try:
-            if d[attribute]:
-                oput += f'{attribute.lower()}: {d[attribute]};'
-        except:
-            pass
-
-    oput += '" \n'
     return oput
 
 def make_table_01(d):
@@ -856,41 +787,6 @@ def make_link(page, d):
     oput += close_entity(page, d)
     return oput
 
-def unit(nounit):
-    #returns positive/negative scaling
-    if nounit == 0:
-        return 0
-    unit = fabs(nounit)/nounit
-    return unit
-
-def object_material(d):
-    #returns object material
-    oput = ''
-    if d['wireframe']:
-        oput += f'material="wireframe: true; wireframe-linewidth: {d["wf_width"]}; color: {d[d["prefix"]+"_color"]}; '
-    else:
-        oput += f'material="src: #{d[d["prefix"]+"_image"]}; color: {d[d["prefix"]+"_color"]};'
-        if d[d['prefix']+'_repeat']:
-            oput += f' repeat:{d["rx"]} {d["ry"]};'
-    return oput
-
-def prepare_material_values(values, d):
-
-    for v in values:
-        try:
-            component_pool = d[v[0]]
-            component = component_pool[v[1]]
-            d[v[2]+'_color'] = component[1]
-            d[v[2]+'_image'] = d[v[3]] + '-' + component[0]
-            d[v[2]+'_repeat'] = component[2]
-
-        except:
-            d[v[2]+'_color'] = d['color']
-            d[v[2]+'_image'] = d['8']
-            d[v[2]+'_repeat'] = d['repeat']
-
-    return d
-
 def make_object(d):
     """Object block
 
@@ -1035,6 +931,94 @@ def make_leaves(branch, lb, d):
     oput += '</a-sphere> \n'#close branch
     return oput
 
+def open_entity(page, d):
+    oput = ''
+    if d['animation']:
+        oput += f'<a-entity id="{d["2"]}-{d["num"]}-rig" \n'
+        oput += make_position(d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
+        oput += make_insertion(page, d)
+    else:
+        oput += make_insertion(page, d)
+        oput += make_position(d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+    return oput
+
+def make_insertion(page, d):
+    oput = ''
+    if d['ID']:
+        oput += f'<{d["ent"]} id="{d["ID"]}" \n'
+    else:
+        oput += f'<{d["ent"]} id="{d["2"]}-{d["num"]}" \n'
+    if d['ATTRIBUTE'] == 'checkpoint':
+        oput += 'checkpoint '
+    elif d['ATTRIBUTE'] == 'look-at':
+        if d['TARGET']:
+            oput += f'look-at="#{d["TARGET"]}" '
+        else:
+            oput += 'look-at="#camera" '
+    elif d['ATTRIBUTE'] == 'stalker':
+        oput += 'look-at="#camera" '
+    if page.shadows:
+        if d['ent'] == 'a-curvedimage':
+            oput += 'shadow="receive: false; cast: false" \n'
+        elif d['ent'] == 'a-light':
+            pass
+        else:
+            oput += 'shadow="receive: true; cast: true" \n'
+    return oput
+
+def make_position(d):
+    sx = sin(radians(-d['210']))
+    cx = cos(radians(-d['210']))
+    sy = sin(radians(-d['220']))
+    cy = cos(radians(-d['220']))
+    sz = sin(radians(-d['50']))
+    cz = cos(radians(-d['50']))
+    #Euler angles, yaw (Z), pitch (X), roll (Y)
+    d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
+    d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
+    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy']+            (cx*cy)*d['dz']
+    oput = ''
+    oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
+    return oput
+
+def close_entity(page, d):
+    oput = ''
+    if d['ATTRIBUTE'] == 'stalker':
+        oput += add_stalker(page, d)
+    if d['animation']:
+        if eval(d['RIG']):
+            oput += f'</{d["ent"]}> \n'
+            oput += add_animation(d)
+            oput += '</a-entity> \n'
+        else:
+            oput += add_animation(d)
+            oput += f'</{d["ent"]}></a-entity> \n'
+    else:
+        oput += f'</{d["ent"]}> \n'
+    return oput
+
+def entity_geometry(d):
+    attr_dict = {
+        'a-cone': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-cylinder': ('OPEN-ENDED', 'RADIUS-BOTTOM', 'RADIUS-TOP', 'SEGMENTS-RADIAL', 'THETA-LENGTH', 'THETA-START', ),
+        'a-circle': ('SEGMENTS', 'THETA-LENGTH', 'THETA-START', ),
+        'a-curvedimage': ('THETA-LENGTH', 'THETA-START', ),
+        'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
+    }
+    attributes = attr_dict[d['2']]
+    oput = 'geometry="'
+    for attribute in attributes:
+        try:
+            if d[attribute]:
+                oput += f'{attribute.lower()}: {d[attribute]};'
+        except:
+            pass
+
+    oput += '" \n'
+    return oput
+
 def add_animation(d):#careful, this is different from the one in aframe.py
     oput = ''
     oput += f'<a-animation id="{d["prefix"]}-{d["num"]}-animation" \n'
@@ -1127,3 +1111,38 @@ def add_stalker(page, d):
         oput += '>\n'
         oput += '</a-link>\n'
     return oput
+
+def unit(nounit):
+    #returns positive/negative scaling
+    if nounit == 0:
+        return 0
+    unit = fabs(nounit)/nounit
+    return unit
+
+def object_material(d):
+    #returns object material
+    oput = ''
+    if d['wireframe']:
+        oput += f'material="wireframe: true; wireframe-linewidth: {d["wf_width"]}; color: {d[d["prefix"]+"_color"]}; '
+    else:
+        oput += f'material="src: #{d[d["prefix"]+"_image"]}; color: {d[d["prefix"]+"_color"]};'
+        if d[d['prefix']+'_repeat']:
+            oput += f' repeat:{d["rx"]} {d["ry"]};'
+    return oput
+
+def prepare_material_values(values, d):
+
+    for v in values:
+        try:
+            component_pool = d[v[0]]
+            component = component_pool[v[1]]
+            d[v[2]+'_color'] = component[1]
+            d[v[2]+'_image'] = d[v[3]] + '-' + component[0]
+            d[v[2]+'_repeat'] = component[2]
+
+        except:
+            d[v[2]+'_color'] = d['color']
+            d[v[2]+'_image'] = d['8']
+            d[v[2]+'_repeat'] = d['repeat']
+
+    return d

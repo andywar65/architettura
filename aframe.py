@@ -2,7 +2,7 @@ import os, html
 from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
-from architettura import blocks
+from architettura import entities
 
 def get_layer_list(page):
     """Gets layer list from DXF file.
@@ -574,43 +574,41 @@ def make_html(page, collection, mode):
 
         if d['2'] == 'a-camera' and no_camera:
             no_camera = False
-            entities_dict[x] = make_camera(page, d, mode)
+            entities_dict[x] = entities.make_camera(page, d, mode)
         elif d['2'] == 'a-box':
-            entities_dict[x] = blocks.make_box(page, d)
+            entities_dict[x] = entities.make_box(page, d)
         elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
-            entities_dict[x] = blocks.make_circular(page, d)
+            entities_dict[x] = entities.make_circular(page, d)
         elif d['2'] == 'a-curvedimage':
-            entities_dict[x] = blocks.make_curvedimage(page, d)
+            entities_dict[x] = entities.make_curvedimage(page, d)
         elif d['2'] == 'a-plane':
-            entities_dict[x] = blocks.make_plane(page, d)
+            entities_dict[x] = entities.make_plane(page, d)
         elif d['2'] == 'a-triangle':
-            entities_dict[x] = blocks.make_triangle(page, d)
+            entities_dict[x] = entities.make_triangle(page, d)
         elif d['2'] == 'a-line':
-            entities_dict[x] = blocks.make_line(page, d)
+            entities_dict[x] = entities.make_line(page, d)
         elif d['2'] == 'a-poly':
-            entities_dict[x] = blocks.make_poly(page, d)
+            entities_dict[x] = entities.make_poly(page, d)
         elif d['2'] == 'a-light':
-            entities_dict[x] = blocks.make_light(page, d)
+            entities_dict[x] = entities.make_light(page, d)
         elif d['2'] == 'a-link':
-            entities_dict[x] = blocks.make_link(page, d)
+            entities_dict[x] = entities.make_link(page, d)
         elif d['2'] == 'a-text':
-            entities_dict[x] = blocks.make_text(page, d)
+            entities_dict[x] = entities.make_text(page, d)
         elif d['2'] == 'a-wall':
-            entities_dict[x] = blocks.make_bim_block(page, d)
+            entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-door':
-            entities_dict[x] = blocks.make_bim_block(page, d)
+            entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-slab':
-            entities_dict[x] = blocks.make_bim_block(page, d)
+            entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-openwall':
-            entities_dict[x] = blocks.make_bim_block(page, d)
+            entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-block':
             d['NAME'] = d.get('NAME', 't01')
-            entities_dict[x] = blocks.make_block(page, d)
+            entities_dict[x] = entities.make_block(page, d)
 
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
-        else:
-            entities_dict[x] = make_entities(page, d)
 
     if no_camera:
         x += 1
@@ -618,244 +616,9 @@ def make_html(page, collection, mode):
         '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
         'LIGHT-INT': 1,
         }
-        entities_dict[x] = make_camera(page, d, mode)
+        entities_dict[x] = entities.make_camera(page, d, mode)
 
     return entities_dict
-
-def make_entities(page, d):
-
-    oput = ''
-
-    d = prepare_coordinates(d)
-
-    oput += prepare_insertion(page, d)
-
-    if d['2'] == 'a-light':
-        oput += blocks.make_light(page, d)
-    elif d['2'] == 'a-link':
-        oput += blocks.make_link(page, d)
-    elif d['2'] == 'a-text':
-        oput += blocks.make_text(d)
-    #make animations (is animation)
-    if d['animation']:
-        oput += add_animation(d)
-    #make stalker balloon and link
-    if d['ATTRIBUTE'] == 'stalker':
-        oput += add_stalker(page, d)
-
-    oput += '</a-entity> <!--close handle-->\n'
-    if d['animation'] or d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-        oput += '</a-entity> <!--close animation rig-->\n'
-    oput += '</a-entity> <!--close insertion-->\n'
-    return oput
-
-def prepare_coordinates(d):
-    insertion = {'a-box': 'v', 'a-cone': 'c', 'a-cylinder': 'c', 'a-line': 'l',
-    'a-circle': '0', 'a-curvedimage': 'c', 'a-sphere': 'c2', 'a-triangle': 't',
-    'a-poly': 'p', 'a-block': 'c', 'a-wall': 'v', 'a-door': 'v', 'a-slab': 'v2',
-    'a-openwall': 'v', 'a-plane': 'pl', 'a-light': '0', 'a-link': '0', 'a-text': '0',
-    }
-    d['xg'] = d['yg'] = d['zg'] = 0
-    d['xs'] = d['ys'] = d['zs'] = 0
-    #position of gravity center from insertion point
-    if insertion[d['2']] == 'v':
-        d['xg'] = d['41']/2
-        d['yg'] = -d['42']/2
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'v2':
-        d['xg'] = d['41']/2
-        d['yg'] = -d['42']/2
-        d['zg'] = -d['43']/2
-    elif insertion[d['2']] == 'pl':
-        d['xg'] = d['41']/2
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'c':
-        d['zg'] = d['43']/2
-    elif insertion[d['2']] == 'c2':
-        d['zg'] = d['43']
-    elif insertion[d['2']] == 'l':
-        d['xg'] = d['11']/2
-        d['yg'] = d['21']/2
-        d['39'] = d.get('39', 0)
-        if d['39']:#it has thickness?
-            d['zg'] = d['39']/2
-        else:
-            d['zg'] = d['31']/2
-    elif insertion[d['2']] == 't':
-        d['xg'] = (d['11'] + d['12'])/3
-        d['yg'] = (d['21'] + d['22'])/3
-        d['zg'] = (d['31'] + d['32'])/3
-    elif insertion[d['2']] == 'p':
-        xmax = xmin = 0
-        ymax = ymin = 0
-        for i in range(1, d['90']):
-            if d['vx'][i] < xmin:
-                xmin = d['vx'][i]
-            elif d['vx'][i] > xmax:
-                xmax = d['vx'][i]
-            if d['vy'][i] < ymin:
-                ymin = d['vy'][i]
-            elif d['vy'][i] > ymax:
-                ymax = d['vy'][i]
-
-        d['xg'] = (xmax + xmin)/2
-        d['yg'] = (ymax + ymin)/2
-        d['39'] = d.get('39', 0)
-        if d['39']:#it has thickness?
-            d['zg'] = d['39']/2
-
-    if 'ATTRIBUTE' in d:
-        if d['ATTRIBUTE'] == 'stalker' or d['ATTRIBUTE'] == 'checkpoint':
-            d['xs'] = d['xg']
-            d['ys'] = d['yg']
-            d['xg'] = d['yg'] = 0
-        elif d['ATTRIBUTE'] == 'look-at':
-            pass
-        else:
-            d['xs'] = d['xg']
-            d['ys'] = d['yg']
-            d['zs'] = d['zg']
-            d['xg'] = d['yg'] = d['zg'] = 0
-    else:
-        d['ATTRIBUTE'] = False
-
-    return d
-
-def prepare_insertion(page, d):
-    oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-insert" \n'
-    oput += f'position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}"> \n'
-    if d['animation']:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-animation-rig" \n'
-        oput += f'position="{d["xs"]} {d["zs"]} {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'stalker':
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-stalker" \n'
-        oput += 'look-at="#camera-foot" \n'
-        oput += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    elif d['ATTRIBUTE'] == 'checkpoint':
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-checkpoint" \n'
-        oput += 'checkpoint \n'
-        oput += f'position="{d["xs"]} 0 {d["ys"]}"> \n'
-    #handle
-    if d['ID']:
-        oput += f'<a-entity id="{d["ID"]}" \n'
-    else:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-handle" \n'
-    oput += f'position="{d["xg"]} {d["zg"]} {d["yg"]}" \n'
-    if page.shadows:
-        if d['2'] == 'a-curvedimage':
-            oput += 'shadow="receive: false; cast: false" \n'
-        elif d['2'] == 'a-light':
-            pass
-        else:
-            oput += 'shadow="receive: true; cast: true" \n'
-    if d['ATTRIBUTE'] == 'look-at':
-        if d['TARGET']:
-            oput += f'look-at="#{d["TARGET"]}" \n'
-        else:
-            oput += 'look-at="#camera" \n'
-    oput += '> \n'
-    return oput
-
-def add_animation(d):
-    oput = ''
-    oput += f'<a-animation id="{d["2"]}-{d["num"]}-animation" \n'
-    oput += f'attribute="{d["ATTRIBUTE"]}"\n'
-    oput += f'from="{d["FROM"]}"\n'
-    oput += f'to="{d["TO"]}"\n'
-    oput += f'begin="{d["BEGIN"]}"\n'
-    oput += f'direction="{d["DIRECTION"]}"\n'
-    oput += f'repeat="{d["REPEAT"]}"\n'
-    oput += f'dur="{d["DURATION"]}"\n'
-    oput += '></a-animation>\n'
-    return oput
-
-def add_stalker(page, d):
-    oput = ''
-    if d['TEXT']:
-        length = len(d['TEXT'])
-        if length <= 8:
-            wrapcount = length+1
-        elif length <= 30:
-            wrapcount = 10
-        else:
-            wrapcount = length/3
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
-        oput += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
-        oput += f'text="width: {d["41"]*.9}; align: center; color: black; '
-        oput += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
-        oput += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
-        oput += f'position="0 0 -0.01" \n'
-        oput += f'rotation="90 0 0" \n'
-        oput += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
-        oput += '</a-cylinder></a-entity>\n'
-        oput += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
-        oput += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
-        oput += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
-        oput += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
-        oput += '</a-triangle> \n'
-    if d['LINK']:
-        oput += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
-        oput += f'position="{d["41"]*.7} 0 0.02" \n'
-        oput += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
-        target = False
-        try:
-            if d['LINK'] == 'parent':
-                target = page.get_parent()
-            elif d['LINK'] == 'child':
-                target = page.get_first_child()
-            elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
-                target = page.get_prev_sibling()
-            elif d['LINK'] == 'next':
-                target = page.get_next_sibling()
-        except:
-            d['LINK'] = ''
-        if target:
-            oput += f'href="{target.url}" \n'
-            oput += f'title="{target.title}" on="click" \n'
-            try:
-                eq_image = target.specific.equirectangular_image
-                if eq_image:
-                    oput += f'image="{eq_image.file.url}"'
-            except:
-                oput += 'image="#default-sky"'
-        else:
-            oput += f'href="{d["LINK"]}" \n'
-            oput += 'title="Sorry, no title" on="click" \n'
-            oput += 'image="#default-sky"'
-        oput += '>\n'
-        oput += '</a-link>\n'
-    return oput
-
-def make_block(page, d):
-    oput = ''
-    if d['NAME'] == 'obj-mtl':
-        oput += blocks.make_object(d)
-    if d['NAME'] == 't01':
-        oput += blocks.make_table_01(d)
-    if d['NAME'] == 'tree':
-        oput += blocks.make_tree(d)
-    return oput
-
-def make_camera(page, d, mode):
-    oput = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
-    if mode == 'digkom':
-        oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: true" '
-        oput += f' position="0 {d["43"]*1.6} 0"> \n'
-        oput += '<a-cursor color="black"></a-cursor> \n'
-    else:
-        oput += '> \n'
-        oput += f'<a-camera id="camera" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-        oput += f' position="0 {d["43"]*1.6} 0"> \n'
-        oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
-
-    oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
-    oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
-    oput += '</a-camera></a-entity> \n'
-    return oput
 
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
@@ -1125,20 +888,3 @@ def cad2hex(cad_color):
         b = RGB_list[cad_color][2]
         hex = "#{:02x}{:02x}{:02x}".format(r,g,b)
         return hex
-
-def prepare_new_coordinates(d):
-    sx = sin(radians(-d['210']))
-    cx = cos(radians(-d['210']))
-    sy = sin(radians(-d['220']))
-    cy = cos(radians(-d['220']))
-    sz = sin(radians(-d['50']))
-    cz = cos(radians(-d['50']))
-    dx = d['41']/2
-    dy = -d['42']/2
-    dz = d['43']/2
-    #Euler angles, yaw (Z), pitch (X), roll (Y)
-    d['10'] = d['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
-    d['20'] = d['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
-    d['30'] = d['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
-
-    return d
