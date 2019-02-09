@@ -468,28 +468,28 @@ def make_door(d):
     d = prepare_material_values(values, d)
 
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+    #oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
+    #oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
     d['prefix'] = 'frame'
     d['rx'] = 1
     d['ry'] = 1
     #left frame
     oput += f'<a-box id="{d["2"]}-{d["num"]}-left-frame" \n'
-    oput += f'position="{-0.049*unit(d["41"])} {(d["43"]+0.099*unit(d["43"]))/2} {-d["42"]/2}" \n'
+    oput += f'position="{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
     #right frame
     oput += f'<a-box id="{d["2"]}-{d["num"]}-right-frame" \n'
-    oput += f'position="{d["41"]+0.049*unit(d["41"])} {(d["43"]+0.099*unit(d["43"]))/2} {-d["42"]/2}" \n'
+    oput += f'position="{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
     #top frame
     oput += f'<a-box id="{d["2"]}-{d["num"]}-top-frame" \n'
-    oput += f'position="{d["41"]/2} {d["43"]+0.049*unit(d["43"])} {-d["42"]/2}" \n'
+    oput += f'position="0 {d["43"]/2+0.049*unit(d["43"])} 0" \n'
     oput += f'scale="{fabs(d["41"])-0.002} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += object_material(d)
     oput += '"></a-box>\n'
@@ -527,7 +527,7 @@ def make_door(d):
                 oput += object_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                oput += '</a-entity><!--close door reset--> \n'
+                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
             else:#single
                 #animated slide
@@ -540,7 +540,7 @@ def make_door(d):
                 oput += object_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                oput += '</a-entity><!--close door reset--> \n'
+                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
         else:#hinged
             if eval(d["DOUBLE"]):
@@ -565,7 +565,7 @@ def make_door(d):
                 oput += object_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                oput += '</a-entity><!--close door reset--> \n'
+                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
             else:#single
                 #animated hinge
@@ -578,7 +578,7 @@ def make_door(d):
                 oput += object_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                oput += '</a-entity><!--close door reset--> \n'
+                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
 
 def make_slab(d):
@@ -688,26 +688,33 @@ def make_wall(d):
 
 def make_openwall(d):
     oput = ''
-
+    tot = d['41']
     #make left wall
     d2 = d.copy()
     d2['41'] = d2['door_off_1']
     d2['2'] = 'a-openwall-left'
+    oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    xpos = round((d2['door_off_1']-tot)/2, 4)
+    oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
+    oput += '</a-entity> \n'
     #make part above door
     d2 = d.copy()
     d2['41'] = d2['door_off_2'] - d2['door_off_1']
     d2['2'] = 'a-openwall-above'
     oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
-    oput += f'position="{d2["door_off_1"]} {d2["door_height"]} 0"> \n'
+    xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
+    zpos = round(d2['door_height'], 4)
+    oput += f'position="{xpos} {zpos} 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
     #make right wall
     d2 = d.copy()
-    d2['41'] = d2['41'] - d2['door_off_2']
+    d2['41'] = tot - d2['door_off_2']
     d2['2'] = 'a-openwall-right'
     oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
-    oput += f'position="{d2["door_off_2"]} 0 0"> \n'
+    xpos = round((-d2['41']+tot)/2, 4)
+    oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
 
