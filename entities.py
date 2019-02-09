@@ -155,10 +155,7 @@ def make_plane(page, d):
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
-    oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-reset" \n'
-    oput += f'position="0 {-d["dz"]} 0"> \n'
     oput += make_w_plane(page, d)
-    oput += '</a-entity><!--close plane reset--> \n'
     oput += close_entity(page, d)
     return oput
 
@@ -208,7 +205,7 @@ def make_w_plane(page, d):
             d['prefix'] = v[1]
             d['ry'] = v[0]
             oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="0 {round(v[2]*unit(d["43"]), 4)} 0" \n'
+            oput += f'position="0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0" \n'
             oput += f'width="{round(d["rx"], 4)}" height="{v[0]}" \n'
             oput += object_material(d)
             if page.double_face:
@@ -276,7 +273,6 @@ def make_line(page, d):
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
         d['50'] = -degrees(atan2(d['21'], d['11']))
         oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
-        oput += f'position="0 {round(-d["43"]/2, 4)} 0" \n'
         oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
         oput += make_w_plane(page, d)
         oput +='</a-entity><!--close wall--> \n'
@@ -326,7 +322,7 @@ def make_poly(page, d):
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
             oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{round(d["vx"][i]-dx/2, 4)} {round(-d["43"]/2, 4)} {round(d["vy"][i]-dy/2, 4)}" \n'
+            oput += f'position="{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}" \n'
             oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
             oput += make_w_plane(page, d)
             oput +='</a-entity>'
@@ -337,7 +333,7 @@ def make_poly(page, d):
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
             oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{round(d["vx"][i+1]-dx/2, 4)} {round(-d["43"]/2, 4)} {round(d["vy"][i+1]-dy/2, 4)}" \n'
+            oput += f'position="{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}" \n'
             oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
             oput += make_w_plane(page, d)
             oput +='</a-entity>'
@@ -1125,8 +1121,8 @@ def unit(nounit):
     unit = fabs(nounit)/nounit
     return unit
 
-def rfloat(in):
-    return round(float(in), 4)
+def rfloat(string):
+    return round(float(string), 4)
 
 def object_material(d):
     #returns object material
