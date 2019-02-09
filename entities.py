@@ -963,6 +963,15 @@ def make_insertion(page, d):
             pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
+    if d['ATTRIBUTE'] == 'orbit':
+        d['RIG'] = 'True'
+        d['ATTRIBUTE'] = 'rotation'
+        l = d['TO'].split()
+        d['FROM'] = '0 0 0'
+        d['TO'] = '0 360 0'
+        d['BEGIN'] = d['DIRECTION'] = ''
+        d['REPEAT'] = 'indefinite" fill="forwards" easing="linear'
+        oput += f'position="{round(float(l[0]), 4)} 0 0" \n'
     return oput
 
 def make_position(d):
@@ -1016,7 +1025,7 @@ def entity_geometry(d):
     oput += '" \n'
     return oput
 
-def add_animation(d):#careful, this is different from the one in aframe.py
+def add_animation(d):
     oput = ''
     oput += f'<a-animation id="{d["prefix"]}-{d["num"]}-animation" \n'
     oput += f'attribute="{d["ATTRIBUTE"]}"\n'
