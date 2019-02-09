@@ -91,6 +91,8 @@ def make_circular(page, d):
     d['dy'] = 0
     if d['2'] == 'a-sphere':
         d['dz'] = d['43']
+    elif d['2'] == 'a-circle':
+        d['dz'] = 0
     else:
         d['dz'] = d['43']/2
     d['ent'] = d['2']
@@ -752,10 +754,12 @@ def make_light(page, d):
         d['DECAY'] = 2
     if d['COLOR'] == '':
         d['COLOR'] = d['color']
+    d['prefix'] = 'light'
 
+    d['dx'] = d['dy'] = d['dz'] = 0
+    d['ent'] = 'a-entity'
     oput = ''
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}" \n'
-
+    oput += open_entity(page, d)
 
     oput += f'light="type: {d["TYPE"]}; color: {d["COLOR"]}; intensity: {d["INTENSITY"]}; '
     if d['TYPE'] != 'ambient':
@@ -775,7 +779,7 @@ def make_light(page, d):
     else:
         oput += '">\n'
 
-    oput += '</a-entity> \n'#close light entity
+    oput += close_entity(page, d)
     return oput
 
 def make_light_target(d):
@@ -783,21 +787,42 @@ def make_light_target(d):
     oput += f'<a-entity id="light-{d["num"]}-target" position="0 -1 0"> </a-entity> \n'
     return oput
 
-def make_text(d):
+def make_text(page, d):
+    d['prefix'] = 'text'
     values = (
-        ('pool', 0, 'text', 'MATERIAL'),
+        ('pool', 0, d['prefix'], 'MATERIAL'),
     )
     d = prepare_material_values(values, d)
+
+    d['dx'] = d['dy'] = d['dz'] = 0
+    d['ent'] = 'a-entity'
+
+    if d["WRAP-COUNT"]:
+        wrapcount =  d["WRAP-COUNT"]
+    else:
+        length = len(d['TEXT'])
+        if length <= 8:
+            wrapcount = length+1
+        elif length <= 30:
+            wrapcount = 10
+        else:
+            wrapcount = length/3
     oput = ''
-    oput += f'<a-entity id="a-text-{d["num"]}" \n'
+    oput += open_entity(page, d)
     oput += f'text="width: {d["41"]}; align: {d["ALIGN"]}; color: {d["text_color"]}; '
-    oput += f'value: {d["TEXT"]}; wrap-count: {d["WRAP-COUNT"]}; '
+    oput += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
     oput += '">\n'
-    oput += '</a-entity>\n'
+    oput += close_entity(page, d)
     return oput
 
 def make_link(page, d):
-    oput = f'<a-link id="a-link-{d["num"]}" \n'
+    d['prefix'] = 'link'
+
+    d['dx'] = d['dy'] = d['dz'] = 0
+    d['ent'] = 'a-link'
+
+    oput = ''
+    oput += open_entity(page, d)
     oput += f'scale="{d["41"]} {d["43"]} {d["42"]}"\n'
     target = False
     try:
@@ -822,9 +847,13 @@ def make_link(page, d):
             oput += 'image="#default-sky"'
     else:
         oput += f'href="{d["LINK"]}" \n'
-        oput += 'title="Sorry, no title" on="click" \n'
+        if d['TITLE']:
+            oput += f'title="{d["TITLE"]}" on="click" \n'
+        else:
+            oput += 'title="Sorry, no title" on="click" \n'
         oput += 'image="#default-sky"'
-    oput += '></a-link>\n'
+    oput += '>\n'
+    oput += close_entity(page, d)
     return oput
 
 def unit(nounit):
@@ -1090,7 +1119,10 @@ def add_stalker(page, d):
                 oput += 'image="#default-sky"'
         else:
             oput += f'href="{d["LINK"]}" \n'
-            oput += 'title="Sorry, no title" on="click" \n'
+            if d['TITLE']:
+                oput += f'title="{d["TITLE"]}" on="click" \n'
+            else:
+                oput += 'title="Sorry, no title" on="click" \n'
             oput += 'image="#default-sky"'
         oput += '>\n'
         oput += '</a-link>\n'

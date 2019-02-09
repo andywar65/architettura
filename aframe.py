@@ -589,6 +589,12 @@ def make_html(page, collection, mode):
             entities_dict[x] = blocks.make_line(page, d)
         elif d['2'] == 'a-poly':
             entities_dict[x] = blocks.make_poly(page, d)
+        elif d['2'] == 'a-light':
+            entities_dict[x] = blocks.make_light(page, d)
+        elif d['2'] == 'a-link':
+            entities_dict[x] = blocks.make_link(page, d)
+        elif d['2'] == 'a-text':
+            entities_dict[x] = blocks.make_text(page, d)
         elif d['2'] == 'a-wall':
             entities_dict[x] = blocks.make_bim_block(page, d)
         elif d['2'] == 'a-door':
