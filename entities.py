@@ -971,7 +971,7 @@ def make_insertion(page, d):
         d['TO'] = '0 360 0'
         d['BEGIN'] = d['DIRECTION'] = ''
         d['REPEAT'] = 'indefinite" fill="forwards" easing="linear'
-        oput += f'position="{round(float(l[0]), 4)} 0 0" \n'
+        oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
     return oput
 
 def make_position(d):
@@ -1124,6 +1124,9 @@ def unit(nounit):
         return 0
     unit = fabs(nounit)/nounit
     return unit
+
+def rfloat(in):
+    return round(float(in), 4)
 
 def object_material(d):
     #returns object material
