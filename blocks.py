@@ -507,22 +507,23 @@ def make_door(d):
         if eval(d["SLIDING"]):
             if eval(d["DOUBLE"]):
                 #animated slide 1
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide-1"> \n'
-                oput += f'<a-animation attribute="position" from="0 0 0" to="{-(d["41"])/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide-1" \n'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
+                oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
-                oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += object_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #animated slide 2
                 oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide-2" \n'
-                oput += f'position="{d["41"]} 0 0"> \n'
-                oput += f'<a-animation attribute="position" from="{d["41"]} 0 0" to="{(d["41"])*3/2} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{d["41"]/2} {-d["43"]/2} 0"> \n'
+                oput += f'<a-animation attribute="position" from="{d["41"]/2} {-d["43"]/2} 0" to="{d["41"]-0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
-                oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += object_material(d)
                 oput += '"></a-box>\n'
@@ -531,11 +532,12 @@ def make_door(d):
                 return oput
             else:#single
                 #animated slide
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide"> \n'
-                oput += f'<a-animation attribute="position" from="0 0 0" to="{-d["41"]} 0 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide" \n'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
+                oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]*3/2+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
-                oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-d["42"]/2}" \n'
+                oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += object_material(d)
                 oput += '"></a-box>\n'
@@ -545,7 +547,8 @@ def make_door(d):
         else:#hinged
             if eval(d["DOUBLE"]):
                 #animated hinge 1
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-1"> \n'
+                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-1" \n'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
@@ -556,7 +559,7 @@ def make_door(d):
                 oput += '</a-entity>\n'
                 #animated hinge 2
                 oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-2" '
-                oput += f'position="{d["41"]} 0 0"> \n'
+                oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
@@ -569,7 +572,8 @@ def make_door(d):
                 return oput
             else:#single
                 #animated hinge
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge"> \n'
+                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge" \n'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
