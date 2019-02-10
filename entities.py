@@ -42,7 +42,7 @@ def make_box(page, d):
     oput = ''
     oput += open_entity(page, d)
     oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"> \n'
     oput += close_entity(page, d)
 
@@ -57,11 +57,13 @@ def make_block(page, d):
     oput += open_entity(page, d)
     oput += '> \n'
 
-    if d['NAME'] == 'obj-mtl':
-        oput += make_object(d)
     if d['NAME'] == 't01':
         oput += make_table_01(d)
-    if d['NAME'] == 'tree':
+    elif d['NAME'] == 'obj-mtl':
+        oput += make_object(d)
+    elif d['NAME'] == 'gltf':
+        oput += make_object(d)
+    elif d['NAME'] == 'tree':
         oput += make_tree(d)
 
     oput += close_entity(page, d)
@@ -119,7 +121,7 @@ def make_circular(page, d):
     else:
         oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     oput += entity_geometry(d)
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"> \n'
     oput += close_entity(page, d)
 
@@ -141,7 +143,7 @@ def make_curvedimage(page, d):
     oput += open_entity(page, d)
     oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     oput += entity_geometry(d)
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"> \n'
     oput += close_entity(page, d)
     return oput
@@ -207,7 +209,7 @@ def make_w_plane(page, d):
             oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
             oput += f'position="0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0" \n'
             oput += f'width="{round(d["rx"], 4)}" height="{v[0]}" \n'
-            oput += object_material(d)
+            oput += entity_material(d)
             if page.double_face:
                 oput += 'side: double; '
             oput += '"></a-plane>\n'
@@ -240,7 +242,7 @@ def make_triangle(page, d):
     oput += f'geometry="vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
     oput += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
     oput += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     if page.double_face:
         oput += 'side: double; '
     oput += '"> \n'
@@ -372,7 +374,7 @@ def make_table_01(d):
     oput += f'<a-box id="{d["2"]}-{d["num"]}-table-top" \n'
     oput += f'position="0 {d["43"]/2-0.025*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} 0.05 {d["ry"]}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
     #prepare legs
     d['prefix'] = 'leg'
@@ -393,7 +395,7 @@ def make_table_01(d):
         oput += f'position="{v[1]} {(height-d["43"])/2} {v[2]}" \n'
         oput += 'radius="0.025" \n'
         oput += f'height="{height}" \n'
-        oput += object_material(d)
+        oput += entity_material(d)
         oput += '"></a-cylinder>\n'
 
     return oput
@@ -423,20 +425,20 @@ def make_door(d):
     oput += f'position="{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
     #right frame
     oput += f'<a-box id="{d["2"]}-{d["num"]}-right-frame" \n'
     oput += f'position="{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
     #top frame
     oput += f'<a-box id="{d["2"]}-{d["num"]}-top-frame" \n'
     oput += f'position="0 {d["43"]/2+0.049*unit(d["43"])} 0" \n'
     oput += f'scale="{fabs(d["41"])-0.002} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
 
     if d["TYPE"] == 'ghost':
@@ -459,7 +461,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #animated slide 2
@@ -470,7 +472,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #oput += '</a-entity><!--close door reset--> \n'
@@ -484,7 +486,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #oput += '</a-entity><!--close door reset--> \n'
@@ -499,7 +501,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #animated hinge 2
@@ -510,7 +512,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #oput += '</a-entity><!--close door reset--> \n'
@@ -524,7 +526,7 @@ def make_door(d):
                 oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-                oput += object_material(d)
+                oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #oput += '</a-entity><!--close door reset--> \n'
@@ -551,14 +553,14 @@ def make_slab(d):
     oput += f'<a-box id="{d["2"]}-{d["num"]}-floor" \n'
     oput += f'position="0 {-0.005*unit(d["43"])+d["43"]/2} 0" \n'
     oput += f'scale="{d["rx"]} 0.01 {d["ry"]}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
     #ceiling
     d['prefix'] = 'ceiling'
     oput += f'<a-box id="{d["2"]}-{d["num"]}-ceiling" \n'
     oput += f'position="0 {-0.005*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} {fabs(d["43"])-0.01} {d["ry"]}" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '"></a-box>\n'
 
     return oput
@@ -630,7 +632,7 @@ def make_wall(d):
             oput += f'<a-box id="{d["2"]}-{d["num"]}-{v[1]}" \n'
             oput += f'position="0 {v[2]*unit(d["43"])-d["43"]/2} {-v[3]+0.005*unit(d["42"])+d["42"]/2}" \n'
             oput += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
-            oput += object_material(d)
+            oput += entity_material(d)
             oput += '"></a-box>\n'
 
     return oput
@@ -790,10 +792,13 @@ def make_object(d):
     """
     oput = ''
 
-    oput += f'<a-entity id="{d["2"]}-{d["num"]}-object" \n'
+    oput += f'<a-entity id="model-{d["num"]}" \n'
     oput += f'position="0 {-d["43"]/2} 0" \n'
-    oput += f'obj-model="obj: #{d["PARAM1"]}-obj; \n'
-    oput += f' mtl: #{d["PARAM1"]}-mtl" \n'
+    if d['NAME'] == 'obj-mtl':
+        oput += f'obj-model="obj: #{d["PARAM1"]}.obj; \n'
+        oput += f' mtl: #{d["PARAM1"]}.mtl" \n'
+    elif d['NAME'] == 'gltf':
+        oput += f'gltf-model="#{d["PARAM1"]}.gltf" animation-mixer \n'
     if d['PARAM2'] == 'scale':
         oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
     oput += '></a-entity><!--close object--> \n'
@@ -843,7 +848,7 @@ def make_tree(d):
     oput += f'<a-cone id="{d["NAME"]}-{d["num"]}-trunk" \n'
     oput += f'position="0 {lt/2} 0" \n'
     oput += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '">\n'
     oput += '</a-cone> \n'#close trunk
     osc = 30 * gauss(1, .1)
@@ -907,7 +912,7 @@ def make_branch(branch, lb, lp, angle, rotx, d):
     oput += f'<a-cone id="{d["TYPE"]}-{d["num"]}-branch-{branch}" \n'
     oput += f'position="0 {lb/2} 0" \n'
     oput += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += '">\n'
     oput += '</a-cone> \n'#close branch
     return oput
@@ -919,7 +924,7 @@ def make_leaves(branch, lb, d):
     oput = f'<a-sphere id="{d["NAME"]}-{d["num"]}-leaves-{branch}" \n'
     oput += f'position="0 {lb} 0" \n'
     oput += f'geometry="radius: {gauss(lb, lb/5)};" \n'
-    oput += object_material(d)
+    oput += entity_material(d)
     oput += 'side: back;">\n'
     oput += '</a-sphere> \n'#close branch
     return oput
@@ -1124,7 +1129,7 @@ def unit(nounit):
 def rfloat(string):
     return round(float(string), 4)
 
-def object_material(d):
+def entity_material(d):
     #returns object material
     oput = ''
     if d['wireframe']:

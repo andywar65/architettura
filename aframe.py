@@ -65,24 +65,32 @@ def get_object_dict(page):
             elif key == '2':#attribute key
                 if value == 'NAME':
                     if attr_value == 'obj-mtl':
-                        flag = 'object'
-        elif flag == 'object':#stores values for attributes within object block
+                        flag = 'obj'
+                    elif attr_value == 'gltf':
+                        flag = 'gltf'
+        elif flag == 'obj' or flag == 'gltf':#stores values for attributes within object block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'PARAM1':
+                    print(attr_value)
                     if page.object_repository:
-                        object_dict[attr_value] = page.object_repository
+                        path = page.object_repository
                     else:
-                        object_dict[attr_value] = os.path.join(settings.MEDIA_URL, 'documents')
+                        path = os.path.join(settings.MEDIA_URL, 'documents')
+                    if flag == 'obj':
+                        object_dict[attr_value + '.' + 'obj'] = path
+                        object_dict[attr_value + '.' + 'mtl'] = path
+                    else:
+                        object_dict[attr_value + '.' + 'gltf'] = path
                     flag = False
-        if key == '0' and flag != 'object':
-
-            if value == 'ATTRIB':#start attribute
-                flag = 'attrib'
+        if key == '0':
+            if flag != 'obj' and flag != 'gltf':
+                if value == 'ATTRIB':#start attribute
+                    flag = 'attrib'
 
     dxf_f.close()
-
+    print(object_dict)
     return object_dict
 
 def get_entity_material(page):
@@ -227,7 +235,6 @@ def parse_dxf(page, material_dict, layer_dict):
                         d['10'] = d['vx'][0]
                         d['20'] = d['vy'][0]
                         d['30'] = d['38']
-                        print(d['vx'], d['vy'], d['10'], d['30'], d['20'])
                         d['num'] = x
                         collection[x] = d
                         flag = False
