@@ -73,7 +73,6 @@ def get_object_dict(page):
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'PARAM1':
-                    print(attr_value)
                     if page.object_repository:
                         path = page.object_repository
                     else:
@@ -90,7 +89,6 @@ def get_object_dict(page):
                     flag = 'attrib'
 
     dxf_f.close()
-    print(object_dict)
     return object_dict
 
 def get_entity_material(page):
@@ -210,7 +208,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         if component_pool:
                             d['pool'] = component_pool
 
-                    if d['ent'] == 'a-triangle':
+                    if d['ent'] == '3df':
                         d['2'] = 'a-triangle'
 
                         d['num'] = x
@@ -230,7 +228,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
                         flag = False
 
-                    elif d['ent'] == 'a-poly':#close polyline
+                    elif d['ent'] == 'poly':#close polyline
                         d['2'] = 'a-poly'
                         d['10'] = d['vx'][0]
                         d['20'] = d['vy'][0]
@@ -239,13 +237,13 @@ def parse_dxf(page, material_dict, layer_dict):
                         collection[x] = d
                         flag = False
 
-                    elif d['ent'] == 'a-line':#close line
+                    elif d['ent'] == 'line':#close line
                         d['2'] = 'a-line'
                         d['num'] = x
                         collection[x] = d
                         flag = False
 
-                    elif d['ent'] == 'a-block':
+                    elif d['ent'] == 'insert':
                         if d['2'] == 'a-wall':
                             if d['MATERIAL2']:
                                 d['pool2'] = material_dict[d['MATERIAL2']]
@@ -264,7 +262,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
                 'ATTRIBUTE': False, 'animation': False,}#default values
                 flag = 'ent'
-                d['ent'] = 'a-triangle'
+                d['ent'] = '3df'
                 x += 1
 
             elif value == 'INSERT':#start block
@@ -272,7 +270,7 @@ def parse_dxf(page, material_dict, layer_dict):
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '',
                  'animation': False, 'ATTRIBUTE': False,}#default values
                 flag = 'ent'
-                d['ent'] = 'a-block'
+                d['ent'] = 'insert'
                 x += 1
 
             elif value == 'LINE':#start line
@@ -281,7 +279,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 'ATTRIBUTE': False, 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
-                d['ent'] = 'a-line'
+                d['ent'] = 'line'
                 x += 1
 
             elif value == 'LWPOLYLINE':#start polyline
@@ -292,7 +290,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
-                d['ent'] = 'a-poly'
+                d['ent'] = 'poly'
                 x += 1
 
     return collection
@@ -303,12 +301,12 @@ def store_entity_values(d, key, value):
     if key == '8':#layer name
         d['layer'] = d[key] =  html.escape(value, quote=True)
     elif key == '10':#X position
-        if d['ent'] == 'a-poly':
+        if d['ent'] == 'poly':
             d['vx'].append(float(value))
         else:
             d[key] = float(value)
     elif key == '20':#mirror Y position
-        if d['ent'] == 'a-poly':
+        if d['ent'] == 'poly':
             d['vy'].append(-float(value))
         else:
             d[key] = -float(value)
@@ -609,6 +607,8 @@ def make_html(page, collection, mode):
         elif d['2'] == 'a-slab':
             entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-openwall':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-stair':
             entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-block':
             d['NAME'] = d.get('NAME', 't01')

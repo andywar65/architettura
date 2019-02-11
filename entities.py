@@ -92,6 +92,8 @@ def make_bim_block(page, d):
         oput += make_slab(d)
     elif d['2'] == 'a-door':
         oput += make_door(d)
+    elif d['2'] == 'a-stair':
+        oput += make_stair(d)
     elif d['2'] == 'a-openwall':
         oput += make_openwall(d)
 
@@ -590,7 +592,7 @@ def make_wall(d):
     skirt_h = fabs(float(d['SKIRTING']))
     tile2_h = fabs(float(d['TILING2']))
     skirt2_h = fabs(float(d['SKIRTING2']))
-    if d['2'] == 'openwall-above':
+    if d['ide'] == 'openwall-above':
         door_h = d['door_height']
     else:
         door_h = 0
@@ -639,11 +641,16 @@ def make_wall(d):
 
     return oput
 
+def make_stair(d):
+    oput = ''
+    return oput
+
 def make_openwall(d):
     oput = ''
     tot = d['41']
-    #make left wall
+
     d2 = d.copy()
+    #make left wall
     d2['41'] = d2['door_off_1']
     d2['ide'] = 'openwall-left'
     oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
@@ -652,7 +659,6 @@ def make_openwall(d):
     oput += make_wall(d2)
     oput += '</a-entity> \n'
     #make part above door
-    d2 = d.copy()
     d2['41'] = d2['door_off_2'] - d2['door_off_1']
     d2['ide'] = 'openwall-above'
     oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
@@ -662,7 +668,6 @@ def make_openwall(d):
     oput += make_wall(d2)
     oput += '</a-entity> \n'
     #make right wall
-    d2 = d.copy()
     d2['41'] = tot - d2['door_off_2']
     d2['ide'] = 'openwall-right'
     oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
