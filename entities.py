@@ -87,6 +87,7 @@ def make_bim_block(page, d):
     oput += '> \n'
 
     if d['2'] == 'a-wall':
+        d['ide'] = 'wall'
         oput += make_wall(d)
     elif d['2'] == 'a-slab':
         oput += make_slab(d)
@@ -623,10 +624,10 @@ def make_wall(d):
     values = (
         (skirt_h, 'int-skirt', skirt_h/2, d["42"]/2, fabs(d["42"]), 'skirt'),
         (tile_h, 'int-tile', tile_h/2+skirt_h, d["42"]/2, fabs(d["42"]), 'tile'),
-        (wall_h, 'int-wall', wall_h/2+tile_h+skirt_h, d["42"]/2, fabs(d["42"]), 'wall'),
+        (wall_h, 'int-plaster', wall_h/2+tile_h+skirt_h, d["42"]/2, fabs(d["42"]), 'wall'),
         (skirt2_h, 'ext-skirt', skirt2_h/2, d["42"], 0.02, 'skirt2'),
         (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, d["42"], 0.02, 'tile2'),
-        (wall2_h, 'ext-wall', wall2_h/2+tile2_h+skirt2_h, d["42"], 0.02, 'wall2'),
+        (wall2_h, 'ext-plaster', wall2_h/2+tile2_h+skirt2_h, d["42"], 0.02, 'wall2'),
     )
     for v in values:
         if v[0]:
