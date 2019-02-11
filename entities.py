@@ -39,6 +39,7 @@ def make_box(page, d):
     d['dy'] = -d['42']/2
     d['dz'] = d['43']/2
     d['tag'] = 'a-box'
+    d['ide'] = 'box'
     oput = ''
     oput += open_entity(page, d)
     oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
@@ -53,6 +54,7 @@ def make_block(page, d):
     d['dx'] = d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
+    d['ide'] = 'block'
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
@@ -79,6 +81,7 @@ def make_bim_block(page, d):
     else:
         d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
+    d['ide'] = 'block'
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
@@ -97,7 +100,7 @@ def make_bim_block(page, d):
     return oput
 
 def make_circular(page, d):
-    d['prefix'] = d['2'].replace('a-', '')
+    d['prefix'] = d['ide'] = d['2'].replace('a-', '')
     values = (
         ('pool', 0, d['prefix'], 'MATERIAL'),
     )
@@ -128,7 +131,7 @@ def make_circular(page, d):
     return oput
 
 def make_curvedimage(page, d):
-    d['prefix'] = 'curvedim'
+    d['prefix'] = d['ide'] = 'curvedim'
     values = (
         ('pool', 0, d['prefix'], 'MATERIAL'),
     )
@@ -149,7 +152,7 @@ def make_curvedimage(page, d):
     return oput
 
 def make_plane(page, d):
-    d['prefix'] = 'plane'
+    d['prefix'] = d['ide'] = 'plane'
     d['dx'] = d['41']/2
     d['dy'] = 0
     d['dz'] = d['43']/2
@@ -206,7 +209,7 @@ def make_w_plane(page, d):
         if v[0]:
             d['prefix'] = v[1]
             d['ry'] = v[0]
-            oput += f'<a-plane id="{d["2"]}-{d["num"]}-{v[1]}" \n'
+            oput += f'<a-plane id="{d["ide"]}-{d["num"]}-{v[1]}" \n'
             oput += f'position="0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0" \n'
             oput += f'width="{round(d["rx"], 4)}" height="{v[0]}" \n'
             oput += entity_material(d)
@@ -228,7 +231,7 @@ def make_triangle(page, d):
         d[value[0]] = d[value[0]] - d[key]
         d[value[1]] = d[value[1]] - d[key]
         d[value[2]] = d[value[2]] - d[key]
-    d['prefix'] = 'triangle'
+    d['prefix'] = d['ide'] = 'triangle'
     values = (
         ('pool', 0, d['prefix'], 'MATERIAL'),
     )
@@ -264,7 +267,7 @@ def make_line(page, d):
     if d['39']:
         d['30'] = d['30'] + d['39']/2
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['prefix'] = 'line'
+    d['prefix'] = d['ide'] = 'line'
     d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
@@ -308,7 +311,7 @@ def make_poly(page, d):
         d['vy'][i] = d['vy'][i]-d['20']
     d['dx'] = d['dy'] = 0
     d['dz'] = d['39']/2
-    d['prefix'] = 'poly'
+    d['prefix'] = d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
     oput = ''
@@ -323,7 +326,7 @@ def make_poly(page, d):
             dy = d['vy'][i]-d['vy'][i+1]
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
+            oput += f'<a-entity id="{d["ide"]}-{d["num"]}-wall-ent" \n'
             oput += f'position="{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}" \n'
             oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
             oput += make_w_plane(page, d)
@@ -334,7 +337,7 @@ def make_poly(page, d):
             dy = d['vy'][i+1]-d['vy'][0]
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
+            oput += f'<a-entity id="{d["ide"]}-{d["num"]}-wall-ent" \n'
             oput += f'position="{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}" \n'
             oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
             oput += make_w_plane(page, d)
@@ -587,7 +590,7 @@ def make_wall(d):
     skirt_h = fabs(float(d['SKIRTING']))
     tile2_h = fabs(float(d['TILING2']))
     skirt2_h = fabs(float(d['SKIRTING2']))
-    if d['2'] == 'a-openwall-above':
+    if d['2'] == 'openwall-above':
         door_h = d['door_height']
     else:
         door_h = 0
@@ -628,7 +631,7 @@ def make_wall(d):
             d['prefix'] = v[5]
             d['rx'] = fabs(d["41"])
             d['ry'] = v[0]
-            oput += f'<a-box id="{d["2"]}-{d["num"]}-{v[1]}" \n'
+            oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[1]}" \n'
             oput += f'position="0 {v[2]*unit(d["43"])-d["43"]/2} {-v[3]+0.005*unit(d["42"])+d["42"]/2}" \n'
             oput += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
             oput += entity_material(d)
@@ -642,8 +645,8 @@ def make_openwall(d):
     #make left wall
     d2 = d.copy()
     d2['41'] = d2['door_off_1']
-    d2['2'] = 'a-openwall-left'
-    oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    d2['ide'] = 'openwall-left'
+    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
     xpos = round((d2['door_off_1']-tot)/2, 4)
     oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
@@ -651,8 +654,8 @@ def make_openwall(d):
     #make part above door
     d2 = d.copy()
     d2['41'] = d2['door_off_2'] - d2['door_off_1']
-    d2['2'] = 'a-openwall-above'
-    oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    d2['ide'] = 'openwall-above'
+    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
     xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
     zpos = round(d2['door_height'], 4)
     oput += f'position="{xpos} {zpos} 0"> \n'
@@ -661,8 +664,8 @@ def make_openwall(d):
     #make right wall
     d2 = d.copy()
     d2['41'] = tot - d2['door_off_2']
-    d2['2'] = 'a-openwall-right'
-    oput += f'<a-entity id="{d2["2"]}-{d2["num"]}-ent" \n'
+    d2['ide'] = 'openwall-right'
+    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
     xpos = round((-d2['41']+tot)/2, 4)
     oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
@@ -679,7 +682,7 @@ def make_light(page, d):
         d['DECAY'] = 2
     if d['COLOR'] == '':
         d['COLOR'] = d['color']
-    d['prefix'] = 'light'
+    d['prefix'] = d['ide'] = 'light'
 
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-entity'
@@ -713,7 +716,7 @@ def make_light_target(d):
     return oput
 
 def make_text(page, d):
-    d['prefix'] = 'text'
+    d['prefix'] = d['ide'] = 'text'
     values = (
         ('pool', 0, d['prefix'], 'MATERIAL'),
     )
@@ -741,7 +744,7 @@ def make_text(page, d):
     return oput
 
 def make_link(page, d):
-    d['prefix'] = 'link'
+    d['prefix'] = d['ide'] = 'link'
 
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-link'
@@ -931,7 +934,7 @@ def make_leaves(branch, lb, d):
 def open_entity(page, d):
     oput = ''
     if d['animation']:
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-rig" \n'
+        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
         oput += make_insertion(page, d)
@@ -946,7 +949,7 @@ def make_insertion(page, d):
     if d['ID']:
         oput += f'<{d["tag"]} id="{d["ID"]}" \n'
     else:
-        oput += f'<{d["tag"]} id="{d["2"]}-{d["num"]}" \n'
+        oput += f'<{d["tag"]} id="{d["ide"]}-{d["num"]}" \n'
     if d['ATTRIBUTE'] == 'checkpoint':
         oput += 'checkpoint '
     elif d['ATTRIBUTE'] == 'look-at':
@@ -1027,7 +1030,7 @@ def entity_geometry(d):
 
 def add_animation(d):
     oput = ''
-    oput += f'<a-animation id="{d["prefix"]}-{d["num"]}-animation" \n'
+    oput += f'<a-animation id="{d["ide"]}-{d["num"]}-animation" \n'
     oput += f'attribute="{d["ATTRIBUTE"]}"\n'
     if eval(d['RIG']):
         if d['ATTRIBUTE'] == 'rotation':
@@ -1068,22 +1071,22 @@ def add_stalker(page, d):
             wrapcount = 10
         else:
             wrapcount = length/3
-        oput += f'<a-entity id="{d["2"]}-{d["num"]}-balloon-ent" \n'
+        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-balloon-ent" \n'
         oput += f'position="0 {d["43"]/2+d["41"]/4+.1} 0" \n'
         oput += f'text="width: {d["41"]*.9}; align: center; color: black; '
         oput += f'value: {d["TEXT"]}; wrap-count: {wrapcount};"> \n'
-        oput += f'<a-cylinder id="{d["2"]}-{d["num"]}-balloon" \n'
+        oput += f'<a-cylinder id="{d["ide"]}-{d["num"]}-balloon" \n'
         oput += f'position="0 0 -0.01" \n'
         oput += f'rotation="90 0 0" \n'
         oput += f'scale="{fabs(d["41"])/1.5} 0 {fabs(d["41"])/3}"> \n'
         oput += '</a-cylinder></a-entity>\n'
-        oput += f'<a-triangle id="{d["2"]}-{d["num"]}-triangle" \n'
+        oput += f'<a-triangle id="{d["ide"]}-{d["num"]}-triangle" \n'
         oput += f'geometry="vertexA:0 {d["43"]/2+.1} 0.0005; \n'
         oput += f'vertexB:0 {d["43"]/2-.05} 0.0005; \n'
         oput += f'vertexC:{d["41"]/4} {d["43"]/2+.1} 0.0005"> \n'
         oput += '</a-triangle> \n'
     if d['LINK']:
-        oput += f'<a-link id="{d["2"]}-{d["num"]}-link" \n'
+        oput += f'<a-link id="{d["ide"]}-{d["num"]}-link" \n'
         oput += f'position="{d["41"]*.7} 0 0.02" \n'
         oput += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
         target = False
