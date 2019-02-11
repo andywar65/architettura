@@ -656,14 +656,32 @@ def make_stair(d):
         na = int(d['STEPS'])
         np = na-1
     else:
-        return oput
-    for i in range(np):
-        posz = (d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2
-        posy = -d["42"]/np/2-i*d["42"]/np+d["42"]/2
+        #attempts to find the 2a+p=63 relationship
+        na = d['43'] / 0.05
+        if int(na) != na:
+            na = int(na) + 1
+        flag = False
+        while flag == False:
+            np = na-1
+            diff = (2*d["43"]/na+d["42"]/np)-.63
+            print(f'na={na}, np={np}, diff={diff} \n')
+            if fabs(diff) <= 0.01:
+                flag = True
+            else:
+                na -= 1
+        if np == 0:
+            #if previous attempt failed
+            na = d['43'] / 0.16
+            if int(na) != na:
+                na = int(na) + 1
+                np = na-1
+    for i in range(int(np)):
+        posz = round((d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2, 4)
+        posy = round(-d["42"]/np/2-i*d["42"]/np+d["42"]/2, 4)
         oput += f'<a-box id="stair-{d["num"]}-step-{i}" \n'
         oput += f'position="0 {posz} {posy}" \n'
         oput += f'rotation="0 90 0" \n'
-        oput += f'scale="{d["42"]/np} 0.03 {d["41"]}" \n'
+        oput += f'scale="{round(d["42"]/np, 4)} 0.03 {round(d["41"], 4)}" \n'
         oput += entity_material(d)
         oput += '"></a-box>\n'
     return oput
