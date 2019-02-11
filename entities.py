@@ -643,7 +643,29 @@ def make_wall(d):
     return oput
 
 def make_stair(d):
+    values = (
+        ('pool', 0, 'steps', 'MATERIAL'),
+        ('pool', 2, 'railings', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
     oput = ''
+    d['prefix'] = 'steps'
+    d['rx'] = fabs(d["41"])
+    d['ry'] = fabs(d["42"])
+    if d['STEPS']:
+        na = int(d['STEPS'])
+        np = na-1
+    else:
+        return oput
+    for i in range(np):
+        posz = (d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2
+        posy = -d["42"]/np/2-i*d["42"]/np+d["42"]/2
+        oput += f'<a-box id="stair-{d["num"]}-step-{i}" \n'
+        oput += f'position="0 {posz} {posy}" \n'
+        oput += f'rotation="0 90 0" \n'
+        oput += f'scale="{d["42"]/np} 0.03 {d["41"]}" \n'
+        oput += entity_material(d)
+        oput += '"></a-box>\n'
     return oput
 
 def make_openwall(d):
