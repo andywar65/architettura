@@ -38,7 +38,7 @@ def make_box(page, d):
     d['dx'] = d['41']/2
     d['dy'] = -d['42']/2
     d['dz'] = d['43']/2
-    d['ent'] = 'a-box'
+    d['tag'] = 'a-box'
     oput = ''
     oput += open_entity(page, d)
     oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
@@ -52,7 +52,7 @@ def make_block(page, d):
 
     d['dx'] = d['dy'] = 0
     d['dz'] = d['43']/2
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
@@ -78,7 +78,7 @@ def make_bim_block(page, d):
         d['dz'] = -d['43']/2
     else:
         d['dz'] = d['43']/2
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
@@ -113,7 +113,7 @@ def make_circular(page, d):
         d['dz'] = 0
     else:
         d['dz'] = d['43']/2
-    d['ent'] = d['2']
+    d['tag'] = d['2']
     oput = ''
     oput += open_entity(page, d)
     if d['2'] == 'a-circle':
@@ -138,7 +138,7 @@ def make_curvedimage(page, d):
     d['dx'] = 0
     d['dy'] = 0
     d['dz'] = d['43']/2
-    d['ent'] = d['2']
+    d['tag'] = d['2']
     oput = ''
     oput += open_entity(page, d)
     oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
@@ -153,7 +153,7 @@ def make_plane(page, d):
     d['dx'] = d['41']/2
     d['dy'] = 0
     d['dz'] = d['43']/2
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
     oput += '> \n'
@@ -236,7 +236,7 @@ def make_triangle(page, d):
     d['rx'] = 1
     d['ry'] = 1
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['ent'] = 'a-triangle'
+    d['tag'] = 'a-triangle'
     oput = ''
     oput += open_entity(page, d)
     oput += f'geometry="vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
@@ -265,7 +265,7 @@ def make_line(page, d):
         d['30'] = d['30'] + d['39']/2
     d['dx'] = d['dy'] = d['dz'] = 0
     d['prefix'] = 'line'
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
     if d['39']:
@@ -309,7 +309,7 @@ def make_poly(page, d):
     d['dx'] = d['dy'] = 0
     d['dz'] = d['39']/2
     d['prefix'] = 'poly'
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     d['num1'] = d['num']
     oput = ''
     oput += open_entity(page, d)
@@ -371,7 +371,7 @@ def make_table_01(d):
     d['prefix'] = 'top'
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-table-top" \n'
+    oput += f'<a-box id="table01-{d["num"]}-top" \n'
     oput += f'position="0 {d["43"]/2-0.025*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} 0.05 {d["ry"]}" \n'
     oput += entity_material(d)
@@ -391,7 +391,7 @@ def make_table_01(d):
     )
     #make legs
     for v in values:
-        oput += f'<a-cylinder id="{d["2"]}-{d["num"]}-leg-{v[0]}" \n'
+        oput += f'<a-cylinder id="table01-{d["num"]}-leg-{v[0]}" \n'
         oput += f'position="{v[1]} {(height-d["43"])/2} {v[2]}" \n'
         oput += 'radius="0.025" \n'
         oput += f'height="{height}" \n'
@@ -415,27 +415,26 @@ def make_door(d):
     d = prepare_material_values(values, d)
 
     oput = ''
-    #oput += f'<a-entity id="{d["2"]}-{d["num"]}-reset" \n'
-    #oput += f'position="{-d["xg"]-d["xs"]} {-d["zg"]-d["zs"]} {-d["yg"]-d["ys"]}"> \n'
+
     d['prefix'] = 'frame'
     d['rx'] = 1
     d['ry'] = 1
     #left frame
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-left-frame" \n'
+    oput += f'<a-box id="door-{d["num"]}-left-frame" \n'
     oput += f'position="{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += entity_material(d)
     oput += '"></a-box>\n'
     #right frame
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-right-frame" \n'
+    oput += f'<a-box id="door-{d["num"]}-right-frame" \n'
     oput += f'position="{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0" \n'
     oput += 'rotation="0 0 90" \n'
     oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += entity_material(d)
     oput += '"></a-box>\n'
     #top frame
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-top-frame" \n'
+    oput += f'<a-box id="door-{d["num"]}-top-frame" \n'
     oput += f'position="0 {d["43"]/2+0.049*unit(d["43"])} 0" \n'
     oput += f'scale="{fabs(d["41"])-0.002} 0.1 {fabs(d["42"])+0.02}" \n'
     oput += entity_material(d)
@@ -454,22 +453,22 @@ def make_door(d):
         if eval(d["SLIDING"]):
             if eval(d["DOUBLE"]):
                 #animated slide 1
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide-1" \n'
+                oput += f'<a-entity id="door-{d["num"]}-slide-1" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
                 oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #animated slide 2
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide-2" \n'
+                oput += f'<a-entity id="door-{d["num"]}-slide-2" \n'
                 oput += f'position="{d["41"]/2} {-d["43"]/2} 0"> \n'
                 oput += f'<a-animation attribute="position" from="{d["41"]/2} {-d["43"]/2} 0" to="{d["41"]-0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
@@ -479,11 +478,11 @@ def make_door(d):
                 return oput
             else:#single
                 #animated slide
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-slide" \n'
+                oput += f'<a-entity id="door-{d["num"]}-slide" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
                 oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]*3/2+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
                 oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
@@ -494,22 +493,22 @@ def make_door(d):
         else:#hinged
             if eval(d["DOUBLE"]):
                 #animated hinge 1
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-1" \n'
+                oput += f'<a-entity id="door-{d["num"]}-hinge-1" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 1
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-1" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
                 #animated hinge 2
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge-2" '
+                oput += f'<a-entity id="door-{d["num"]}-hinge-2" '
                 oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part 2
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part-2" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
@@ -519,11 +518,11 @@ def make_door(d):
                 return oput
             else:#single
                 #animated hinge
-                oput += f'<a-entity id="{d["2"]}-{d["num"]}-hinge" \n'
+                oput += f'<a-entity id="door-{d["num"]}-hinge" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
                 oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
                 #moving part
-                oput += f'<a-box id="{d["2"]}-{d["num"]}-moving-part" \n'
+                oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
                 oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
                 oput += entity_material(d)
@@ -550,14 +549,14 @@ def make_slab(d):
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     #floor
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-floor" \n'
+    oput += f'<a-box id="slab-{d["num"]}-floor" \n'
     oput += f'position="0 {-0.005*unit(d["43"])+d["43"]/2} 0" \n'
     oput += f'scale="{d["rx"]} 0.01 {d["ry"]}" \n'
     oput += entity_material(d)
     oput += '"></a-box>\n'
     #ceiling
     d['prefix'] = 'ceiling'
-    oput += f'<a-box id="{d["2"]}-{d["num"]}-ceiling" \n'
+    oput += f'<a-box id="slab-{d["num"]}-ceiling" \n'
     oput += f'position="0 {-0.005*unit(d["43"])} 0" \n'
     oput += f'scale="{d["rx"]} {fabs(d["43"])-0.01} {d["ry"]}" \n'
     oput += entity_material(d)
@@ -683,7 +682,7 @@ def make_light(page, d):
     d['prefix'] = 'light'
 
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
     oput = ''
     oput += open_entity(page, d)
 
@@ -721,7 +720,7 @@ def make_text(page, d):
     d = prepare_material_values(values, d)
 
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['ent'] = 'a-entity'
+    d['tag'] = 'a-entity'
 
     if d["WRAP-COUNT"]:
         wrapcount =  d["WRAP-COUNT"]
@@ -745,7 +744,7 @@ def make_link(page, d):
     d['prefix'] = 'link'
 
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['ent'] = 'a-link'
+    d['tag'] = 'a-link'
 
     oput = ''
     oput += open_entity(page, d)
@@ -926,7 +925,7 @@ def make_leaves(branch, lb, d):
     oput += f'geometry="radius: {gauss(lb, lb/5)};" \n'
     oput += entity_material(d)
     oput += 'side: back;">\n'
-    oput += '</a-sphere> \n'#close branch
+    oput += '</a-sphere> \n'#close leaves
     return oput
 
 def open_entity(page, d):
@@ -945,9 +944,9 @@ def open_entity(page, d):
 def make_insertion(page, d):
     oput = ''
     if d['ID']:
-        oput += f'<{d["ent"]} id="{d["ID"]}" \n'
+        oput += f'<{d["tag"]} id="{d["ID"]}" \n'
     else:
-        oput += f'<{d["ent"]} id="{d["2"]}-{d["num"]}" \n'
+        oput += f'<{d["tag"]} id="{d["2"]}-{d["num"]}" \n'
     if d['ATTRIBUTE'] == 'checkpoint':
         oput += 'checkpoint '
     elif d['ATTRIBUTE'] == 'look-at':
@@ -958,9 +957,9 @@ def make_insertion(page, d):
     elif d['ATTRIBUTE'] == 'stalker':
         oput += 'look-at="#camera" '
     if page.shadows:
-        if d['ent'] == 'a-curvedimage':
+        if d['2'] == 'a-curvedimage':
             oput += 'shadow="receive: false; cast: false" \n'
-        elif d['ent'] == 'a-light':
+        elif d['2'] == 'a-light':
             pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
@@ -996,14 +995,14 @@ def close_entity(page, d):
         oput += add_stalker(page, d)
     if d['animation']:
         if eval(d['RIG']):
-            oput += f'</{d["ent"]}> \n'
+            oput += f'</{d["tag"]}> \n'
             oput += add_animation(d)
             oput += '</a-entity> \n'
         else:
             oput += add_animation(d)
-            oput += f'</{d["ent"]}></a-entity> \n'
+            oput += f'</{d["tag"]}></a-entity> \n'
     else:
-        oput += f'</{d["ent"]}> \n'
+        oput += f'</{d["tag"]}> \n'
     return oput
 
 def entity_geometry(d):

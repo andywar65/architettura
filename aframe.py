@@ -211,7 +211,7 @@ def parse_dxf(page, material_dict, layer_dict):
                             d['pool'] = component_pool
 
                     if d['ent'] == 'a-triangle':
-                        d['2'] = 'a-triangle'#TO DELETE
+                        d['2'] = 'a-triangle'
 
                         d['num'] = x
                         collection[x] = d
