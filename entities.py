@@ -94,7 +94,7 @@ def make_bim_block(page, d):
     elif d['2'] == 'a-door':
         oput += make_door(d)
     elif d['2'] == 'a-stair':
-        oput += make_stair(d)
+        oput += make_stair(page, d)
     elif d['2'] == 'a-openwall':
         oput += make_openwall(d)
 
@@ -642,7 +642,7 @@ def make_wall(d):
 
     return oput
 
-def make_stair(d):
+def make_stair(page, d):
     values = (
         ('pool', 0, 'steps', 'MATERIAL'),
         ('pool', 2, 'railings', 'MATERIAL'),
@@ -661,7 +661,7 @@ def make_stair(d):
         if int(na) != na:
             na = int(na) + 1
         flag = False
-        while flag == False:
+        while na > 1:
             np = na-1
             diff = (2*d["43"]/na+d["42"]/np)-.63
             print(f'na={na}, np={np}, diff={diff} \n')
@@ -669,21 +669,67 @@ def make_stair(d):
                 flag = True
             else:
                 na -= 1
-        if np == 0:
+        if flag == False:
             #if previous attempt failed
             na = d['43'] / 0.16
             if int(na) != na:
                 na = int(na) + 1
-                np = na-1
+            np = na-1
     for i in range(int(np)):
         posz = round((d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2, 4)
         posy = round(-d["42"]/np/2-i*d["42"]/np+d["42"]/2, 4)
         oput += f'<a-box id="stair-{d["num"]}-step-{i}" \n'
         oput += f'position="0 {posz} {posy}" \n'
         oput += f'rotation="0 90 0" \n'
-        oput += f'scale="{round(d["42"]/np, 4)} 0.03 {round(d["41"], 4)}" \n'
+        oput += f'scale="{round(d["42"]/np, 4)} 0.03 {round(d["41"]-0.1, 4)}" \n'
         oput += entity_material(d)
         oput += '"></a-box>\n'
+    d['prefix'] = 'railings'
+    d['rx'] = 1
+    d['ry'] = 1
+    xtup = (-d["41"]/2, d["41"]/2-0.05)
+    a = round(d['43'] / na, 4)
+    d['42'] = round(d['42'], 4)
+    d['43'] = round(d['43'], 4)
+    faces = [
+        (3, 2, 1),
+        (3, 1, 0),
+        (2, 5, 1),
+        (2, 6, 5),
+        (7, 3, 0),
+        (7, 0, 4),
+        (7, 6, 2),
+        (7, 2, 3),
+        (0, 1, 5),
+        (0, 5, 4),
+        (6, 7, 4),
+        (6, 4, 5),
+    ]
+    for xpos in xtup:
+        x = round(xpos, 4)
+        vertices = [
+            (x, d['42']/2, a-d['43']/2),
+            (x+0.05, d['42']/2, a-d['43']/2),
+            (x+0.05, d['42']/2, -0.03-d['43']/2),
+            (x, d['42']/2, -0.03-d['43']/2),
+            (x, -d['42']/2, d['43']/2),
+            (x+0.05, -d['42']/2, d['43']/2),
+            (x+0.05, -d['42']/2, d['43']/2-a-0.03),
+            (x, -d['42']/2, d['43']/2-a-0.03),
+        ]
+        for i in range(12):
+            f = faces[i]
+            va = vertices[f[0]]
+            vb = vertices[f[1]]
+            vc = vertices[f[2]]
+            oput += '<a-triangle '
+            oput += f'geometry="vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; \n'
+            oput += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; \n'
+            oput += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}" \n'
+            oput += entity_material(d)
+            if page.double_face:
+                oput += 'side: double; '
+            oput += '"></a-triangle> \n'
     return oput
 
 def make_openwall(d):
