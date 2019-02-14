@@ -1025,11 +1025,30 @@ def make_leaves(branch, lb, d):
 
 def open_entity(page, d):
     oput = ''
-    if d['animation']:
+    if d['RIG'] == False and d['ATTRIBUTE'] == 'rotation':
+        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
+        oput += make_position(d)
+        #it's the only case when rig must be animated instead of entity
+        oput += 'animation="property: rotation; '
+        oput += f'to:{d["TO"]}; \n'
+        oput += f'startEvents:{d["BEGIN"]}; \n'
+        oput += f'dir:{d["DIRECTION"]}; \n'
+        oput += f'loop:{d["REPEAT"]}; \n'
+        oput += f'dur:{d["DURATION"]};" \n'
+        oput += '> \n'
+        oput += make_insertion(page, d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+    elif d['RIG']:
         oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
         oput += make_insertion(page, d)
+        oput += add_animation(d)
+    elif d['animation']:
+        oput += make_insertion(page, d)
+        oput += make_position(d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+        oput += add_animation(d)
     else:
         oput += make_insertion(page, d)
         oput += make_position(d)
@@ -1054,12 +1073,12 @@ def make_insertion(page, d):
     if page.shadows:
         if d['2'] == 'a-curvedimage':
             oput += 'shadow="receive: false; cast: false" \n'
-        elif d['2'] == 'a-light':
+        elif d['2'] == 'a-light' or d['2'] == 'a-line':
             pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
     if d['ATTRIBUTE'] == 'orbit':
-        d['RIG'] = 'True'
+        d['RIG'] = True
         d['ATTRIBUTE'] = 'rotation'
         l = d['TO'].split()
         d['FROM'] = '0 0 0'
@@ -1088,16 +1107,18 @@ def close_entity(page, d):
     oput = ''
     if d['ATTRIBUTE'] == 'stalker':
         oput += add_stalker(page, d)
+    #if d['animation']:
+        #if eval(d['RIG']):
+            #oput += f'</{d["tag"]}> \n'
+            #oput += add_animation(d)
+            #oput += '</a-entity> \n'
+        #else:
+            #oput += add_animation(d)
+            #oput += f'</{d["tag"]}></a-entity> \n'
+    #else:
+    oput += f'</{d["tag"]}> \n'
     if d['animation']:
-        if eval(d['RIG']):
-            oput += f'</{d["tag"]}> \n'
-            oput += add_animation(d)
-            oput += '</a-entity> \n'
-        else:
-            oput += add_animation(d)
-            oput += f'</{d["tag"]}></a-entity> \n'
-    else:
-        oput += f'</{d["tag"]}> \n'
+        oput += '</a-entity> \n'
     return oput
 
 def entity_geometry(d):
@@ -1122,35 +1143,36 @@ def entity_geometry(d):
 
 def add_animation(d):
     oput = ''
-    oput += f'<a-animation id="{d["ide"]}-{d["num"]}-animation" \n'
-    oput += f'attribute="{d["ATTRIBUTE"]}"\n'
-    if eval(d['RIG']):
+    #oput += f'<a-animation id="{d["ide"]}-{d["num"]}-animation" \n'
+    oput += 'animation=" \n'
+    oput += f'property:{d["ATTRIBUTE"]}; \n'
+    if d['RIG'] == False:
         if d['ATTRIBUTE'] == 'rotation':
             l = d['FROM'].split()
-            oput += f'from="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'from:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
-            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["220"]+float(l[2]), 4)}; \n'
             l = d['TO'].split()
-            oput += f'to="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'to:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
-            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["220"]+float(l[2]), 4)}; \n'
         elif d['ATTRIBUTE'] == 'position':
             l = d['FROM'].split()
-            oput += f'from="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'from:{round(d["10"]+float(l[0]), 4)} '
             oput += f'{round(d["30"]+float(l[1]), 4)} '
-            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["20"]+float(l[2]), 4)}; \n'
             l = d['TO'].split()
-            oput += f'to="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'to:{round(d["10"]+float(l[0]), 4)} '
             oput += f'{round(d["30"]+float(l[1]), 4)} '
-            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["20"]+float(l[2]), 4)}; \n'
     else:
-        oput += f'from="{d["FROM"]}"\n'
-        oput += f'to="{d["TO"]}"\n'
-    oput += f'begin="{d["BEGIN"]}"\n'
-    oput += f'direction="{d["DIRECTION"]}"\n'
-    oput += f'repeat="{d["REPEAT"]}"\n'
-    oput += f'dur="{d["DURATION"]}"\n'
-    oput += '></a-animation>\n'
+        oput += f'from:{d["FROM"]}; \n'
+        oput += f'to:{d["TO"]}; \n'
+    oput += f'startEvents:{d["BEGIN"]}; \n'
+    oput += f'dir:{d["DIRECTION"]}; \n'
+    oput += f'loop:{d["REPEAT"]}; \n'
+    oput += f'dur:{d["DURATION"]};" \n'
+    #oput += '></a-animation>\n'
     return oput
 
 def add_stalker(page, d):

@@ -260,14 +260,14 @@ def parse_dxf(page, material_dict, layer_dict):
 
             if value == '3DFACE':#start 3D face
                 d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
-                'ATTRIBUTE': False, 'animation': False,}#default values
+                'ATTRIBUTE': False, 'animation': False, 'RIG': False,}#default values
                 flag = 'ent'
                 d['ent'] = '3df'
                 x += 1
 
             elif value == 'INSERT':#start block
                 d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
-                 '230': 1,'repeat': False, 'TYPE': '','NAME': '',
+                 '230': 1,'repeat': False, 'TYPE': '','NAME': '', 'RIG': False,
                  'animation': False, 'ATTRIBUTE': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'insert'
@@ -275,7 +275,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
             elif value == 'LINE':#start line
                 d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
-                '50': 0, '210': 0, '220': 0, '230': 1,
+                '50': 0, '210': 0, '220': 0, '230': 1, 'RIG': False,
                 'ATTRIBUTE': False, 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
@@ -286,7 +286,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 #default values
                 d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
-                'vx': [], 'vy': [], 'ATTRIBUTE': False,
+                'vx': [], 'vy': [], 'ATTRIBUTE': False, 'RIG': False,
                 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
@@ -564,7 +564,7 @@ def reference_animations(collection):
                             d2['TARGET'] = d['TARGET']
                             d2['TEXT'] = d['TEXT']
                             d2['LINK'] = d['LINK']
-                            d2['RIG'] = d['RIG']
+                            d2['RIG'] = eval(d['RIG'])
 
                         collection[x2] = d2
     return collection
