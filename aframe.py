@@ -260,7 +260,7 @@ def parse_dxf(page, material_dict, layer_dict):
 
             if value == '3DFACE':#start 3D face
                 d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
-                'ATTRIBUTE': False, 'animation': False, 'RIG': False,}#default values
+                'PROPERTY': False, 'animation': False, 'RIG': False,}#default values
                 flag = 'ent'
                 d['ent'] = '3df'
                 x += 1
@@ -268,7 +268,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'INSERT':#start block
                 d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '', 'RIG': False,
-                 'animation': False, 'ATTRIBUTE': False,}#default values
+                 'animation': False, 'PROPERTY': False,}#default values
                 flag = 'ent'
                 d['ent'] = 'insert'
                 x += 1
@@ -276,7 +276,7 @@ def parse_dxf(page, material_dict, layer_dict):
             elif value == 'LINE':#start line
                 d = {'ID': '', '30': 0, '31': 0, '39': 0, '41': 1, '42': 1, '43': 1,
                 '50': 0, '210': 0, '220': 0, '230': 1, 'RIG': False,
-                'ATTRIBUTE': False, 'animation': False, 'repeat': False,
+                'PROPERTY': False, 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
                 d['ent'] = 'line'
@@ -286,7 +286,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 #default values
                 d = {'ID': '', '38': 0,  '39': 0, '41': 1, '42': 1,
                 '43': 1, '50': 0, '70': False, '210': 0, '220': 0, '230': 1,
-                'vx': [], 'vy': [], 'ATTRIBUTE': False, 'RIG': False,
+                'vx': [], 'vy': [], 'PROPERTY': False, 'RIG': False,
                 'animation': False, 'repeat': False,
                 'TYPE': '', 'TILING': 0, 'SKIRTING': 0}
                 flag = 'ent'
@@ -548,18 +548,18 @@ def reference_animations(collection):
 
                         elif d['2'] == 'a-animation':
                             d2['animation'] = True
-                            if d['ATTRIBUTE'] == 'stalker':
+                            if d['PROPERTY'] == 'stalker':
                                 d2['animation'] = False
-                            elif d['ATTRIBUTE'] == 'look-at':
+                            elif d['PROPERTY'] == 'look-at':
                                 d2['animation'] = False
-                            elif d['ATTRIBUTE'] == 'checkpoint':
+                            elif d['PROPERTY'] == 'checkpoint':
                                 d2['animation'] = False
-                            d2['ATTRIBUTE'] = d['ATTRIBUTE']
+                            d2['PROPERTY'] = d['PROPERTY']
                             d2['FROM'] = d['FROM']
                             d2['TO'] = d['TO']
-                            d2['BEGIN'] = d['BEGIN']
+                            d2['START_EVENTS'] = d['START_EVENTS']
                             d2['DIRECTION'] = d['DIRECTION']
-                            d2['REPEAT'] = d['REPEAT']
+                            d2['LOOP'] = d['LOOP']
                             d2['DURATION'] = d['DURATION']
                             d2['TARGET'] = d['TARGET']
                             d2['TEXT'] = d['TEXT']

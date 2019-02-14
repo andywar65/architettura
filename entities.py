@@ -1025,15 +1025,15 @@ def make_leaves(branch, lb, d):
 
 def open_entity(page, d):
     oput = ''
-    if d['RIG'] == False and d['ATTRIBUTE'] == 'rotation':
+    if d['RIG'] == False and d['PROPERTY'] == 'rotation':
         oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         #it's the only case when rig must be animated instead of entity
         oput += 'animation="property: rotation; '
         oput += f'to:{d["TO"]}; \n'
-        oput += f'startEvents:{d["BEGIN"]}; \n'
+        oput += f'startEvents:{d["START_EVENTS"]}; \n'
         oput += f'dir:{d["DIRECTION"]}; \n'
-        oput += f'loop:{d["REPEAT"]}; \n'
+        oput += f'loop:{d["LOOP"]}; \n'
         oput += f'dur:{d["DURATION"]};" \n'
         oput += '> \n'
         oput += make_insertion(page, d)
@@ -1061,14 +1061,14 @@ def make_insertion(page, d):
         oput += f'<{d["tag"]} id="{d["ID"]}" \n'
     else:
         oput += f'<{d["tag"]} id="{d["ide"]}-{d["num"]}" \n'
-    if d['ATTRIBUTE'] == 'checkpoint':
+    if d['PROPERTY'] == 'checkpoint':
         oput += 'checkpoint '
-    elif d['ATTRIBUTE'] == 'look-at':
+    elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
             oput += f'look-at="#{d["TARGET"]}" '
         else:
             oput += 'look-at="#camera" '
-    elif d['ATTRIBUTE'] == 'stalker':
+    elif d['PROPERTY'] == 'stalker':
         oput += 'look-at="#camera" '
     if page.shadows:
         if d['2'] == 'a-curvedimage':
@@ -1077,14 +1077,14 @@ def make_insertion(page, d):
             pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
-    if d['ATTRIBUTE'] == 'orbit':
+    if d['PROPERTY'] == 'orbit':
         d['RIG'] = True
-        d['ATTRIBUTE'] = 'rotation'
+        d['PROPERTY'] = 'rotation'
         l = d['TO'].split()
         d['FROM'] = '0 0 0'
         d['TO'] = '0 360 0'
-        d['BEGIN'] = d['DIRECTION'] = ''
-        d['REPEAT'] = 'indefinite" fill="forwards" easing="linear'
+        d['START_EVENTS'] = d['DIRECTION'] = ''
+        d['LOOP'] = 'indefinite" fill="forwards" easing="linear'
         oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
     return oput
 
@@ -1105,7 +1105,7 @@ def make_position(d):
 
 def close_entity(page, d):
     oput = ''
-    if d['ATTRIBUTE'] == 'stalker':
+    if d['PROPERTY'] == 'stalker':
         oput += add_stalker(page, d)
     #if d['animation']:
         #if eval(d['RIG']):
@@ -1145,9 +1145,9 @@ def add_animation(d):
     oput = ''
     #oput += f'<a-animation id="{d["ide"]}-{d["num"]}-animation" \n'
     oput += 'animation=" \n'
-    oput += f'property:{d["ATTRIBUTE"]}; \n'
+    oput += f'property:{d["PROPERTY"]}; \n'
     if d['RIG'] == False:
-        if d['ATTRIBUTE'] == 'rotation':
+        if d['PROPERTY'] == 'rotation':
             l = d['FROM'].split()
             oput += f'from:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
@@ -1156,7 +1156,7 @@ def add_animation(d):
             oput += f'to:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
             oput += f'{round(d["220"]+float(l[2]), 4)}; \n'
-        elif d['ATTRIBUTE'] == 'position':
+        elif d['PROPERTY'] == 'position':
             l = d['FROM'].split()
             oput += f'from:{round(d["10"]+float(l[0]), 4)} '
             oput += f'{round(d["30"]+float(l[1]), 4)} '
@@ -1168,9 +1168,9 @@ def add_animation(d):
     else:
         oput += f'from:{d["FROM"]}; \n'
         oput += f'to:{d["TO"]}; \n'
-    oput += f'startEvents:{d["BEGIN"]}; \n'
+    oput += f'startEvents:{d["START_EVENTS"]}; \n'
     oput += f'dir:{d["DIRECTION"]}; \n'
-    oput += f'loop:{d["REPEAT"]}; \n'
+    oput += f'loop:{d["LOOP"]}; \n'
     oput += f'dur:{d["DURATION"]};" \n'
     #oput += '></a-animation>\n'
     return oput
