@@ -659,7 +659,6 @@ def make_stair(page, d):
         while na > 1:
             np = na-1
             diff = (2*d["43"]/na+d["42"]/np)-.63
-            print(f'na={na}, np={np}, diff={diff} \n')
             if fabs(diff) <= 0.01:
                 flag = True
             else:
@@ -1041,7 +1040,6 @@ def open_entity(page, d):
             if d['PROPERTY'] == 'rotation':
                 oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
                 oput += make_position(d)
-                d['FROM'] = '0 0 0'
                 oput += add_animation(d)
                 oput += '> \n'
                 oput += make_insertion(page, d)
@@ -1051,8 +1049,8 @@ def open_entity(page, d):
                 oput += make_position(d)
                 oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
                 l = d['TO'].split()
-                d['FROM'] = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                d['TO'] = f'{round(d["210"], 4)} {round(d["50"]+360, 4)} {round(d["220"], 4)}'
+                d['FROM'] = '0 0 0'
+                d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
                 oput += add_animation(d)
@@ -1161,6 +1159,9 @@ def add_animation(d):
         oput += f'property: {d["PROPERTY"]}; \n'
     if d['RIG'] == False:
         if d['PROPERTY'] == 'rotation':
+            oput += f'from: {d["FROM"]}; \n'
+            oput += f'to: {d["TO"]}; \n'
+        elif d['PROPERTY'] == 'orbit':
             l = d['FROM'].split()
             oput += f'from:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '

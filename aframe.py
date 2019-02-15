@@ -248,7 +248,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         if d['2'] == 'a-window':
                             d['WMATERIAL'] = d['MATERIAL']
                             d['wpool'] = d['pool']
-                        if d['2'] == 'a-wall':
+                        elif d['2'] == 'a-wall':
                             if d['MATERIAL2']:
                                 d['pool2'] = material_dict[d['MATERIAL2']]
                             else:
@@ -579,9 +579,7 @@ def reference_animations(collection):
                             d2['TARGET'] = d['TARGET']
                             d2['TEXT'] = d['TEXT']
                             d2['LINK'] = d['LINK']
-                            if d['PROPERTY'] == 'orbit':
-                                d2['RIG'] = True
-                            elif d['PROPERTY'] == 'stalker':
+                            if d['PROPERTY'] == 'stalker':
                                 d2['RIG'] = False
                             elif d['PROPERTY'] == 'look-at':
                                 d2['RIG'] = False
