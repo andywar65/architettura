@@ -566,6 +566,12 @@ def reference_animations(collection):
                             d2['LINK'] = d['LINK']
                             if d['PROPERTY'] == 'orbit':
                                 d2['RIG'] = True
+                            elif d['PROPERTY'] == 'stalker':
+                                d2['RIG'] = False
+                            elif d['PROPERTY'] == 'look-at':
+                                d2['RIG'] = False
+                            elif d['PROPERTY'] == 'checkpoint':
+                                d2['RIG'] = False
                             else:
                                 d2['RIG'] = eval(d['RIG'])
 
