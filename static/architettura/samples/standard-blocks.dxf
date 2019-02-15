@@ -501,11 +501,11 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2458527.014321018
+2458530.018500879
   9
 $TDUUPDATE
  40
-2458526.972654352
+2458529.976834213
   9
 $TDINDWG
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-3AC3
+3B3A
   9
 $SURFTAB1
  70
@@ -1127,7 +1127,7 @@ ObjectDBX Classes
  90
         0
  91
-        7
+        8
 280
      0
 281
@@ -1175,7 +1175,7 @@ ObjectDBX Classes
  90
         0
  91
-        4
+        5
 280
      0
 281
@@ -1191,7 +1191,7 @@ ObjectDBX Classes
  90
      4095
  91
-        7
+        8
 280
      0
 281
@@ -1207,7 +1207,7 @@ ObjectDBX Classes
  90
      1153
  91
-        7
+        8
 280
      0
 281
@@ -1223,7 +1223,7 @@ ObjectDBX Classes
  90
      1153
  91
-        7
+        8
 280
      0
 281
@@ -1239,7 +1239,7 @@ ObjectDBX Classes
  90
      4095
  91
-        7
+        8
 280
      0
 281
@@ -1255,7 +1255,7 @@ SCENEOE
  90
      1153
  91
-        7
+        8
 280
      0
 281
@@ -1271,7 +1271,7 @@ ObjectDBX Classes
  90
      1152
  91
-        4
+        5
 280
      0
 281
@@ -1287,7 +1287,7 @@ ACDB_MLEADERSTYLE_CLASS
  90
      4095
  91
-        7
+        8
 280
      0
 281
@@ -1303,7 +1303,7 @@ ObjectDBX Classes
  90
      1025
  91
-        4
+        5
 280
      0
 281
@@ -1319,7 +1319,7 @@ ObjectDBX Classes
  90
      1025
  91
-        4
+        5
 280
      0
 281
@@ -1335,7 +1335,7 @@ ObjectDBX Classes
  90
         0
  91
-        4
+        5
 280
      0
 281
@@ -1367,7 +1367,7 @@ AcDbDimAssoc
  90
         0
  91
-        4
+        5
 280
      0
 281
@@ -1415,7 +1415,7 @@ AcDbViewportTableRecord
  12
 -14.77917073705339
  22
--4.7101079854705
+-4.71010798547051
  13
 0.0
  23
@@ -2521,7 +2521,11 @@ a-animation
 102
 {BLKREFS
 331
-398A
+0
+331
+0
+331
+3B21
 102
 }
  70
@@ -2716,8 +2720,6 @@ a-stair
 0
 102
 {BLKREFS
-331
-0
 331
 3AB1
 102
@@ -22271,7 +22273,7 @@ a-animation
   0
 CIRCLE
   5
-3977
+3B0E
 330
 2203
 100
@@ -22281,11 +22283,11 @@ AcDbEntity
 100
 AcDbCircle
  10
--0.0000277435968
+0.00003183423196
  20
 0.50000000000001
  30
-0.00000974522672
+0.00004123326863
  40
 0.25
 210
@@ -22297,7 +22299,7 @@ AcDbCircle
   0
 LWPOLYLINE
   5
-3978
+3B0F
 330
 2203
 100
@@ -22314,26 +22316,28 @@ AcDbPolyline
      0
  43
 0.0
+ 38
+0.0
  10
-0.00002774359683
+-0.00003183423193
  20
--0.00000974522672
+-0.00004123326863
  10
--0.24997225640317
+-0.25003183423193
  20
--0.00000974522672
+-0.00004123326863
  10
--0.16663895480082
+-0.16669853262958
  20
--0.08327035651711
+-0.08330184455902
  10
--0.24997225640317
+-0.25003183423193
  20
--0.00000974522672
+-0.00004123326863
  10
--0.16663895480082
+-0.16669853262958
  20
-0.08325086606367
+0.08321937802176
 210
 0.0
 220
@@ -22343,7 +22347,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-3979
+3B10
 330
 2203
 100
@@ -22361,25 +22365,25 @@ AcDbPolyline
  43
 0.0
  38
-0.00000974522672
+0.00004123326863
  10
--0.00002774359683
+0.00003183423193
  20
 0.00000000000003
  10
--0.00002774359683
+0.00003183423193
  20
 0.25000000000001
  10
--0.08328835488722
+-0.08322877705846
  20
 0.16666669839767
  10
--0.00002774359683
+0.00003183423193
  20
 0.25000000000001
  10
-0.08323286769356
+0.08329244552232
  20
 0.16666669839767
 210
@@ -22391,7 +22395,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-397A
+3B11
 330
 2203
 100
@@ -22409,27 +22413,27 @@ AcDbPolyline
  43
 0.0
  38
--0.00000000000003
+-0.00000000000001
  10
-0.00002774359683
+-0.00003183423193
  20
--0.00000974522672
+-0.00004123326863
  10
-0.00002774359683
+-0.00003183423193
  20
-0.24999025477328
+0.24995876673137
  10
--0.08323286769356
+-0.08329244552232
  20
-0.16665695317092
+0.16662546512901
  10
-0.00002774359683
+-0.00003183423193
  20
-0.24999025477328
+0.24995876673137
  10
-0.08328835488722
+0.08322877705846
  20
-0.16665695317092
+0.16662546512901
 210
 1.224646799147427E-16
 220
@@ -22439,11 +22443,11 @@ AcDbPolyline
   0
 TEXT
   5
-397B
+3B12
 102
 {ACAD_XDICTIONARY
 360
-397C
+3B13
 102
 }
 330
@@ -22455,11 +22459,11 @@ AcDbEntity
 100
 AcDbText
  10
--0.07505163503853
+-0.07499205720977
  20
 0.37500000000002
  30
-0.00000974522672
+0.00004123326863
  40
 0.2
   1
@@ -22487,7 +22491,7 @@ AnnotativeData
   0
 ATTDEF
   5
-397F
+3B16
 330
 2203
 100
@@ -22497,9 +22501,41 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
--0.18543536179148
+0.11453315016661
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+rotation
+100
+AcDbAttributeDefinition
+  3
+Property to animate. To specify a component attribute, In alternative, checkpoint, look-at or stalker.
+  2
+PROPERTY
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+3B17
+330
+2203
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.66980704044317
+ 20
+-0.18546684983339
  30
 0.00000000000003
  40
@@ -22509,7 +22545,7 @@ False
 100
 AcDbAttributeDefinition
   3
-Absolute (True) or relative (False) animation
+Relative to rig (True) or to world (False)
   2
 RIG
  70
@@ -22519,7 +22555,7 @@ RIG
   0
 ATTDEF
   5
-3980
+3B18
 330
 2203
 100
@@ -22529,169 +22565,9 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
--1.98543536179148
- 30
-0.00000000000003
- 40
-0.2
-  1
-1000
-100
-AcDbAttributeDefinition
-  3
-Duration in (milliseconds) of the animation
-  2
-DURATION
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-3981
-330
-2203
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.66974746261441
- 20
--1.68543536179148
- 30
-0.00000000000003
- 40
-0.2
-  1
-1
-100
-AcDbAttributeDefinition
-  3
-Repeat count or indefinite
-  2
-REPEAT
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-3982
-330
-2203
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.66974746261441
- 20
--2.28543536179148
- 30
-0.00000000000003
- 40
-0.2
-  1
-camera
-100
-AcDbAttributeDefinition
-  3
-ID of  Look-at target
-  2
-TARGET
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-3983
-330
-2203
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.66974746261441
- 20
--2.58543536179148
- 30
-0.00000000000003
- 40
-0.2
-  1
-
-100
-AcDbAttributeDefinition
-  3
-Text of stalker balloon
-  2
-TEXT
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-3984
-330
-2203
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.66974746261441
- 20
--2.88543536179148
- 30
-0.00000000000003
- 40
-0.2
-  1
-next
-100
-AcDbAttributeDefinition
-  3
-Link (parent, child, next, previous) of Stalker
-  2
-LINK
- 70
-     1
-280
-     0
-  0
-ATTDEF
-  5
-3985
-330
-2203
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-0.66974746261441
- 20
--0.48543536179148
+-0.48546684983339
  30
 0.00000000000003
  40
@@ -22711,7 +22587,7 @@ FROM
   0
 ATTDEF
   5
-3986
+3B19
 330
 2203
 100
@@ -22721,9 +22597,9 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
--0.78543536179148
+-0.78546684983339
  30
 0.00000000000003
  40
@@ -22743,7 +22619,7 @@ TO
   0
 ATTDEF
   5
-3987
+3B1A
 330
 2203
 100
@@ -22753,9 +22629,9 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
--1.08543536179148
+-1.08546684983339
  30
 0.00000000000003
  40
@@ -22767,7 +22643,7 @@ AcDbAttributeDefinition
   3
 Event name to wait on before beginning animation
   2
-BEGIN
+START_EVENTS
  70
      1
 280
@@ -22775,7 +22651,7 @@ BEGIN
   0
 ATTDEF
   5
-3988
+3B1B
 330
 2203
 100
@@ -22785,9 +22661,9 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
--1.38543536179148
+-1.38546684983339
  30
 0.00000000000003
  40
@@ -22807,7 +22683,7 @@ DIRECTION
   0
 ATTDEF
   5
-3989
+3B1C
 330
 2203
 100
@@ -22817,21 +22693,149 @@ AcDbEntity
 100
 AcDbText
  10
-0.66974746261441
+0.66980704044317
  20
-0.11456463820852
+-1.68546684983339
  30
 0.00000000000003
  40
 0.2
   1
-rotation
+1
 100
 AcDbAttributeDefinition
   3
-Attribute to animate. To specify a component attribute, use componentName.property syntax (e.g., light.intensity). In alternative, checkpoint, look-at or stalker.
+Repeat count or indefinite (true)
   2
-ATTRIBUTE
+LOOP
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+3B1D
+330
+2203
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.66980704044317
+ 20
+-1.98546684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+1000
+100
+AcDbAttributeDefinition
+  3
+Duration in (milliseconds) of the animation
+  2
+DURATION
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+3B1E
+330
+2203
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.66980704044317
+ 20
+-2.28546684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+camera
+100
+AcDbAttributeDefinition
+  3
+ID of  Look-at target
+  2
+TARGET
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+3B1F
+330
+2203
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.66980704044317
+ 20
+-2.58546684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+
+100
+AcDbAttributeDefinition
+  3
+Text of stalker balloon
+  2
+TEXT
+ 70
+     1
+280
+     0
+  0
+ATTDEF
+  5
+3B20
+330
+2203
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+0.66980704044317
+ 20
+-2.88546684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+next
+100
+AcDbAttributeDefinition
+  3
+Link (parent, child, next, previous) of Stalker
+  2
+LINK
  70
      1
 280
@@ -26072,8 +26076,6 @@ AcDbPolyline
      0
  43
 0.0
- 38
-0.0
  10
 0.00003186506358
  20
@@ -29181,368 +29183,6 @@ AcDbEntity
   0
 INSERT
   5
-398A
-330
-1F
-100
-AcDbEntity
-  8
-0
-100
-AcDbBlockReference
- 66
-     1
-  2
-a-animation
- 10
-2.80105957782876
- 20
--2.44363148804191
- 30
-0.0
-  0
-ATTRIB
-  5
-398B
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--2.6290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-False
-100
-AcDbAttribute
-  2
-RIG
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-398C
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--4.4290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-1000
-100
-AcDbAttribute
-  2
-DURATION
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-398D
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--4.1290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-1
-100
-AcDbAttribute
-  2
-REPEAT
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-398E
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--4.7290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-camera
-100
-AcDbAttribute
-  2
-TARGET
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-398F
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--5.0290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-
-100
-AcDbAttribute
-  2
-TEXT
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3990
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--5.3290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-next
-100
-AcDbAttribute
-  2
-LINK
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3991
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--2.9290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-0 0 0
-100
-AcDbAttribute
-  2
-FROM
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3992
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--3.2290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-0 180 0
-100
-AcDbAttribute
-  2
-TO
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3993
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--3.5290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-click
-100
-AcDbAttribute
-  2
-BEGIN
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3994
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--3.8290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-alternate
-100
-AcDbAttribute
-  2
-DIRECTION
- 70
-     1
-280
-     0
-  0
-ATTRIB
-  5
-3995
-330
-398A
-100
-AcDbEntity
-  8
-0
-100
-AcDbText
- 10
-3.47080704044317
- 20
--2.3290668498334
- 30
-0.00000000000003
- 40
-0.2
-  1
-rotation
-100
-AcDbAttribute
-  2
-ATTRIBUTE
- 70
-     1
-280
-     0
-  0
-SEQEND
-  5
-3996
-330
-398A
-100
-AcDbEntity
-  8
-0
-  0
-INSERT
-  5
 39D5
 330
 1F
@@ -30271,6 +29911,368 @@ AcDbEntity
   8
 0
   0
+INSERT
+  5
+3B21
+330
+1F
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockReference
+ 66
+     1
+  2
+a-animation
+ 10
+2.801
+ 20
+-2.4436
+ 30
+0.0
+  0
+ATTRIB
+  5
+3B22
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-2.32906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+rotation
+100
+AcDbAttribute
+  2
+PROPERTY
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B23
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-2.62906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+False
+100
+AcDbAttribute
+  2
+RIG
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B24
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-2.92906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+0 0 0
+100
+AcDbAttribute
+  2
+FROM
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B25
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-3.22906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+0 180 0
+100
+AcDbAttribute
+  2
+TO
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B26
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-3.52906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+click
+100
+AcDbAttribute
+  2
+START_EVENTS
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B27
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-3.82906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+alternate
+100
+AcDbAttribute
+  2
+DIRECTION
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B28
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-4.12906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+1
+100
+AcDbAttribute
+  2
+LOOP
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B29
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-4.42906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+1000
+100
+AcDbAttribute
+  2
+DURATION
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B2A
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-4.72906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+camera
+100
+AcDbAttribute
+  2
+TARGET
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B2B
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-5.02906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+
+100
+AcDbAttribute
+  2
+TEXT
+ 70
+     1
+280
+     0
+  0
+ATTRIB
+  5
+3B2C
+330
+3B21
+100
+AcDbEntity
+  8
+0
+100
+AcDbText
+ 10
+3.47080704044317
+ 20
+-5.32906684983339
+ 30
+0.00000000000003
+ 40
+0.2
+  1
+next
+100
+AcDbAttribute
+  2
+LINK
+ 70
+     1
+280
+     0
+  0
+SEQEND
+  5
+3B2D
+330
+3B21
+100
+AcDbEntity
+  8
+0
+  0
 ENDSEC
   0
 SECTION
@@ -30345,7 +30347,7 @@ ACAD_VISUALSTYLE
   3
 ACDB_RECOMPOSE_DATA
 350
-3ABC
+3B33
   3
 AcDbVariableDictionary
 350
@@ -30417,9 +30419,9 @@ ACAD_SORTENTS
   0
 DICTIONARY
   5
-397C
+3B13
 330
-397B
+3B12
 100
 AcDbDictionary
 280
@@ -30429,7 +30431,7 @@ AcDbDictionary
   3
 AcDbContextDataManager
 360
-397D
+3B14
   0
 DICTIONARY
   5
@@ -30855,7 +30857,7 @@ X-Ray
   0
 XRECORD
   5
-3ABC
+3B33
 102
 {ACAD_REACTORS
 330
@@ -30891,31 +30893,31 @@ AcDbDictionary
   3
 CANNOSCALE
 350
-3AB7
+3B2E
   3
 CMLEADERSTYLE
 350
-3ABE
+3B35
   3
 CTABLESTYLE
 350
-3ABD
+3B34
   3
 CVIEWDETAILSTYLE
 350
-3AC1
+3B38
   3
 CVIEWSECTIONSTYLE
 350
-3AC2
+3B39
   3
 DWFFRAME
 350
-3ABF
+3B36
   3
 XCLIPFRAME
 350
-3AC0
+3B37
   0
 DICTIONARY
   5
@@ -31001,29 +31003,101 @@ AcDbSortentsTable
   5
 3A0D
 331
-398A
+0
   5
 3A0E
 331
 39D5
   5
-3A0F
+3AD2
 331
 3A03
   5
+3AD3
+331
+3A19
+  5
+3AD4
+331
+3AB1
+  5
+3AD5
+331
+0
+  5
+3A0F
+331
+0
+  5
 3A10
+331
+0
+  5
+3A19
+331
+0
+  5
+3AB1
+331
+0
+  5
+3AC3
+331
+0
+  5
+3AC4
+331
+0
+  5
+3AC5
+331
+0
+  5
+3AC6
+331
+0
+  5
+3AC7
+331
+0
+  5
+3ACB
+331
+0
+  5
+3ACC
+331
+0
+  5
+3ACD
+331
+0
+  5
+3ACE
+331
+0
+  5
+3ACF
+331
+0
+  5
+3AD0
+331
+0
+  5
+3AD1
   0
 DICTIONARY
   5
-397D
+3B14
 102
 {ACAD_REACTORS
 330
-397C
+3B13
 102
 }
 330
-397C
+3B13
 100
 AcDbDictionary
 281
@@ -31031,7 +31105,7 @@ AcDbDictionary
   3
 ACDB_ANNOTATIONSCALES
 350
-397E
+3B15
   0
 DICTIONARY
   5
@@ -31969,7 +32043,7 @@ FA
 102
 {ACAD_XDICTIONARY
 360
-3ABA
+3B31
 102
 }
 330
@@ -38973,7 +39047,7 @@ strokes_ogs.tif
   0
 DICTIONARYVAR
   5
-3AB7
+3B2E
 102
 {ACAD_REACTORS
 330
@@ -38991,7 +39065,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-3ABE
+3B35
 102
 {ACAD_REACTORS
 330
@@ -39009,7 +39083,7 @@ Standard
   0
 DICTIONARYVAR
   5
-3ABD
+3B34
 102
 {ACAD_REACTORS
 330
@@ -39027,7 +39101,7 @@ Standard
   0
 DICTIONARYVAR
   5
-3AC1
+3B38
 102
 {ACAD_REACTORS
 330
@@ -39045,7 +39119,7 @@ Metric50
   0
 DICTIONARYVAR
   5
-3AC2
+3B39
 102
 {ACAD_REACTORS
 330
@@ -39063,7 +39137,7 @@ Metric50
   0
 DICTIONARYVAR
   5
-3ABF
+3B36
 102
 {ACAD_REACTORS
 330
@@ -39081,7 +39155,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-3AC0
+3B37
 102
 {ACAD_REACTORS
 330
@@ -39099,15 +39173,15 @@ DictionaryVariables
   0
 DICTIONARY
   5
-397E
+3B15
 102
 {ACAD_REACTORS
 330
-397D
+3B14
 102
 }
 330
-397D
+3B14
 100
 AcDbDictionary
 281
@@ -39159,7 +39233,7 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-3AB8
+3B2F
   0
 DICTIONARY
   5
@@ -39191,11 +39265,11 @@ AcDbDictionary
   3
 ACAD_XREC_ROUNDTRIP
 360
-3AB9
+3B30
   0
 DICTIONARY
   5
-3ABA
+3B31
 330
 FA
 100
@@ -39207,11 +39281,11 @@ AcDbDictionary
   3
 ACAD_ROUNDTRIP_2008_TABLESTYLE_CELLSTYLEMAP
 360
-3ABB
+3B32
   0
 XRECORD
   5
-3AB8
+3B2F
 102
 {ACAD_REACTORS
 330
@@ -40073,7 +40147,7 @@ A80000002601000013000000000000000000000000003A4E00005B436F6E74656E745F5479706573
   0
 XRECORD
   5
-3AB9
+3B30
 102
 {ACAD_REACTORS
 330
@@ -40097,15 +40171,15 @@ FLAGS
   0
 CELLSTYLEMAP
   5
-3ABB
+3B32
 102
 {ACAD_REACTORS
 330
-3ABA
+3B31
 102
 }
 330
-3ABA
+3B31
 100
 AcDbCellStyleMap
  90

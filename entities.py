@@ -460,8 +460,8 @@ def make_door(d):
             if eval(d["DOUBLE"]):
                 #animated slide 1
                 oput += f'<a-entity id="door-{d["num"]}-slide-1" \n'
-                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
-                oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
+                oput += f'animation="property: position; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 1
                 oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -471,8 +471,8 @@ def make_door(d):
                 oput += '</a-entity>\n'
                 #animated slide 2
                 oput += f'<a-entity id="door-{d["num"]}-slide-2" \n'
-                oput += f'position="{d["41"]/2} {-d["43"]/2} 0"> \n'
-                oput += f'<a-animation attribute="position" from="{d["41"]/2} {-d["43"]/2} 0" to="{d["41"]-0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{d["41"]/2} {-d["43"]/2} 0" \n'
+                oput += f'animation="property: position; from:{d["41"]/2} {-d["43"]/2} 0; to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 2
                 oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -485,8 +485,8 @@ def make_door(d):
             else:#single
                 #animated slide
                 oput += f'<a-entity id="door-{d["num"]}-slide" \n'
-                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0"> \n'
-                oput += f'<a-animation attribute="position" from="{-d["41"]/2} {-d["43"]/2} 0" to="{-d["41"]*3/2+0.01} {-d["43"]/2} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
+                oput += f'animation="property: position; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part
                 oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -500,8 +500,8 @@ def make_door(d):
             if eval(d["DOUBLE"]):
                 #animated hinge 1
                 oput += f'<a-entity id="door-{d["num"]}-hinge-1" \n'
-                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
-                oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
+                oput += f'animation="property: rotation; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 1
                 oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -511,8 +511,8 @@ def make_door(d):
                 oput += '</a-entity>\n'
                 #animated hinge 2
                 oput += f'<a-entity id="door-{d["num"]}-hinge-2" '
-                oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
-                oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
+                oput += f'animation="property: rotation; from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 2
                 oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -525,8 +525,8 @@ def make_door(d):
             else:#single
                 #animated hinge
                 oput += f'<a-entity id="door-{d["num"]}-hinge" \n'
-                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}"> \n'
-                oput += f'<a-animation attribute="rotation" from="0 0 0" to="0 {-90*unit(d["41"])*unit(d["42"])} 0" begin="click" repeat="1" direction="alternate"></a-animation>'
+                oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
+                oput += f'animation="property: rotation; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part
                 oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -937,8 +937,6 @@ def make_tree(d):
     oput += f'<a-entity id="{d["NAME"]}-{d["num"]}-trunk-ent" \n'
     oput += f'position="0 {-d["43"]/2} 0" \n'
     oput += f'rotation="{ang} {rot} 0"> \n'
-    #oput += f'<a-animation attribute="rotation" from="{ang} {rot} 0" '
-    #oput += f'to="{ang*gauss(1, .1)} {rot} 0" dur="{int(5000*gauss(1, .5))}" repeat="indefinite" direction="alternate"></a-animation>'
     oput += f'<a-cone id="{d["NAME"]}-{d["num"]}-trunk" \n'
     oput += f'position="0 {lt/2} 0" \n'
     oput += f'geometry="height: {lt}; radius-bottom: {lt/8}; radius-top: {lt/12};" \n'
@@ -1025,11 +1023,30 @@ def make_leaves(branch, lb, d):
 
 def open_entity(page, d):
     oput = ''
-    if d['animation']:
+    if d['RIG'] == False and d['PROPERTY'] == 'rotation':
+        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
+        oput += make_position(d)
+        #it's the only case when rig must be animated instead of entity
+        oput += 'animation="property: rotation; '
+        oput += f'to:{d["TO"]}; \n'
+        oput += f'startEvents:{d["START_EVENTS"]}; \n'
+        oput += f'dir:{d["DIRECTION"]}; \n'
+        oput += f'loop:{d["LOOP"]}; \n'
+        oput += f'dur:{d["DURATION"]};" \n'
+        oput += '> \n'
+        oput += make_insertion(page, d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+    elif d['RIG']:
         oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
         oput += make_insertion(page, d)
+        oput += add_animation(d)
+    elif d['animation']:
+        oput += make_insertion(page, d)
+        oput += make_position(d)
+        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+        oput += add_animation(d)
     else:
         oput += make_insertion(page, d)
         oput += make_position(d)
@@ -1042,30 +1059,35 @@ def make_insertion(page, d):
         oput += f'<{d["tag"]} id="{d["ID"]}" \n'
     else:
         oput += f'<{d["tag"]} id="{d["ide"]}-{d["num"]}" \n'
-    if d['ATTRIBUTE'] == 'checkpoint':
+    if d['PROPERTY'] == 'checkpoint':
         oput += 'checkpoint '
-    elif d['ATTRIBUTE'] == 'look-at':
+    elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
             oput += f'look-at="#{d["TARGET"]}" '
         else:
             oput += 'look-at="#camera" '
-    elif d['ATTRIBUTE'] == 'stalker':
+    elif d['PROPERTY'] == 'stalker':
         oput += 'look-at="#camera" '
     if page.shadows:
         if d['2'] == 'a-curvedimage':
             oput += 'shadow="receive: false; cast: false" \n'
         elif d['2'] == 'a-light':
             pass
+        elif d['2'] == 'a-poly' or d['2'] == 'a-line':
+            if d['39']:
+                oput += 'shadow="receive: true; cast: true" \n'
+            else:
+                pass
         else:
             oput += 'shadow="receive: true; cast: true" \n'
-    if d['ATTRIBUTE'] == 'orbit':
-        d['RIG'] = 'True'
-        d['ATTRIBUTE'] = 'rotation'
+    if d['PROPERTY'] == 'orbit':
+        d['RIG'] = True
+        d['PROPERTY'] = 'rotation'
         l = d['TO'].split()
         d['FROM'] = '0 0 0'
         d['TO'] = '0 360 0'
-        d['BEGIN'] = d['DIRECTION'] = ''
-        d['REPEAT'] = 'indefinite" fill="forwards" easing="linear'
+        d['START_EVENTS'] = d['DIRECTION'] = ''
+        d['LOOP'] = 'indefinite" fill="forwards" easing="linear'
         oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
     return oput
 
@@ -1086,18 +1108,13 @@ def make_position(d):
 
 def close_entity(page, d):
     oput = ''
-    if d['ATTRIBUTE'] == 'stalker':
+    if d['PROPERTY'] == 'stalker':
         oput += add_stalker(page, d)
-    if d['animation']:
-        if eval(d['RIG']):
-            oput += f'</{d["tag"]}> \n'
-            oput += add_animation(d)
-            oput += '</a-entity> \n'
-        else:
-            oput += add_animation(d)
-            oput += f'</{d["tag"]}></a-entity> \n'
-    else:
-        oput += f'</{d["tag"]}> \n'
+    oput += f'</{d["tag"]}> \n'
+    if d['RIG']:
+        oput += '</a-entity> \n'
+    elif d['RIG'] == False and d['PROPERTY'] == 'rotation':
+        oput += '</a-entity> \n'
     return oput
 
 def entity_geometry(d):
@@ -1122,35 +1139,34 @@ def entity_geometry(d):
 
 def add_animation(d):
     oput = ''
-    oput += f'<a-animation id="{d["ide"]}-{d["num"]}-animation" \n'
-    oput += f'attribute="{d["ATTRIBUTE"]}"\n'
-    if eval(d['RIG']):
-        if d['ATTRIBUTE'] == 'rotation':
+    oput += 'animation=" \n'
+    oput += f'property:{d["PROPERTY"]}; \n'
+    if d['RIG'] == False:
+        if d['PROPERTY'] == 'rotation':
             l = d['FROM'].split()
-            oput += f'from="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'from:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
-            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["220"]+float(l[2]), 4)}; \n'
             l = d['TO'].split()
-            oput += f'to="{round(d["210"]+float(l[0]), 4)} '
+            oput += f'to:{round(d["210"]+float(l[0]), 4)} '
             oput += f'{round(d["50"]+float(l[1]), 4)} '
-            oput += f'{round(d["220"]+float(l[2]), 4)}" \n'
-        elif d['ATTRIBUTE'] == 'position':
+            oput += f'{round(d["220"]+float(l[2]), 4)}; \n'
+        elif d['PROPERTY'] == 'position':
             l = d['FROM'].split()
-            oput += f'from="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'from:{round(d["10"]+float(l[0]), 4)} '
             oput += f'{round(d["30"]+float(l[1]), 4)} '
-            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["20"]+float(l[2]), 4)}; \n'
             l = d['TO'].split()
-            oput += f'to="{round(d["10"]+float(l[0]), 4)} '
+            oput += f'to:{round(d["10"]+float(l[0]), 4)} '
             oput += f'{round(d["30"]+float(l[1]), 4)} '
-            oput += f'{round(d["20"]+float(l[2]), 4)}" \n'
+            oput += f'{round(d["20"]+float(l[2]), 4)}; \n'
     else:
-        oput += f'from="{d["FROM"]}"\n'
-        oput += f'to="{d["TO"]}"\n'
-    oput += f'begin="{d["BEGIN"]}"\n'
-    oput += f'direction="{d["DIRECTION"]}"\n'
-    oput += f'repeat="{d["REPEAT"]}"\n'
-    oput += f'dur="{d["DURATION"]}"\n'
-    oput += '></a-animation>\n'
+        oput += f'from:{d["FROM"]}; \n'
+        oput += f'to:{d["TO"]}; \n'
+    oput += f'startEvents:{d["START_EVENTS"]}; \n'
+    oput += f'dir:{d["DIRECTION"]}; \n'
+    oput += f'loop:{d["LOOP"]}; \n'
+    oput += f'dur:{d["DURATION"]};" \n'
     return oput
 
 def add_stalker(page, d):
