@@ -414,7 +414,7 @@ def reference_openings(collection):
     """
     collection2 = collection.copy()
     for x, d in collection.items():
-        if d['2'] == 'a-door':
+        if d['2'] == 'a-door' or d['2'] == 'a-window':
             collection[x] = d
             for x2, d2 in collection2.items():
                 if d2['2'] == 'a-wall':
@@ -427,7 +427,14 @@ def reference_openings(collection):
                         d2 = door_straight_case(d, d2)
                     else:
                         d2 = door_tilted_case(d, d2)
-                    collection[x2] = d2
+                    if d2['2'] = 'a-openwall':#success!
+                        collection[x2] = d2
+                        if d['2'] = 'a-window':
+                            d['WMATERIAL'] = d2['MATERIAL']
+                            d['wpool'] = d2['pool']
+                            d['WMATERIAL2'] = d2['MATERIAL2']
+                            d['wpool2'] = d2['pool2']
+                            collection[x] = d
 
     return collection
 
