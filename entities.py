@@ -1018,44 +1018,57 @@ def make_leaves(branch, lb, d):
 
 def open_entity(page, d):
     oput = ''
-    if d['RIG'] == False and d['PROPERTY'] == 'rotation':
-        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
-        oput += make_position(d)
-        d['FROM'] = '0 0 0'
-        oput += add_animation(d)
-        oput += '> \n'
-        oput += make_insertion(page, d)
-        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
-    elif d['RIG']:
-        if d['PROPERTY'] == 'orbit':
-            oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
-            oput += make_position(d)
-            oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
-            d['PROPERTY'] = 'rotation'
-            l = d['TO'].split()
-            d['FROM'] = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-            d['TO'] = f'{round(d["210"], 4)} {round(d["50"]+360, 4)} {round(d["220"], 4)}'
-            d['START_EVENTS'] = d['DIRECTION'] = ''
-            d['LOOP'] = 'true; autoplay: true; easing: linear'
-            oput += add_animation(d)
-            oput += '> \n'
-            oput += make_insertion(page, d)
-            oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
-        else:
+    if d['animation']:
+        if d['RIG']:
             oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
             oput += make_position(d)
             oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}"> \n'
-            oput += make_insertion(page, d)
-            oput += add_animation(d)
-    elif d['animation']:
-        oput += make_insertion(page, d)
-        oput += make_position(d)
-        oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
-        oput += add_animation(d)
+            if d['PROPERTY'] == 'orbit':
+                oput += f'<a-entity id="{d["ide"]}-{d["num"]}-leash" \n'
+                l = d['TO'].split()
+                d['FROM'] = '0 0 0'
+                d['TO'] = '0 360 0'
+                d['START_EVENTS'] = d['DIRECTION'] = ''
+                d['LOOP'] = 'true; autoplay: true; easing: linear'
+                oput += add_animation(d)
+                oput += '> \n'
+                oput += make_insertion(page, d)
+                oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
+            else:
+                oput += make_insertion(page, d)
+                oput += add_animation(d)
+        else:
+            if d['PROPERTY'] == 'rotation':
+                oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
+                oput += make_position(d)
+                d['FROM'] = '0 0 0'
+                oput += add_animation(d)
+                oput += '> \n'
+                oput += make_insertion(page, d)
+                oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+            elif d['PROPERTY'] == 'orbit':
+                oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
+                oput += make_position(d)
+                oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+                l = d['TO'].split()
+                d['FROM'] = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                d['TO'] = f'{round(d["210"], 4)} {round(d["50"]+360, 4)} {round(d["220"], 4)}'
+                d['START_EVENTS'] = d['DIRECTION'] = ''
+                d['LOOP'] = 'true; autoplay: true; easing: linear'
+                oput += add_animation(d)
+                oput += '> \n'
+                oput += make_insertion(page, d)
+                oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
+            else:
+                oput += make_insertion(page, d)
+                oput += make_position(d)
+                oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+                oput += add_animation(d)
     else:
         oput += make_insertion(page, d)
         oput += make_position(d)
         oput += f'rotation="{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}" \n'
+
     return oput
 
 def make_insertion(page, d):
@@ -1107,10 +1120,15 @@ def close_entity(page, d):
     if d['PROPERTY'] == 'stalker':
         oput += add_stalker(page, d)
     oput += f'</{d["tag"]}> \n'
-    if d['RIG']:
-        oput += '</a-entity> \n'
-    elif d['RIG'] == False and d['PROPERTY'] == 'rotation':
-        oput += '</a-entity> \n'
+    if d['animation']:
+        if d['RIG']:
+            if d['PROPERTY'] == 'orbit':
+                oput += '</a-entity></a-entity><!--close leash and rig--> \n'
+            else:
+                oput += '</a-entity><!--close rig--> \n'
+        else:
+            if d['PROPERTY'] == 'rotation' or d['PROPERTY'] == 'orbit':
+                oput += '</a-entity><!--close rig--> \n'
     return oput
 
 def entity_geometry(d):
@@ -1137,7 +1155,10 @@ def add_animation(d):
     oput = ''
     oput += 'animation=" \n'
     oput += 'easing: easeInOutQuad; \n'
-    oput += f'property:{d["PROPERTY"]}; \n'
+    if d['PROPERTY'] == 'orbit':
+        oput += f'property: rotation; \n'
+    else:
+        oput += f'property: {d["PROPERTY"]}; \n'
     if d['RIG'] == False:
         if d['PROPERTY'] == 'rotation':
             l = d['FROM'].split()
@@ -1158,12 +1179,12 @@ def add_animation(d):
             oput += f'{round(d["30"]+float(l[1]), 4)} '
             oput += f'{round(d["20"]+float(l[2]), 4)}; \n'
     else:
-        oput += f'from:{d["FROM"]}; \n'
-        oput += f'to:{d["TO"]}; \n'
-    oput += f'startEvents:{d["START_EVENTS"]}; \n'
-    oput += f'dir:{d["DIRECTION"]}; \n'
-    oput += f'loop:{d["LOOP"]}; \n'
-    oput += f'dur:{d["DURATION"]};" \n'
+        oput += f'from: {d["FROM"]}; \n'
+        oput += f'to: {d["TO"]}; \n'
+    oput += f'startEvents: {d["START_EVENTS"]}; \n'
+    oput += f'dir: {d["DIRECTION"]}; \n'
+    oput += f'loop: {d["LOOP"]}; \n'
+    oput += f'dur: {d["DURATION"]};" \n'
     return oput
 
 def add_stalker(page, d):

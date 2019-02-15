@@ -208,6 +208,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         if component_pool:
                             d['pool'] = component_pool
 
+
                     if d['ent'] == '3df':
                         d['2'] = 'a-triangle'
 
@@ -244,6 +245,9 @@ def parse_dxf(page, material_dict, layer_dict):
                         flag = False
 
                     elif d['ent'] == 'insert':
+                        if d['2'] == 'a-window':
+                            d['WMATERIAL'] = d['MATERIAL']
+                            d['wpool'] = d['pool']
                         if d['2'] == 'a-wall':
                             if d['MATERIAL2']:
                                 d['pool2'] = material_dict[d['MATERIAL2']]
@@ -427,13 +431,17 @@ def reference_openings(collection):
                         d2 = door_straight_case(d, d2)
                     else:
                         d2 = door_tilted_case(d, d2)
-                    if d2['2'] = 'a-openwall':#success!
+                    if d2['2'] == 'a-openwall':#success!
                         collection[x2] = d2
-                        if d['2'] = 'a-window':
-                            d['WMATERIAL'] = d2['MATERIAL']
-                            d['wpool'] = d2['pool']
-                            d['WMATERIAL2'] = d2['MATERIAL2']
-                            d['wpool2'] = d2['pool2']
+                        if d['2'] == 'a-window':
+                            d['MATERIAL'] = d2['MATERIAL']
+                            d['pool'] = d2['pool']
+                            d['MATERIAL2'] = d2['MATERIAL2']
+                            d['pool2'] = d2['pool2']
+                            d['TILING'] = d2['TILING']
+                            d['SKIRTING'] = d2['SKIRTING']
+                            d['TILING2'] = d2['TILING2']
+                            d['SKIRTING2'] = d2['SKIRTING2']
                             collection[x] = d
 
     return collection
