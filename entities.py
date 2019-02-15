@@ -93,6 +93,8 @@ def make_bim_block(page, d):
         oput += make_slab(d)
     elif d['2'] == 'a-door':
         oput += make_door(d)
+    elif d['2'] == 'a-window':
+        oput += make_window(d)
     elif d['2'] == 'a-stair':
         oput += make_stair(page, d)
     elif d['2'] == 'a-openwall':
@@ -754,6 +756,24 @@ def make_openwall(d):
     oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
     xpos = round((-d2['41']+tot)/2, 4)
     oput += f'position="{xpos} 0 0"> \n'
+    oput += make_wall(d2)
+    oput += '</a-entity> \n'
+
+    return oput
+
+def make_window(d):
+    if d['SILL'] == '':
+        d['SILL'] = 0
+    else:
+        d['SILL'] = float(d['SILL'])
+    oput = ''
+    #make wall under sill
+    d2 = d.copy()
+    d2['43'] = d2['SILL']
+    d2['ide'] = 'window-under'
+    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    zpos = round((d2['SILL']-d['43'])/2, 4)
+    oput += f'position="0 {zpos} 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
 

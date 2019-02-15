@@ -246,8 +246,10 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     elif d['ent'] == 'insert':
                         if d['2'] == 'a-window':
-                            d['WMATERIAL'] = d['MATERIAL']
-                            d['wpool'] = d['pool']
+                            d['WMATERIAL'] = d['MATERIAL2'] = d['MATERIAL']
+                            d['wpool'] = d['pool2'] = d['pool']
+                            d['TILING2'] = d['TILING'] = 0
+                            d['SKIRTING2'] = d['SKIRTING'] = 0
                         elif d['2'] == 'a-wall':
                             if d['MATERIAL2']:
                                 d['pool2'] = material_dict[d['MATERIAL2']]
@@ -625,6 +627,8 @@ def make_html(page, collection, mode):
         elif d['2'] == 'a-wall':
             entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-door':
+            entities_dict[x] = entities.make_bim_block(page, d)
+        elif d['2'] == 'a-window':
             entities_dict[x] = entities.make_bim_block(page, d)
         elif d['2'] == 'a-slab':
             entities_dict[x] = entities.make_bim_block(page, d)
