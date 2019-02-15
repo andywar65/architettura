@@ -447,7 +447,6 @@ def make_door(d):
     oput += '"></a-box>\n'
 
     if d["TYPE"] == 'ghost':
-        oput += '</a-entity><!--close door reset--> \n'
         return oput
     else:
         d['prefix'] = 'panel'
@@ -461,7 +460,7 @@ def make_door(d):
                 #animated slide 1
                 oput += f'<a-entity id="door-{d["num"]}-slide-1" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
-                oput += f'animation="property: position; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: position; easing: easeInOutQuad; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 1
                 oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -472,7 +471,7 @@ def make_door(d):
                 #animated slide 2
                 oput += f'<a-entity id="door-{d["num"]}-slide-2" \n'
                 oput += f'position="{d["41"]/2} {-d["43"]/2} 0" \n'
-                oput += f'animation="property: position; from:{d["41"]/2} {-d["43"]/2} 0; to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: position; easing: easeInOutQuad; from:{d["41"]/2} {-d["43"]/2} 0; to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 2
                 oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -480,13 +479,12 @@ def make_door(d):
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
             else:#single
                 #animated slide
                 oput += f'<a-entity id="door-{d["num"]}-slide" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
-                oput += f'animation="property: position; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: position; easing: easeInOutQuad; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part
                 oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
@@ -494,14 +492,13 @@ def make_door(d):
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
         else:#hinged
             if eval(d["DOUBLE"]):
                 #animated hinge 1
                 oput += f'<a-entity id="door-{d["num"]}-hinge-1" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-                oput += f'animation="property: rotation; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 1
                 oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
                 oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -512,7 +509,7 @@ def make_door(d):
                 #animated hinge 2
                 oput += f'<a-entity id="door-{d["num"]}-hinge-2" '
                 oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-                oput += f'animation="property: rotation; from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part 2
                 oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
                 oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -520,13 +517,12 @@ def make_door(d):
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
             else:#single
                 #animated hinge
                 oput += f'<a-entity id="door-{d["num"]}-hinge" \n'
                 oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-                oput += f'animation="property: rotation; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+                oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
                 #moving part
                 oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
                 oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
@@ -534,7 +530,6 @@ def make_door(d):
                 oput += entity_material(d)
                 oput += '"></a-box>\n'
                 oput += '</a-entity>\n'
-                #oput += '</a-entity><!--close door reset--> \n'
                 return oput
 
 def make_slab(d):
@@ -1027,7 +1022,9 @@ def open_entity(page, d):
         oput += f'<a-entity id="{d["ide"]}-{d["num"]}-rig" \n'
         oput += make_position(d)
         #it's the only case when rig must be animated instead of entity
-        oput += 'animation="property: rotation; '
+        oput += 'animation="property: rotation;  \n'
+        oput += 'easing: easeInOutQuad; \n'
+        oput += 'from:0 0 0; \n'
         oput += f'to:{d["TO"]}; \n'
         oput += f'startEvents:{d["START_EVENTS"]}; \n'
         oput += f'dir:{d["DIRECTION"]}; \n'
@@ -1087,7 +1084,7 @@ def make_insertion(page, d):
         d['FROM'] = '0 0 0'
         d['TO'] = '0 360 0'
         d['START_EVENTS'] = d['DIRECTION'] = ''
-        d['LOOP'] = 'indefinite" fill="forwards" easing="linear'
+        d['LOOP'] = 'true; autoplay: true; easing: linear;'
         oput += f'position="{l[0]} {l[1]} {l[2]}" \n'
     return oput
 
@@ -1140,6 +1137,7 @@ def entity_geometry(d):
 def add_animation(d):
     oput = ''
     oput += 'animation=" \n'
+    oput += 'easing: easeInOutQuad; \n'
     oput += f'property:{d["PROPERTY"]}; \n'
     if d['RIG'] == False:
         if d['PROPERTY'] == 'rotation':
