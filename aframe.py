@@ -424,15 +424,21 @@ def reference_openings(collection):
             collection[x] = d
             for x2, d2 in collection2.items():
                 if d2['2'] == 'a-wall':
-                    flag = True
-                    values = [d['210'], d['220'], d2['210'], d2['220']]
-                    for v in values:
-                        if fabs(v)>1:
-                            flag = False
-                    if flag:
+                    flag = 0
+                    if d['210'] - fabs(d2['210'])<1:
+                        flag += 1
+                    if d['220'] - fabs(d2['220'])<1:
+                        flag += 1
+                    if fabs(d['50'] - d2['50'])<1:
+                        flag += 1
+                    elif fabs(d['50'] - 180 - d2['50'])<1:
+                        flag += 1
+                    elif fabs(d['50'] + 180 - d2['50'])<1:
+                        flag += 1
+                    if flag == 3:
                         d2 = door_straight_case(d, d2)
-                    else:
-                        d2 = door_tilted_case(d, d2)
+                    #else:
+                        #d2 = door_tilted_case(d, d2)
                     if d2['2'] == 'a-openwall':#success!
                         collection[x2] = d2
                         if d['2'] == 'a-window':
