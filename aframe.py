@@ -460,77 +460,66 @@ def door_straight_case(d, d2):
     Works if both blocks are not rotated on X and Y axis and if insertion point
     is on the same plane. Returns modified wall info.
     """
-    flag = False
-    if fabs(d['50'] - d2['50'])<1:
-        flag = True
-        back = 1
-    elif fabs(d['50'] - 180 - d2['50'])<1:
-        flag = True
-        back = -1
-    elif fabs(d['50'] + 180 - d2['50'])<1:
-        flag = True
-        back = -1
-    if fabs(d['30'] - d2['30'])>.01:
+    sx = sin(radians(-d['210']))
+    cx = cos(radians(-d['210']))
+    sy = sin(radians(-d['220']))
+    cy = cos(radians(-d['220']))
+    sz = sin(radians(-d['50']))
+    cz = cos(radians(-d['50']))
+    dx = d['41']/2
+    dy = -d['42']/2
+    dz = 0
+    #Center of door base
+    xgd = d['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
+    ygd = d['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
+    zgd = d['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+
+    sx = sin(radians(-d2['210']))
+    cx = cos(radians(-d2['210']))
+    sy = sin(radians(-d2['220']))
+    cy = cos(radians(-d2['220']))
+    sz = sin(radians(-d2['50']))
+    cz = cos(radians(-d2['50']))
+    dx = d2['41']/2
+    dy = -d2['42']/2
+    dz = 0
+    #Center of wall base
+    xgw = d2['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
+    ygw = d2['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
+    zgw = d2['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+
+    #translated door coordinates
+    dx = -xgd + xgw
+    dy = ygd - ygw
+    dz = -zgd + zgw
+
+    #flattened door coordinates
+    xd = (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
+    yd = (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
+    zd =         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+
+    flag = True
+    #conditions of inclusion
+    if fabs(zd)>0.01:
         flag = False
-    if d['43']<0 or d2['43']<0:
+    if fabs(d2['41']/2) - fabs(xd) - fabs(d['41']/2) < -0.01:
         flag = False
+    if fabs(d2['42']/2) - fabs(yd) - fabs(d['42']/2) < -0.01:
+        flag = False
+
     if flag:
-        #translation
-        xt = d['10']-d2['10']
-        zt = d['20']-d2['20']
-        #rotation
-        alfa = radians(d2['50'])
-        xd = xt*cos(alfa)-zt*sin(alfa)
-        zd = (xt*sin(alfa)+zt*cos(alfa))*back*fabs(d2['42'])/d2['42']*fabs(d['42'])/d['42']
-        xde = xd + d['41']*back
-        zde = zd + d['42']*back
-        xwe = d2['41']
-        zwe = d2['42']
-        if xde > xd:
-            xdmax = xde
-            xdmin = xd
+        d2['door'] = d['num']
+        d2['2'] = 'a-openwall'
+        if d['43']>d2['43']:
+            d2['door_height'] = d2['43']
         else:
-            xdmax = xd
-            xdmin = xde
-        if zde > zd:
-            zdmax = zde
-            zdmin = zd
+            d2['door_height'] = d['43']
+        if d2['41']>0:
+            d2['door_off_1'] = d2['41']/2 + xd - fabs(d['41']/2)
+            d2['door_off_2'] = d2['41']/2 + xd + fabs(d['41']/2)
         else:
-            zdmax = zd
-            zdmin = zde
-        if xwe > 0:
-            xwmax = xwe
-            xwmin = 0
-        else:
-            xwmax = 0
-            xwmin = xwe
-        if zwe > 0:
-            zwmax = zwe
-            zwmin = 0
-        else:
-            zwmax = 0
-            zwmin = zwe
-        if xdmin - xwmin < -0.01:
-            flag = False
-        elif zdmin -zwmin < -0.01:
-            flag = False
-        elif xwmax - xdmax < -0.01:
-            flag = False
-        elif zwmax - zdmax < -0.01:
-            flag = False
-        if flag:
-            d2['door'] = d['num']
-            d2['2'] = 'a-openwall'
-            if d['43']>d2['43']:
-                d2['door_height'] = d2['43']
-            else:
-                d2['door_height'] = d['43']
-            if d2['41']>0:
-                d2['door_off_1'] = xdmin
-                d2['door_off_2'] = xdmax
-            else:
-                d2['door_off_1'] = xdmax - xwmax
-                d2['door_off_2'] = xdmin - xwmax
+            d2['door_off_1'] = -fabs(d2['41']/2) + xd + fabs(d['41']/2)
+            d2['door_off_2'] = -fabs(d2['41']/2) + xd - fabs(d['41']/2)
 
     return d2
 
