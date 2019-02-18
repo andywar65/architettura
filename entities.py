@@ -872,7 +872,7 @@ def make_link(page, d):
         d['LINK'] = ''
     if target:
         oput += f'href="{target.url}" \n'
-        oput += f'title="{target.title}" on="click" \n'
+        oput += f'title="{target.title}" \n'
         try:
             eq_image = target.specific.equirectangular_image
             if eq_image:
@@ -882,9 +882,9 @@ def make_link(page, d):
     else:
         oput += f'href="{d["LINK"]}" \n'
         if d['TITLE']:
-            oput += f'title="{d["TITLE"]}" on="click" \n'
+            oput += f'title="{d["TITLE"]}" \n'
         else:
-            oput += 'title="Sorry, no title" on="click" \n'
+            oput += 'title="Sorry, no title" \n'
         oput += 'image="#default-sky"'
     oput += '>\n'
     oput += close_entity(page, d)
@@ -1250,7 +1250,7 @@ def add_stalker(page, d):
             d['LINK'] = ''
         if target:
             oput += f'href="{target.url}" \n'
-            oput += f'title="{target.title}" on="click" \n'
+            oput += f'title="{target.title}" \n'
             try:
                 eq_image = target.specific.equirectangular_image
                 if eq_image:
@@ -1260,9 +1260,9 @@ def add_stalker(page, d):
         else:
             oput += f'href="{d["LINK"]}" \n'
             if d['TITLE']:
-                oput += f'title="{d["TITLE"]}" on="click" \n'
+                oput += f'title="{d["TITLE"]}" \n'
             else:
-                oput += 'title="Sorry, no title" on="click" \n'
+                oput += 'title="Sorry, no title" \n'
             oput += 'image="#default-sky"'
         oput += '>\n'
         oput += '</a-link>\n'
