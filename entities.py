@@ -1128,7 +1128,7 @@ def make_position(d):
     #Euler angles, yaw (Z), pitch (X), roll (Y)
     d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
     d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
-    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy']+            (cx*cy)*d['dz']
+    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy'] +           (cx*cy)*d['dz']
     oput = ''
     oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
     return oput

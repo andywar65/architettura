@@ -489,15 +489,21 @@ def door_straight_case(d, d2):
     zgw = d2['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
 
     #translated door coordinates
-    dx = -xgd + xgw
-    dy = ygd - ygw
-    dz = -zgd + zgw
+    sx = sin(radians(d2['210']))
+    cx = cos(radians(d2['210']))
+    sy = sin(radians(d2['220']))
+    cy = cos(radians(d2['220']))
+    sz = sin(radians(d2['50']))
+    cz = cos(radians(d2['50']))
+    dx = xgd - xgw
+    dy = -ygd + ygw
+    dz = zgd - zgw
 
     #flattened door coordinates
-    xd = (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
-    yd = (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
-    zd =         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
-
+    xd = (cy*cz+sx*sy*sz)*dx + (cz*sx*sy-cy*sz)*dy +  (cx*sy)*dz
+    yd = (cx*sz)*dx +  (cx*cz)*dy + (-sx)*dz
+    zd =         (cy*sx*sz-cz*sy)*dx +     (cy*cz*sx+sy*sz)*dy+            (cx*cy)*dz
+    print(xd, yd, zd)
     flag = True
     #conditions of inclusion
     if fabs(zd)>0.01:
