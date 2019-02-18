@@ -415,8 +415,8 @@ def store_entity_values(d, key, value):
 def reference_openings(collection):
     """Compares each door entity with each wall.
 
-    Has two helper functions, straight case and tilted case, but latter has not
-    been implemented yet. Returns modified entity collection.
+    Has helper functions that calculates the bounding boxes. Window inherits
+    wall materials. Returns modified entity collection.
     """
     collection2 = collection.copy()
     for x, d in collection.items():
@@ -436,9 +436,8 @@ def reference_openings(collection):
                     elif fabs(d['50'] + 180 - d2['50'])<1:
                         flag += 1
                     if flag == 3:
-                        d2 = door_straight_case(d, d2)
-                    #else:
-                        #d2 = door_tilted_case(d, d2)
+                        d2 = opening_bounding_box(d, d2)
+
                     if d2['2'] == 'a-openwall':#success!
                         collection[x2] = d2
                         if d['2'] == 'a-window':
@@ -454,11 +453,11 @@ def reference_openings(collection):
 
     return collection
 
-def door_straight_case(d, d2):
+def opening_bounding_box(d, d2):
     """Cheks if door bounding box is inside wall bounding box.
 
-    Works if both blocks are not rotated on X and Y axis and if insertion point
-    is on the same plane. Returns modified wall info.
+    Works if insertion points are on the same plane, even if tilted. Returns
+    modified wall info.
     """
     sx = sin(radians(-d['210']))
     cx = cos(radians(-d['210']))
@@ -527,17 +526,6 @@ def door_straight_case(d, d2):
             d2['door_off_1'] = -fabs(d2['41']/2) + xd + fabs(d['41']/2)
             d2['door_off_2'] = -fabs(d2['41']/2) + xd - fabs(d['41']/2)
 
-    return d2
-
-def door_tilted_case(d, d2):
-    """Not working yet.
-    """
-    d210 = d['210']*fabs(d['41'])/d['41']
-    d220 = d['220']*fabs(d['42'])/d['42']
-    d50 = d['50']*fabs(d['43'])/d['43']
-    w210 = d2['210']*fabs(d2['41'])/d2['41']
-    w220 = d2['220']*fabs(d2['42'])/d2['42']
-    w50 = d2['50']*fabs(d2['43'])/d2['43']
     return d2
 
 def reference_animations(collection):
