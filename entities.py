@@ -784,6 +784,28 @@ def make_window(d):
     silld = round(d['42']+0.04, 4)
     oput += f'scale="{sillw} 0.03 {silld}"> \n'
     oput += '</a-box> \n'
+    #make frame
+    values = (
+        ('pool', 2, 'frame', 'MATERIAL'),
+    )
+    d = prepare_material_values(values, d)
+    values = (
+        #(xpos, zpos, rot, prefix, rx, rz, piece),
+        (d['41']/2-0.025, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL'], 'frame-right'),
+        (-d['41']/2+0.025, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL'], 'frame-left'),
+        (0, -d['43']/2+d['SILL']+0.025, 90, '', 0.05, d['41']-0.1, 'frame-bottom'),
+        (0, d['43']/2-0.025, 90, '', 0.05, d['41']-0.1, 'frame-top'),
+    )
+    d['prefix'] = 'frame'
+    for v in values:
+        d['rx'] = v[4]
+        d['ry'] = v[5]
+        oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[6]}" \n'
+        oput += f'position="{round(v[0], 4)} {round(v[1], 4)} 0" \n'
+        oput += f'rotation="0 0 {v[2]}" \n'
+        oput += f'scale="{round(v[4], 4)} {round(v[5], 4)} 0.06" \n'
+        oput += entity_material(d)
+        oput += '"></a-box> \n'
 
     return oput
 
