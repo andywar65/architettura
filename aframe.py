@@ -336,18 +336,19 @@ def store_entity_values(d, key, value):
         d[key] = int(value)
     elif key == '210':#X of OCS unitary vector
         d['Az_1'] = float(value)
-        if d['ent'] == 'a-poly':
+        if d['ent'] == 'poly':
             d['10'] = d['vx'][0]
         d['P_x'] = d['10']
     elif key == '220':#Y of OCS unitary vector
         d['Az_2'] = float(value)
-        if d['ent'] == 'a-poly':
-            d['20'] = -d['vy'][0]
+        if d['ent'] == 'poly':
+            d['20'] = d['vy'][0]
         d['P_y'] = -d['20']#reset original value
     elif key == '230':#Z of OCS unitary vector
         Az_3 = float(value)
-        if d['ent'] == 'a-poly':
+        if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
+            print(d)
         P_z = d['30']
         #arbitrary axis algorithm
         #see if OCS z vector is close to world Z axis
