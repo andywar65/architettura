@@ -872,7 +872,7 @@ def make_link(page, d):
         d['LINK'] = ''
     if target:
         oput += f'href="{target.url}" \n'
-        oput += f'title="{target.title}" on="click" \n'
+        oput += f'title="{target.title}" \n'
         try:
             eq_image = target.specific.equirectangular_image
             if eq_image:
@@ -882,9 +882,9 @@ def make_link(page, d):
     else:
         oput += f'href="{d["LINK"]}" \n'
         if d['TITLE']:
-            oput += f'title="{d["TITLE"]}" on="click" \n'
+            oput += f'title="{d["TITLE"]}" \n'
         else:
-            oput += 'title="Sorry, no title" on="click" \n'
+            oput += 'title="Sorry, no title" \n'
         oput += 'image="#default-sky"'
     oput += '>\n'
     oput += close_entity(page, d)
@@ -1128,7 +1128,7 @@ def make_position(d):
     #Euler angles, yaw (Z), pitch (X), roll (Y)
     d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
     d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
-    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy']+            (cx*cy)*d['dz']
+    d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy'] +           (cx*cy)*d['dz']
     oput = ''
     oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
     return oput
@@ -1250,7 +1250,7 @@ def add_stalker(page, d):
             d['LINK'] = ''
         if target:
             oput += f'href="{target.url}" \n'
-            oput += f'title="{target.title}" on="click" \n'
+            oput += f'title="{target.title}" \n'
             try:
                 eq_image = target.specific.equirectangular_image
                 if eq_image:
@@ -1260,9 +1260,9 @@ def add_stalker(page, d):
         else:
             oput += f'href="{d["LINK"]}" \n'
             if d['TITLE']:
-                oput += f'title="{d["TITLE"]}" on="click" \n'
+                oput += f'title="{d["TITLE"]}" \n'
             else:
-                oput += 'title="Sorry, no title" on="click" \n'
+                oput += 'title="Sorry, no title" \n'
             oput += 'image="#default-sky"'
         oput += '>\n'
         oput += '</a-link>\n'
