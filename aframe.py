@@ -472,7 +472,7 @@ def door_straight_case(d, d2):
     #Center of door base
     xgd = d['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
     ygd = d['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
-    zgd = d['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+    zgd = d['30'] +         (-cx*sy)*dx +     (sx)*dy +           (cx*cy)*dz
 
     sx = sin(radians(-d2['210']))
     cx = cos(radians(-d2['210']))
@@ -486,7 +486,7 @@ def door_straight_case(d, d2):
     #Center of wall base
     xgw = d2['10'] + (cy*cz-sx*sy*sz)*dx + (-cx*sz)*dy +  (cz*sy+cy*sx*sz)*dz
     ygw = d2['20'] + (cz*sx*sy+cy*sz)*dx +  (cx*cz)*dy + (-cy*cz*sx+sy*sz)*dz
-    zgw = d2['30'] +         (-cx*sy)*dx +     (sx)*dy+            (cx*cy)*dz
+    zgw = d2['30'] +         (-cx*sy)*dx +     (sx)*dy +           (cx*cy)*dz
 
     #translated door coordinates
     sx = sin(radians(d2['210']))
@@ -496,14 +496,14 @@ def door_straight_case(d, d2):
     sz = sin(radians(d2['50']))
     cz = cos(radians(d2['50']))
     dx = xgd - xgw
-    dy = -ygd + ygw
+    dy = ygd - ygw
     dz = zgd - zgw
 
-    #flattened door coordinates
-    xd = (cy*cz+sx*sy*sz)*dx + (cz*sx*sy-cy*sz)*dy +  (cx*sy)*dz
-    yd = (cx*sz)*dx +  (cx*cz)*dy + (-sx)*dz
-    zd =         (cy*sx*sz-cz*sy)*dx +     (cy*cz*sx+sy*sz)*dy+            (cx*cy)*dz
-    print(xd, yd, zd)
+    #flattened door coordinates YXZ euler angles
+    xd = (cy*cz+sx*sy*sz)*dx + (cz*sx*sy-cy*sz)*dy + (cx*sy)*dz
+    yd =          (cx*sz)*dx +          (cx*cz)*dy +   (-sx)*dz
+    zd = (cy*sx*sz-cz*sy)*dx + (cy*cz*sx+sy*sz)*dy + (cx*cy)*dz
+
     flag = True
     #conditions of inclusion
     if fabs(zd)>0.01:
