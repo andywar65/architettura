@@ -797,6 +797,7 @@ def make_window(d):
         (0, d['43']/2-0.025, 90, '', 0.05, d['41']-0.1, 'frame-top'),
     )
     d['prefix'] = 'frame'
+    d['ide'] = 'window'
     for v in values:
         d['rx'] = v[4]
         d['ry'] = v[5]
@@ -806,6 +807,41 @@ def make_window(d):
         oput += f'scale="{round(v[4], 4)} {round(v[5], 4)} 0.06" \n'
         oput += entity_material(d)
         oput += '"></a-box> \n'
+    #animated hinge 1
+    xpos = round(-d["41"]/2+0.05*unit(d["41"]), 4)
+    oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
+    oput += f'position="{xpos} 0 0.025" \n'
+    oput += 'animation="property: rotation; easing: easeInOutQuad; '
+    oput += f'from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; '
+    oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+    if eval(d["DOUBLE"]):
+        #moving part 1
+        #animated hinge 2
+        xpos = round(d["41"]/2-0.05*unit(d["41"]), 4)
+        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
+        oput += f'position="{xpos} 0 0.025" \n'
+        oput += 'animation="property: rotation; easing: easeInOutQuad; '
+        oput += f'from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; '
+        oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+    else:
+        #moving part 1
+        values = (
+            #(xpos, zpos, rot, prefix, rx, rz, piece),
+            (d['41']-0.125, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL']-0.1, 'moving-1-right'),
+            (0.025, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL']-0.1, 'moving-1-left'),
+            (d['41']/2-0.05, -d['43']/2+d['SILL']+0.075, 90, '', 0.05, d['41']-0.2, 'moving-1-bottom'),
+            (d['41']/2-0.05, d['43']/2-0.075, 90, '', 0.05, d['41']-0.2, 'moving-1-top'),
+        )
+        for v in values:
+            d['rx'] = v[4]
+            d['ry'] = v[5]
+            oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[6]}" \n'
+            oput += f'position="{round(v[0], 4)} {round(v[1], 4)} -0.01" \n'
+            oput += f'rotation="0 0 {v[2]}" \n'
+            oput += f'scale="{round(v[4], 4)} {round(v[5], 4)} 0.07" \n'
+            oput += entity_material(d)
+            oput += '"></a-box> \n'
+        oput += '</a-entity> \n'
 
     return oput
 
