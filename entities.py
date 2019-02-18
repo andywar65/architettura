@@ -776,6 +776,14 @@ def make_window(d):
     oput += f'position="0 {zpos} 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
+    #make sill
+    oput += f'<a-box id="{d["ide"]}-{d["num"]}-sill" \n'
+    zpos = round(d['SILL']-d['43']/2-0.014, 4)
+    oput += f'position="0 {zpos} 0" \n'
+    sillw = round(d['41']+0.04, 4)
+    silld = round(d['42']+0.04, 4)
+    oput += f'scale="{sillw} 0.03 {silld}"> \n'
+    oput += '</a-box> \n'
 
     return oput
 
