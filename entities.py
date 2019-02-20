@@ -295,6 +295,12 @@ def make_line(page, d):
     return oput
 
 def make_poly(page, d):
+    #normalize vertices relative to first
+    for i in range(1, d['90']):
+        d['vx'][i] = d['vx'][i]-d['vx'][0]
+        d['vy'][i] = d['vy'][i]-d['vy'][0]
+    d['vx'][0] = 0
+    d['vy'][0] = 0
     #find gravity center
     xmax = xmin = 0
     ymax = ymin = 0
@@ -307,15 +313,15 @@ def make_poly(page, d):
             ymin = d['vy'][i]
         elif d['vy'][i] > ymax:
             ymax = d['vy'][i]
-    d['10'] = (xmax + xmin)/2
-    d['20'] = (ymax + ymin)/2
+    d['dx'] = (xmax + xmin)/2
+    d['dy'] = (ymax + ymin)/2
     d['39'] = d.get('39', 0)
-    #normalize vertices
-    for i in range(d['90']):
-        d['vx'][i] = d['vx'][i]-d['10']
-        d['vy'][i] = d['vy'][i]-d['20']
-    d['dx'] = d['dy'] = 0
     d['dz'] = d['39']/2
+    #normalize vertices to gravity center
+    for i in range(d['90']):
+        d['vx'][i] = d['vx'][i]-d['dx']
+        d['vy'][i] = d['vy'][i]-d['dy']
+    print(d['10'], d['20'], d['30'], )
     d['prefix'] = d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
