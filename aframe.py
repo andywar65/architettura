@@ -348,7 +348,6 @@ def store_entity_values(d, key, value):
         Az_3 = float(value)
         if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
-            print(d)
         P_z = d['30']
         #arbitrary axis algorithm
         #see if OCS z vector is close to world Z axis
