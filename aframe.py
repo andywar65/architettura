@@ -349,8 +349,14 @@ def store_entity_values(d, key, value):
         if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
         d['P_z'] = d['30']
-        d = arbitrary_axis_algorithm(d)
+        if d['ent'] == 'poly':
+            d = poly_axis_algorithm(d)
+        else:
+            d = arbitrary_axis_algorithm(d)
 
+    return d
+
+def poly_axis_algorithm(d):
     return d
 
 def arbitrary_axis_algorithm(d):
