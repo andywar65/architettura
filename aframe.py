@@ -348,15 +348,9 @@ def store_entity_values(d, key, value):
         d['Az_3'] = float(value)
         if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
-            ang = degrees(atan2(d['Az_2'], d['Az_1']))
-            if ang <= -90:
-                d['50'] = fabs(ang) - 90
-            elif ang < 0:
-                d['50'] = fabs(ang) + 270
-            else:
-                d['50'] = 90 + ( 180 - ang)
+            d['50'] = 0
         d['P_z'] = d['30']
-
+        print(d['50'])
         d = arbitrary_axis_algorithm(d)
 
     return d
