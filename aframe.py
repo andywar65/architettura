@@ -1,5 +1,5 @@
 import os, html
-from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
+from math import radians, sin, cos, asin, acos, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
 from architettura import entities
@@ -348,15 +348,17 @@ def store_entity_values(d, key, value):
         d['Az_3'] = float(value)
         if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
+            ang = degrees(atan2(d['Az_2'], d['Az_1']))
+            if ang <= -90:
+                d['50'] = fabs(ang) - 90
+            elif ang < 0:
+                d['50'] = fabs(ang) + 270
+            else:
+                d['50'] = 90 + ( 180 - ang)
         d['P_z'] = d['30']
-        if d['ent'] == 'poly':
-            d = poly_axis_algorithm(d)
-        else:
-            d = arbitrary_axis_algorithm(d)
 
-    return d
+        d = arbitrary_axis_algorithm(d)
 
-def poly_axis_algorithm(d):
     return d
 
 def arbitrary_axis_algorithm(d):
@@ -420,6 +422,7 @@ def arbitrary_axis_algorithm(d):
     d['210'] = degrees(pitch)
     d['50'] = degrees(yaw)
     d['220'] = -degrees(roll)
+    print(d['ent'], round(d['10'], 2), round(d['20'], 2), round(d['30'], 2), d['210'], d['50'], d['220'])
     return d
 
 def reference_openings(collection):

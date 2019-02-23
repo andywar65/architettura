@@ -321,7 +321,6 @@ def make_poly(page, d):
     for i in range(d['90']):
         d['vx'][i] = d['vx'][i]-d['dx']
         d['vy'][i] = d['vy'][i]-d['dy']
-    print(d['10'], d['20'], d['30'], )
     d['prefix'] = d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
