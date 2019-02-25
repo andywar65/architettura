@@ -231,9 +231,10 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     elif d['ent'] == 'poly':#close polyline
                         d['2'] = 'a-poly'
-                        d['10'] = d['vx'][0]
-                        d['20'] = d['vy'][0]
-                        d['30'] = d['38']
+                        if d['210'] == 0 and d['220'] == 0:
+                            d['10'] = d['vx'][0]
+                            d['20'] = d['vy'][0]
+                            d['30'] = d['38']
                         d['num'] = x
                         collection[x] = d
                         flag = False
@@ -350,7 +351,6 @@ def store_entity_values(d, key, value):
             d['30'] = d.get('38', 0)
             d['50'] = 0
         d['P_z'] = d['30']
-        print(d['50'])
         d = arbitrary_axis_algorithm(d)
 
     return d
@@ -381,6 +381,7 @@ def arbitrary_axis_algorithm(d):
     d['10'] = d['P_x']*Ax_1+d['P_y']*Ay_1+d['P_z']*d['Az_1']
     d['20'] = d['P_x']*Ax_2+d['P_y']*Ay_2+d['P_z']*d['Az_2']
     d['30'] = d['P_x']*Ax_3+d['P_y']*Ay_3+d['P_z']*d['Az_3']
+
     #OCS X vector translated into WCS
     Ax_1 = ((d['P_x']+cos(radians(d['50'])))*Ax_1+(d['P_y']+sin(radians(d['50'])))*Ay_1+d['P_z']*d['Az_1'])-d['10']
     Ax_2 = ((d['P_x']+cos(radians(d['50'])))*Ax_2+(d['P_y']+sin(radians(d['50'])))*Ay_2+d['P_z']*d['Az_2'])-d['20']
@@ -416,7 +417,7 @@ def arbitrary_axis_algorithm(d):
     d['210'] = degrees(pitch)
     d['50'] = degrees(yaw)
     d['220'] = -degrees(roll)
-    print(d['ent'], round(d['10'], 2), round(d['20'], 2), round(d['30'], 2), d['210'], d['50'], d['220'])
+    
     return d
 
 def reference_openings(collection):

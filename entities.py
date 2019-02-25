@@ -42,7 +42,7 @@ def make_box(page, d):
     d['ide'] = 'box'
     oput = ''
     oput += open_entity(page, d)
-    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
+    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["42"], 4)}" \n'
     oput += entity_material(d)
     oput += '"> \n'
     oput += close_entity(page, d)
@@ -317,6 +317,7 @@ def make_poly(page, d):
     d['dy'] = (ymax + ymin)/2
     d['39'] = d.get('39', 0)
     d['dz'] = d['39']/2
+
     #normalize vertices to gravity center
     for i in range(d['90']):
         d['vx'][i] = d['vx'][i]-d['dx']
@@ -1215,12 +1216,14 @@ def make_position(d):
     cy = cos(radians(-d['220']))
     sz = sin(radians(-d['50']))
     cz = cos(radians(-d['50']))
+
     #Euler angles, yaw (Z), pitch (X), roll (Y)
     d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
     d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
     d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy'] +           (cx*cy)*d['dz']
     oput = ''
     oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
+
     return oput
 
 def close_entity(page, d):
