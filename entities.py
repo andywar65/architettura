@@ -1196,10 +1196,13 @@ def make_insertion(page, d):
     elif d['PROPERTY'] == 'stalker':
         oput += 'look-at="#camera" '
     if page.shadows:
-        if d['2'] == 'a-curvedimage':
-            oput += 'shadow="receive: false; cast: false" \n'
-        elif d['2'] == 'a-light':
+        if d['2'] == 'a-light':
             pass
+        elif d['no_shadows']:
+            if d['2'] == 'a-poly' or d['2'] == 'a-line':
+                pass
+            else:
+                oput += 'shadow="receive: false; cast: false" \n'
         elif d['2'] == 'a-poly' or d['2'] == 'a-line':
             if d['39']:
                 oput += 'shadow="receive: true; cast: true" \n'
@@ -1375,7 +1378,7 @@ def entity_material(d):
     #returns object material
     oput = ''
     if d['wireframe']:
-        oput += f'material="wireframe: true; wireframe-linewidth: {d["wf_width"]}; color: {d[d["prefix"]+"_color"]}; '
+        oput += f'material="wireframe: true; color: {d[d["prefix"]+"_color"]}; '
     else:
         oput += f'material="src: #{d[d["prefix"]+"_image"]}; color: {d[d["prefix"]+"_color"]};'
         if d[d['prefix']+'_repeat']:

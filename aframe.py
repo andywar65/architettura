@@ -195,7 +195,7 @@ def parse_dxf(page, material_dict, layer_dict):
                     flag = False
                 else:
                     d['wireframe'] = layer[2]
-                    d['wf_width'] = layer[3]
+                    d['no_shadows'] = layer[3]
                     d['color'] = d.get('color', layer[4])
                     d['8'] = d['image'] = layer[0]
                     d['repeat'] = False#TO DELETE?
@@ -417,7 +417,7 @@ def arbitrary_axis_algorithm(d):
     d['210'] = degrees(pitch)
     d['50'] = degrees(yaw)
     d['220'] = -degrees(roll)
-    
+
     return d
 
 def reference_openings(collection):

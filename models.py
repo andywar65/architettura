@@ -162,7 +162,7 @@ class ScenePageLayer(Orderable):
         help_text="As in CAD file",)
     invisible = models.BooleanField(default=False, help_text="Hide layer?",)
     wireframe = models.BooleanField(default=False, help_text="Display only wire frame?",)
-    wireframe_width = models.IntegerField(default=2, help_text="In pixels",)
+    no_shadows = models.BooleanField(default=False, help_text="Layer casts no shadows?",)
     material = models.ForeignKey(MaterialPage, blank=True, null=True,
         on_delete=models.SET_NULL)
 
@@ -170,7 +170,7 @@ class ScenePageLayer(Orderable):
         FieldPanel('name'),
         FieldPanel('invisible'),
         FieldPanel('wireframe'),
-        FieldPanel('wireframe_width'),
+        FieldPanel('no_shadows'),
         FieldPanel('material'),
     ]
 
@@ -404,9 +404,9 @@ def prepare_layer_dict(page_obj):
             for layer in layers:
                 try:
                     m = MaterialPage.objects.get(id=layer.material_id)
-                    layer_dict[layer.name] = [m.title, layer.invisible, layer.wireframe, layer.wireframe_width]
+                    layer_dict[layer.name] = [m.title, layer.invisible, layer.wireframe, layer.no_shadows]
                 except:
-                    layer_dict[layer.name] = ['default', layer.invisible, layer.wireframe, layer.wireframe_width]
+                    layer_dict[layer.name] = ['default', layer.invisible, layer.wireframe, layer.no_shadows]
     except:
         pass
 
