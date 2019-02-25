@@ -42,7 +42,7 @@ def make_box(page, d):
     d['ide'] = 'box'
     oput = ''
     oput += open_entity(page, d)
-    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["43"], 4)}" \n'
+    oput += f'scale="{round(d["41"], 4)} {round(d["43"], 4)} {round(d["42"], 4)}" \n'
     oput += entity_material(d)
     oput += '"> \n'
     oput += close_entity(page, d)
@@ -295,6 +295,12 @@ def make_line(page, d):
     return oput
 
 def make_poly(page, d):
+    #normalize vertices relative to first
+    for i in range(1, d['90']):
+        d['vx'][i] = d['vx'][i]-d['vx'][0]
+        d['vy'][i] = d['vy'][i]-d['vy'][0]
+    d['vx'][0] = 0
+    d['vy'][0] = 0
     #find gravity center
     xmax = xmin = 0
     ymax = ymin = 0
@@ -307,15 +313,15 @@ def make_poly(page, d):
             ymin = d['vy'][i]
         elif d['vy'][i] > ymax:
             ymax = d['vy'][i]
-    d['10'] = (xmax + xmin)/2
-    d['20'] = (ymax + ymin)/2
+    d['dx'] = (xmax + xmin)/2
+    d['dy'] = (ymax + ymin)/2
     d['39'] = d.get('39', 0)
-    #normalize vertices
-    for i in range(d['90']):
-        d['vx'][i] = d['vx'][i]-d['10']
-        d['vy'][i] = d['vy'][i]-d['20']
-    d['dx'] = d['dy'] = 0
     d['dz'] = d['39']/2
+
+    #normalize vertices to gravity center
+    for i in range(d['90']):
+        d['vx'][i] = d['vx'][i]-d['dx']
+        d['vy'][i] = d['vy'][i]-d['dy']
     d['prefix'] = d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
@@ -1210,12 +1216,14 @@ def make_position(d):
     cy = cos(radians(-d['220']))
     sz = sin(radians(-d['50']))
     cz = cos(radians(-d['50']))
+
     #Euler angles, yaw (Z), pitch (X), roll (Y)
     d['10'] = d['10'] + (cy*cz-sx*sy*sz)*d['dx'] + (-cx*sz)*d['dy'] +  (cz*sy+cy*sx*sz)*d['dz']
     d['20'] = d['20'] + (cz*sx*sy+cy*sz)*d['dx'] +  (cx*cz)*d['dy'] + (-cy*cz*sx+sy*sz)*d['dz']
     d['30'] = d['30'] +         (-cx*sy)*d['dx'] +     (sx)*d['dy'] +           (cx*cy)*d['dz']
     oput = ''
     oput += f'position="{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}" \n'
+
     return oput
 
 def close_entity(page, d):

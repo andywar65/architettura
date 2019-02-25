@@ -1,5 +1,5 @@
 import os, html
-from math import radians, sin, cos, asin, degrees, pi, sqrt, pow, fabs, atan2
+from math import radians, sin, cos, asin, acos, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
 from architettura import entities
@@ -231,9 +231,10 @@ def parse_dxf(page, material_dict, layer_dict):
 
                     elif d['ent'] == 'poly':#close polyline
                         d['2'] = 'a-poly'
-                        d['10'] = d['vx'][0]
-                        d['20'] = d['vy'][0]
-                        d['30'] = d['38']
+                        if d['210'] == 0 and d['220'] == 0:
+                            d['10'] = d['vx'][0]
+                            d['20'] = d['vy'][0]
+                            d['30'] = d['38']
                         d['num'] = x
                         collection[x] = d
                         flag = False
@@ -345,71 +346,78 @@ def store_entity_values(d, key, value):
             d['20'] = d['vy'][0]
         d['P_y'] = -d['20']#reset original value
     elif key == '230':#Z of OCS unitary vector
-        Az_3 = float(value)
+        d['Az_3'] = float(value)
         if d['ent'] == 'poly':
             d['30'] = d.get('38', 0)
-        P_z = d['30']
-        #arbitrary axis algorithm
-        #see if OCS z vector is close to world Z axis
-        if fabs(d['Az_1']) < (1/64) and fabs(d['Az_2']) < (1/64):
-            W = ('Y', 0, 1, 0)
-        else:
-            W = ('Z', 0, 0, 1)
-        #cross product for OCS x arbitrary vector, normalized
-        Ax_1 = W[2]*Az_3-W[3]*d['Az_2']
-        Ax_2 = W[3]*d['Az_1']-W[1]*Az_3
-        Ax_3 = W[1]*d['Az_2']-W[2]*d['Az_1']
-        Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
-        Ax_1 = Ax_1/Norm
-        Ax_2 = Ax_2/Norm
-        Ax_3 = Ax_3/Norm
-        #cross product for OCS y arbitrary vector, normalized
-        Ay_1 = d['Az_2']*Ax_3-Az_3*Ax_2
-        Ay_2 = Az_3*Ax_1-d['Az_1']*Ax_3
-        Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
-        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
-        Ay_1 = Ay_1/Norm
-        Ay_2 = Ay_2/Norm
-        Ay_3 = Ay_3/Norm
-        #insertion world coordinates from OCS
-        d['10'] = d['P_x']*Ax_1+d['P_y']*Ay_1+P_z*d['Az_1']
-        d['20'] = d['P_x']*Ax_2+d['P_y']*Ay_2+P_z*d['Az_2']
-        d['30'] = d['P_x']*Ax_3+d['P_y']*Ay_3+P_z*Az_3
-        #OCS X vector translated into WCS
-        Ax_1 = ((d['P_x']+cos(radians(d['50'])))*Ax_1+(d['P_y']+sin(radians(d['50'])))*Ay_1+P_z*d['Az_1'])-d['10']
-        Ax_2 = ((d['P_x']+cos(radians(d['50'])))*Ax_2+(d['P_y']+sin(radians(d['50'])))*Ay_2+P_z*d['Az_2'])-d['20']
-        Ax_3 = ((d['P_x']+cos(radians(d['50'])))*Ax_3+(d['P_y']+sin(radians(d['50'])))*Ay_3+P_z*Az_3)-d['30']
-        #cross product for OCS y vector, normalized
-        Ay_1 = d['Az_2']*Ax_3-Az_3*Ax_2
-        Ay_2 = Az_3*Ax_1-d['Az_1']*Ax_3
-        Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
-        Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
-        Ay_1 = Ay_1/Norm
-        Ay_2 = Ay_2/Norm
-        Ay_3 = Ay_3/Norm
+            d['50'] = 0
+        d['P_z'] = d['30']
+        d = arbitrary_axis_algorithm(d)
 
-        #A-Frame rotation order is Yaw(Z), Pitch(X) and Roll(Y)
-        #thanks for help Marilena Vendittelli and https://www.geometrictools.com/
-        if Ay_3<1:
-            if Ay_3>-1:
-                pitch = asin(Ay_3)
-                yaw = atan2(-Ay_1, Ay_2)
-                roll = atan2(-Ax_3, Az_3)
-            else:
-                pitch = -pi/2
-                yaw = -atan2(d['Az_1'], Ax_1)
-                roll = 0
+    return d
+
+def arbitrary_axis_algorithm(d):
+    #see if OCS z vector is close to world Z axis
+    if fabs(d['Az_1']) < (1/64) and fabs(d['Az_2']) < (1/64):
+        W = ('Y', 0, 1, 0)
+    else:
+        W = ('Z', 0, 0, 1)
+    #cross product for OCS x arbitrary vector, normalized
+    Ax_1 = W[2]*d['Az_3']-W[3]*d['Az_2']
+    Ax_2 = W[3]*d['Az_1']-W[1]*d['Az_3']
+    Ax_3 = W[1]*d['Az_2']-W[2]*d['Az_1']
+    Norm = sqrt(pow(Ax_1, 2)+pow(Ax_2, 2)+pow(Ax_3, 2))
+    Ax_1 = Ax_1/Norm
+    Ax_2 = Ax_2/Norm
+    Ax_3 = Ax_3/Norm
+    #cross product for OCS y arbitrary vector, normalized
+    Ay_1 = d['Az_2']*Ax_3-d['Az_3']*Ax_2
+    Ay_2 = d['Az_3']*Ax_1-d['Az_1']*Ax_3
+    Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
+    Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+    Ay_1 = Ay_1/Norm
+    Ay_2 = Ay_2/Norm
+    Ay_3 = Ay_3/Norm
+    #insertion world coordinates from OCS
+    d['10'] = d['P_x']*Ax_1+d['P_y']*Ay_1+d['P_z']*d['Az_1']
+    d['20'] = d['P_x']*Ax_2+d['P_y']*Ay_2+d['P_z']*d['Az_2']
+    d['30'] = d['P_x']*Ax_3+d['P_y']*Ay_3+d['P_z']*d['Az_3']
+
+    #OCS X vector translated into WCS
+    Ax_1 = ((d['P_x']+cos(radians(d['50'])))*Ax_1+(d['P_y']+sin(radians(d['50'])))*Ay_1+d['P_z']*d['Az_1'])-d['10']
+    Ax_2 = ((d['P_x']+cos(radians(d['50'])))*Ax_2+(d['P_y']+sin(radians(d['50'])))*Ay_2+d['P_z']*d['Az_2'])-d['20']
+    Ax_3 = ((d['P_x']+cos(radians(d['50'])))*Ax_3+(d['P_y']+sin(radians(d['50'])))*Ay_3+d['P_z']*d['Az_3'])-d['30']
+    #cross product for OCS y vector, normalized
+    Ay_1 = d['Az_2']*Ax_3-d['Az_3']*Ax_2
+    Ay_2 = d['Az_3']*Ax_1-d['Az_1']*Ax_3
+    Ay_3 = d['Az_1']*Ax_2-d['Az_2']*Ax_1
+    Norm = sqrt(pow(Ay_1, 2)+pow(Ay_2, 2)+pow(Ay_3, 2))
+    Ay_1 = Ay_1/Norm
+    Ay_2 = Ay_2/Norm
+    Ay_3 = Ay_3/Norm
+
+    #A-Frame rotation order is Yaw(Z), Pitch(X) and Roll(Y)
+    #thanks for help Marilena Vendittelli and https://www.geometrictools.com/
+    if Ay_3<1:
+        if Ay_3>-1:
+            pitch = asin(Ay_3)
+            yaw = atan2(-Ay_1, Ay_2)
+            roll = atan2(-Ax_3, d['Az_3'])
         else:
-            pitch = pi/2
-            yaw = atan2(d['Az_1'], Ax_1)
+            pitch = -pi/2
+            yaw = -atan2(d['Az_1'], Ax_1)
             roll = 0
+    else:
+        pitch = pi/2
+        yaw = atan2(d['Az_1'], Ax_1)
+        roll = 0
 
-        #Y position, mirrored
-        d['20'] = -d['20']
-        #rotations from radians to degrees
-        d['210'] = degrees(pitch)
-        d['50'] = degrees(yaw)
-        d['220'] = -degrees(roll)
+    #Y position, mirrored
+    d['20'] = -d['20']
+    #rotations from radians to degrees
+    d['210'] = degrees(pitch)
+    d['50'] = degrees(yaw)
+    d['220'] = -degrees(roll)
+    
     return d
 
 def reference_openings(collection):
