@@ -1,6 +1,6 @@
-"""Collection of functions for writing HTML of blocks.
+"""Collection of functions for writing HTML of entities and blocks.
 
-Functions are referenced from architettura.aframe.make_block, a-block CAD blocks
+Functions are referenced from architettura.aframe.make_html, a-block CAD blocks
 have NAME attribute that are essentially block names, while BIM blocks use TYPE
 attribute for setting 'partition type'. Block appearance is determined by
 MATERIAL attribute (multiple components may be used depending on NAME), other
@@ -1169,7 +1169,7 @@ def make_insertion(page, d):
     elif d['PROPERTY'] == 'stalker':
         oput += 'look-at="#camera" '
     elif d['PROPERTY'] == 'event':
-        oput += f'event-proxy="listen: click; emit: {d["ID"]}; target: #{d["TARGET"]}" '
+        oput += f'event-proxy="listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}" '
     if page.shadows:
         if d['2'] == 'a-light':
             pass
