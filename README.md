@@ -63,7 +63,7 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `a-curvedimage` standard block is an open cylinder where you can project panoramic images.
 
-`a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.9.0/core/animations.html) for further details on animation attributes. Apart from regular animations, `PROPERTY` can be set to `checkpoint`, `look-at` and `stalker`.
+`a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.9.0/core/animations.html) for further details on animation attributes. Apart from regular animations, `PROPERTY` can be set to `checkpoint`, `look-at`, `event` and `stalker`.
 `Checkpoint` transforms into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see before). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the component.
 `Look-at` and `stalker` have similar behaviour. First gazes towards the camera or given `TARGET`, latter stalkers the camera and may have a `TEXT` in a balloon or a `LINK`.
 `Event` animation connects two entities with given `ID`. On click first entity emits an event targeting second entity, that triggers animation with `startEvents` equal to first `ID`. Thanks to [Supermedium](https://github.com/supermedium/superframe/tree/master/components/animation/examples/events) for the component.
@@ -72,9 +72,9 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 ### Blocks and BIM standard blocks
 
-`Blocks` are a parametric assembly of primitives. In CAD you just have a bounding box with an insertion point, but setting the `TYPE` attribute leads to different results. There will be a list of block types (default is t01 = simple table). `MATERIAL` attribute defines block appearance, other `PARAMETERS` define functionalities peculiar to each block.
+`Blocks` are a parametric assembly of primitives. In CAD you just have a bounding box with an insertion point, but setting the `NAME` attribute leads to different results. There will be a list of block types (default is t01 = simple table). `MATERIAL` attribute defines block appearance, other `PARAMETERS` define functionalities peculiar to each block.
 
-You can load a Wavefront OBJ file setting block `TYPE` to `obj-mtl` and `PARAM1` to the OBJ filename. OBJ and MTL must have same filename and must be loaded to media/documents with lowercase extension. New standard is GLTF. Set the `TYPE` to `gltf` and `PARAM1` to the GLTF filename.
+You can load a Wavefront OBJ file setting block `NAME` to `obj-mtl` and `PARAM1` to the OBJ filename. OBJ and MTL must have same filename and must be loaded to media/documents with lowercase extension. New standard is GLTF. Set the `NAME` to `gltf` and `PARAM1` to the GLTF filename.
 
 BIM (Building Information Management) standard blocks are recognized as real life building elements. By now we have `Wall`, `Slab`, `Door` and `Window` BIM entities. If you put a `Door/Window` inside a `Wall`, you get a `Openwall`.
 
