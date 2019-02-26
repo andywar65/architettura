@@ -949,34 +949,7 @@ def make_link(page, d):
     oput = ''
     oput += open_entity(page, d)
     oput += f'scale="{d["41"]} {d["43"]} {d["42"]}"\n'
-    target = False
-    try:
-        if d['LINK'] == 'parent':
-            target = page.get_parent()
-        elif d['LINK'] == 'child':
-            target = page.get_first_child()
-        elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
-            target = page.get_prev_sibling()
-        elif d['LINK'] == 'next':
-            target = page.get_next_sibling()
-    except:
-        d['LINK'] = ''
-    if target:
-        oput += f'href="{target.url}" \n'
-        oput += f'title="{target.title}" \n'
-        try:
-            eq_image = target.specific.equirectangular_image
-            if eq_image:
-                oput += f'image="{eq_image.file.url}"'
-        except:
-            oput += 'image="#default-sky"'
-    else:
-        oput += f'href="{d["LINK"]}" \n'
-        if d['TITLE']:
-            oput += f'title="{d["TITLE"]}" \n'
-        else:
-            oput += 'title="Sorry, no title" \n'
-        oput += 'image="#default-sky"'
+    oput += add_link_part(page, d)
     oput += '>\n'
     oput += close_entity(page, d)
     return oput
@@ -1334,36 +1307,41 @@ def add_stalker(page, d):
         oput += f'<a-link id="{d["ide"]}-{d["num"]}-link" \n'
         oput += f'position="{d["41"]*.7} 0 0.02" \n'
         oput += f'scale="{d["41"]*.35} {d["41"]*.35}"\n'
-        target = False
-        try:
-            if d['LINK'] == 'parent':
-                target = page.get_parent()
-            elif d['LINK'] == 'child':
-                target = page.get_first_child()
-            elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
-                target = page.get_prev_sibling()
-            elif d['LINK'] == 'next':
-                target = page.get_next_sibling()
-        except:
-            d['LINK'] = ''
-        if target:
-            oput += f'href="{target.url}" \n'
-            oput += f'title="{target.title}" \n'
-            try:
-                eq_image = target.specific.equirectangular_image
-                if eq_image:
-                    oput += f'image="{eq_image.file.url}"'
-            except:
-                oput += 'image="#default-sky"'
-        else:
-            oput += f'href="{d["LINK"]}" \n'
-            if d['TITLE']:
-                oput += f'title="{d["TITLE"]}" \n'
-            else:
-                oput += 'title="Sorry, no title" \n'
-            oput += 'image="#default-sky"'
+        oput += add_link_part(page, d)
         oput += '>\n'
         oput += '</a-link>\n'
+    return oput
+
+def add_link_part(page, d):
+    oput = ''
+    target = False
+    try:
+        if d['LINK'] == 'parent':
+            target = page.get_parent()
+        elif d['LINK'] == 'child':
+            target = page.get_first_child()
+        elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
+            target = page.get_prev_sibling()
+        elif d['LINK'] == 'next':
+            target = page.get_next_sibling()
+    except:
+        d['LINK'] = ''
+    if target:
+        oput += f'href="{target.url}" \n'
+        oput += f'title="{target.title}" \n'
+        try:
+            eq_image = target.specific.equirectangular_image
+            if eq_image:
+                oput += f'image="{eq_image.file.url}"'
+        except:
+            oput += 'image="#default-sky"'
+    else:
+        oput += f'href="{d["LINK"]}" \n'
+        if d['TITLE']:
+            oput += f'title="{d["TITLE"]}" \n'
+        else:
+            oput += 'title="Sorry, no title" \n'
+        oput += 'image="#default-sky"'
     return oput
 
 def unit(nounit):
