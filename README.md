@@ -66,6 +66,7 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 `a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.9.0/core/animations.html) for further details on animation attributes. Apart from regular animations, `PROPERTY` can be set to `checkpoint`, `look-at` and `stalker`.
 `Checkpoint` transforms into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see before). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the component.
 `Look-at` and `stalker` have similar behaviour. First gazes towards the camera or given `TARGET`, latter stalkers the camera and may have a `TEXT` in a balloon or a `LINK`.
+`Event` animation connects two entities with given `ID`. On click first entity emits an event targeting second entity, that triggers animation with `startEvents` equal to first `ID`. Thanks to [Supermedium](https://github.com/supermedium/superframe/tree/master/components/animation/examples/events) for the component.
 
 `a-mason` standard block transforms lines and polylines with thickness and a-planes into `Wall` surfaces (see further). To work it has to be attached at insertion point of a-plane or at origin of line or polyline.
 

@@ -1195,6 +1195,8 @@ def make_insertion(page, d):
             oput += 'look-at="#camera" '
     elif d['PROPERTY'] == 'stalker':
         oput += 'look-at="#camera" '
+    elif d['PROPERTY'] == 'event':
+        oput += f'event-proxy="listen: click; emit: {d["ID"]}; target: #{d["TARGET"]}" '
     if page.shadows:
         if d['2'] == 'a-light':
             pass

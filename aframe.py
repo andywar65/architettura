@@ -568,6 +568,8 @@ def reference_animations(collection):
                                 d2['animation'] = False
                             elif d['PROPERTY'] == 'checkpoint':
                                 d2['animation'] = False
+                            elif d['PROPERTY'] == 'event':
+                                d2['animation'] = False
                             d2['PROPERTY'] = d['PROPERTY']
                             d2['FROM'] = d['FROM']
                             d2['TO'] = d['TO']
@@ -583,6 +585,8 @@ def reference_animations(collection):
                             elif d['PROPERTY'] == 'look-at':
                                 d2['RIG'] = False
                             elif d['PROPERTY'] == 'checkpoint':
+                                d2['RIG'] = False
+                            elif d['PROPERTY'] == 'event':
                                 d2['RIG'] = False
                             else:
                                 d2['RIG'] = eval(d['RIG'])
