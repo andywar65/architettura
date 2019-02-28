@@ -9,8 +9,7 @@ def get_layer_list(page):
 
     Skips some default layers. Returns a list.
     """
-    path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
-    dxf_f = open(path_to_dxf, encoding = 'utf-8')
+    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
     layer_list = []
     value = 'dummy'
@@ -39,8 +38,7 @@ def get_object_dict(page):
     Scans file to see if object entities have PARAM1 attribute and collects
     material names into a dictionary, so no name will be repeated.
     """
-    path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
-    dxf_f = open(path_to_dxf, encoding = 'utf-8')
+    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
     object_dict = {}
     value = 'dummy'
@@ -97,8 +95,7 @@ def get_entity_material(page):
     Scans file to see if entities have MATERIAL attribute and collects material
     name into a dictionary, so no name will be repeated.
     """
-    path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
-    dxf_f = open(path_to_dxf, encoding = 'utf-8')
+    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
     material_dict = {}
     value = 'dummy'
@@ -141,8 +138,7 @@ def parse_dxf(page, material_dict, layer_dict):
     entity, including geometric and appearance values plus functional
     attributes. Returns a nested dictionary.
     """
-    path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', page.dxf_file.filename)
-    dxf_f = open(path_to_dxf, encoding = 'utf-8')
+    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
     collection = {}
     flag = False

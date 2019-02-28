@@ -3,6 +3,7 @@ from architettura import aframe
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from modelcluster.fields import ParentalKey
 
@@ -136,6 +137,7 @@ class ScenePage(Page):
     ]
 
     def add_new_layers(self):
+        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.dxf_file.filename)
         add_new_layers_ext(self)
         return
 
@@ -232,6 +234,7 @@ class ArScenePage(Page):
     ]
 
     def add_new_layers(self):
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.scene.dxf_file.filename)
         add_new_layers_ext(self.scene)
         return
 
@@ -286,6 +289,7 @@ class DigkomPage(Page):
         return self.scene.equirectangular_image
 
     def add_new_layers(self):
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.scene.dxf_file.filename)
         add_new_layers_ext(self.scene)
         return
 
