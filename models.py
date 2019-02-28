@@ -29,6 +29,45 @@ class MaterialPage(Page):
         InlinePanel('image_files', label="Components",),
     ]
 
+    def get_material_assets(self):
+        image_dict = {}
+        components = MaterialPageComponent.objects.filter(page_id=self.id)
+        for component in components:
+            try:
+                if component.image:
+                    image_dict[self.title + '-' + component.name] = component.image
+            except:
+                pass
+        return image_dict
+
+    def get_entities(self):
+        self.path_to_dxf = os.path.join(settings.STATIC_ROOT, 'architettura/samples/materials.dxf')
+
+        material_dict = {}
+        components = MaterialPageComponent.objects.filter(page_id=self.id)
+        x=0
+        component_dict = {}
+        for component in components:
+            component_dict[x] = [component.name, component.color, component.pattern]
+            x += 1
+        material_dict[self.title] = component_dict
+        layer_dict = {}
+        layer_dict['0'] = [self.title, False, False, False]
+        collection = aframe.parse_dxf(self, material_dict, layer_dict)
+        collection = aframe.reference_openings(collection)
+        collection = aframe.reference_animations(collection)
+        for x, d in collection.items():
+            d['MATERIAL'] = self.title
+            d['WMATERIAL'] = self.title
+            d['pool'] = component_dict
+            d['wpool'] = component_dict
+        mode = 'scene'
+        self.shadows = True
+        self.double_face = False
+        self.fly_camera = False
+        entities_dict = aframe.make_html(self, collection, mode)
+        return entities_dict
+
 class MaterialPageComponent(Orderable):
     page = ParentalKey(MaterialPage, related_name='image_files')
     name = models.CharField(max_length=250, default="brick",)

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.9.0.min.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}template-materialpage{% endblock %}
+
+{% block content %}
+  <h1 id="material-title">{{ page.title }}</h1>
+
+    <a-scene style="width: 100%; height: 768px" embedded>
+
+    <a-asset>
+      <img id="sky" src="{% static 'architettura/images/target.png' %}">
+
+      {% with materials=page.get_material_assets %}
+        {% if materials %}
+          {% for name, component in materials.items %}
+          {% image component original as temp_image %}
+            <img id="{{ name }}" src="{{ temp_image.url }}">
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+    </a-asset>
+
+			{% with entities=page.get_entities %}
+			 {% if entities %}
+				{% for key, value in entities.items %}
+				{{ value|safe }}
+				{% endfor %}
+			 {% endif %}
+			{% endwith %}
+
+    <a-sky src="#sky"></a-sky>
+
+  </a-scene>
+{% endblock %}
