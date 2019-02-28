@@ -16,6 +16,31 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 
 from colorful.fields import RGBColorField
 
+class PartitionPage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Partition description",)
+
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('introduction'),
+        InlinePanel('layers', label="Components",),
+    ]
+
+class PartitionPageComponent(Orderable):
+    page = ParentalKey(PartitionPage, related_name='layers')
+    name = models.CharField(max_length=250, default="brick",)
+    thickness = models.IntegerField(default=0, help_text="In millimeters")
+    weight = models.IntegerField(default=0, help_text="In Newtons per cubic meter")
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('thickness'),
+        FieldPanel('weight'),
+    ]
+
 class MaterialPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Material description",)
@@ -206,6 +231,8 @@ class ScenePageLayer(Orderable):
     no_shadows = models.BooleanField(default=False, help_text="Layer casts no shadows?",)
     material = models.ForeignKey(MaterialPage, blank=True, null=True,
         on_delete=models.SET_NULL)
+    partition = models.ForeignKey(PartitionPage, blank=True, null=True,
+        on_delete=models.SET_NULL)
 
     panels = [
         FieldPanel('name'),
@@ -213,6 +240,7 @@ class ScenePageLayer(Orderable):
         FieldPanel('wireframe'),
         FieldPanel('no_shadows'),
         FieldPanel('material'),
+        FieldPanel('partition'),
     ]
 
 class ScenePageCadFile(Orderable):
