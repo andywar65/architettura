@@ -267,6 +267,33 @@ class ScenePageCadFile(Orderable):
         FieldPanel('rotation'),
     ]
 
+class SceneIndexPage(Page):
+    introduction = models.TextField(
+        help_text='Text to describe the page',
+        blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('introduction', classname="full"),
+    ]
+
+    # Speficies that only ScenePage objects can live under this index page
+    subpage_types = ['ScenePage']
+
+    # Defines a method to access the children of the page (e.g. ScenePage
+    # objects).
+    def children(self):
+        return self.get_children().specific().live()
+
+    # Overrides the context to list all child items, that are live, by the
+    # date that they were published
+    # http://docs.wagtail.io/en/latest/getting_started/tutorial.html#overriding-context
+    def get_context(self, request):
+        context = super(SceneIndexPage, self).get_context(request)
+        context['posts'] = ScenePage.objects.descendant_of(
+            self).live().order_by(
+            '-first_published_at')
+        return context
+
 class ArScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Scene description",)
@@ -374,32 +401,38 @@ class DigkomPage(Page):
     def get_ambient_light(self):
         return get_ambient_light_ext(self.scene)
 
-class SceneIndexPage(Page):
-    introduction = models.TextField(
-        help_text='Text to describe the page',
-        blank=True)
+class SurveyPage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Survey description",)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
+    )
+    date_published = models.DateField(
+        "Date article published", blank=True, null=True
+        )
+    author = models.ForeignKey(User, blank=True, null=True,
+        on_delete=models.PROTECT)
+    scene = models.ForeignKey(ScenePage, blank=True, null=True,
+        on_delete=models.PROTECT, help_text="Choose Scene to be surveyed")
 
-    content_panels = Page.content_panels + [
-        FieldPanel('introduction', classname="full"),
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
     ]
 
-    # Speficies that only ScenePage objects can live under this index page
-    subpage_types = ['ScenePage']
-
-    # Defines a method to access the children of the page (e.g. ScenePage
-    # objects).
-    def children(self):
-        return self.get_children().specific().live()
-
-    # Overrides the context to list all child items, that are live, by the
-    # date that they were published
-    # http://docs.wagtail.io/en/latest/getting_started/tutorial.html#overriding-context
-    def get_context(self, request):
-        context = super(SceneIndexPage, self).get_context(request)
-        context['posts'] = ScenePage.objects.descendant_of(
-            self).live().order_by(
-            '-first_published_at')
-        return context
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            FieldPanel('introduction'),
+            ImageChooserPanel('image'),
+            FieldPanel('author'),
+            FieldPanel('date_published'),
+        ], heading="Presentation", classname="collapsible collapsed"),
+        FieldPanel('scene'),
+    ]
 
 def add_new_layers_ext(page_obj):
     layer_list = aframe.get_layer_list(page_obj)
