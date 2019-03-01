@@ -178,7 +178,7 @@ def make_w_plane(page, d):
     """
     #prepare values for materials
     values = (
-        ('pool', 0, 'wall', 'MATERIAL'),
+        ('pool', 0, 'plaster', 'MATERIAL'),
         ('pool', 1, 'tile', 'MATERIAL'),
         ('pool', 2, 'skirt', 'MATERIAL'),
     )
@@ -206,10 +206,12 @@ def make_w_plane(page, d):
     values = (
         (skirt_h, 'skirt', skirt_h/2,),
         (tile_h, 'tile', tile_h/2+skirt_h,),
-        (wall_h, 'wall', wall_h/2+tile_h+skirt_h,),
+        (wall_h, 'plaster', wall_h/2+tile_h+skirt_h,),
     )
     #loop surfaces
     d['rx'] = fabs(d["41"])
+    if d['rx'] == 0:
+        return oput
     for v in values:
         if v[0]:
             d['prefix'] = v[1]
