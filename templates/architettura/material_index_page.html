@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags navigation_tags wagtailimages_tags %}
+
+{% block content %}
+  {% include "base/include/header-index.html" %}
+    <div class="container">
+
+        <div class="row row-eq-height blog-list">
+            {% if posts %}
+                {% for material in posts %}
+                    <li class="col-xs-12 col-sm-6 col-md-3 blog-list-item">
+                        <a href="{% pageurl material %}">
+                            <div class="image">
+                                {% image material.image fill-850x450-c50 as image %}
+                                <img src="{{ image.url }}" width="{{ image.width }}" height="{{ image.height }}" alt="{{ image.alt }}" class="" />
+                            </div>
+                            <div class="text">
+                                <h2 class="material-list-title">{{ material.title }}</h2>
+                                <p>{{ material.introduction|truncatewords:15 }}</p>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12">
+                    <p>Sorry, there are no Materials to list.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
