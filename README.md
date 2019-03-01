@@ -41,7 +41,7 @@ In this mode interaction has a different behaviour: keyboard movements are disab
 
 ### Nesting Pages
 
-When you have several `Scene Pages` you can collect them under a `Scene Index Page`. This page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually delete `navigation_tags` from the template, it's not a Wagtail native tag.
+When you have several `Scene Pages` or `Material Pages` you can collect them under a `Scene Index / Material Index Page`. These page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually delete `navigation_tags` from the templates, it's not a Wagtail native tag.
 
 ## Entities
 
@@ -82,4 +82,4 @@ BIM (Building Information Management) standard blocks are recognized as real lif
 
 In a Wall block you can define it's `TYPE` to set the partition type (physical characteristics, TODO) and `MATERIALs` for interior and exterior surfaces. A single material can describe three stripes of the same surface. In Slabs a single material describes ceiling and floor patterns.
 
-Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `TYPE` attribute to `ghost`, door panel is not rendered. If a door panel is clicked, an animation is triggered. Windows are similar, but they also have a `SILL`, representing the height of the window sill from the floor. Wall underneath will inherit the material from the wall entity you have poked.
+Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `TYPE` attribute to `ghost`, door is not rendered. If a door panel is clicked, an animation is triggered. Windows are similar, but they also have a `SILL`, representing the height of the window sill from the floor. Wall underneath will inherit the material from the wall entity you have poked.
