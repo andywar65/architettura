@@ -429,9 +429,9 @@ def reference_openings(collection):
             for x2, d2 in collection2.items():
                 if d2['2'] == 'a-wall':
                     flag = 0
-                    if d['210'] - fabs(d2['210'])<1:
+                    if fabs(d['210']) - fabs(d2['210'])<1:
                         flag += 1
-                    if d['220'] - fabs(d2['220'])<1:
+                    if fabs(d['220']) - fabs(d2['220'])<1:
                         flag += 1
                     if fabs(d['50'] - d2['50'])<1:
                         flag += 1
