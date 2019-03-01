@@ -33,6 +33,8 @@ Okay, now publish and go to the frontend to see how your model behaves.
 The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. On some mobiles you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
 Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that makes you inspect and modify the entities of the model. Modifications can be saved to HTML files.
 
+If you view a `Material Page`, a mockup scene will be presented, showing how different entities react to inspected material.
+
 ### digitalkOmiX mode
 
 In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `animation block` with `PROPERTY` set to `checkpoint`in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
