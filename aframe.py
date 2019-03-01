@@ -200,9 +200,12 @@ def parse_dxf(page, material_dict, layer_dict):
                     if d['MATERIAL'] == '':
                         d['MATERIAL'] = layer[0]
                     if d['MATERIAL'] != 'default':
-                        component_pool = material_dict[d['MATERIAL']]
-                        if component_pool:
-                            d['pool'] = component_pool
+                        try:
+                            component_pool = material_dict[d['MATERIAL']]
+                            if component_pool:
+                                d['pool'] = component_pool
+                        except:
+                            pass
 
 
                     if d['ent'] == '3df':
@@ -249,7 +252,10 @@ def parse_dxf(page, material_dict, layer_dict):
                             d['SKIRTING2'] = d['SKIRTING'] = 0
                         elif d['2'] == 'a-wall':
                             if d['MATERIAL2']:
-                                d['pool2'] = material_dict[d['MATERIAL2']]
+                                try:
+                                    d['pool2'] = material_dict[d['MATERIAL2']]
+                                except:
+                                    d['pool2'] = d['pool']
                             else:
                                 d['MATERIAL2'] = d['MATERIAL']
                                 d['pool2'] = d['pool']
