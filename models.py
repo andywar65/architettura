@@ -95,7 +95,7 @@ class MaterialPage(Page):
 
 class MaterialPageComponent(Orderable):
     page = ParentalKey(MaterialPage, related_name='image_files')
-    name = models.CharField(max_length=250, default="brick",)
+    name = models.CharField(max_length=250, default="0",)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
