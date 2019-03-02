@@ -41,7 +41,7 @@ In this mode interaction has a different behaviour: keyboard movements are disab
 
 ### Nesting Pages
 
-When you have several `Scene Pages` or `Material Pages` you can collect them under a `Scene Index / Material Index Page`. These page acts like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually delete `navigation_tags` from the templates, it's not a Wagtail native tag.
+When you have several `Scene Pages` or `Material Pages` you can collect them under a `Scene Index / Material Index Page`. These page act like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually uncomment `navigation_tags` from the templates, it's not a Wagtail native tag.
 
 ## Entities
 
