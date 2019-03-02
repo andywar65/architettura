@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block body_class %}template-surveypage{% endblock %}
+
+{% block content %}
+  <h1 id="survey-title">{{ page.title }}</h1>
+  <p id="survey-author">By: {{ page.author }}</p>
+  <p id="survey-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
+
+  {% with nl=page.add_new_layers %}
+  {% endwith %}
+
+	{% with entities=page.get_entities %}
+	 {% if entities %}
+		{% for key, value in entities.items %}
+		{{ value|safe }}
+		{% endfor %}
+	 {% endif %}
+	{% endwith %}
+
+{% endblock %}

@@ -463,6 +463,33 @@ class SurveyPage(Page):
             FieldPanel('date_published'),
         ], heading="Presentation", classname="collapsible collapsed"),
         FieldPanel('scene'),
+        InlinePanel('layers', label="Layers",),
+    ]
+
+    def add_new_layers(self):
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.scene.dxf_file.filename)
+        layer_list = aframe.get_layer_list(self.scene)
+        for layer in layer_list:
+            try:
+                a = SurveyPageLayer.objects.get(page_id=self.id, name=layer)
+            except:
+                b = SurveyPageLayer(page_id=self.id, name=layer)
+                b.save()
+        return
+
+    def get_entities(self):
+        entities = {'Hello ': 'World'}
+        return entities
+
+class SurveyPageLayer(Orderable):
+    page = ParentalKey(SurveyPage, related_name='layers')
+    name = models.CharField(max_length=250, default="0",
+        help_text="As in CAD file",)
+    invisible = models.BooleanField(default=False, help_text="Exclude layer from survey?",)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('invisible'),
     ]
 
 def add_new_layers_ext(page_obj):
