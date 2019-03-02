@@ -478,8 +478,20 @@ class SurveyPage(Page):
         return
 
     def get_entities(self):
-        entities = {'Hello ': 'World'}
+        mode = 'scene'
+        material_dict = prepare_material_dict()
+        part_dict = prepare_partition_dict()
+        layer_dict = prepare_layer_dict(self.scene)
+        collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
+        collection = add_partitions(collection, part_dict)
+        collection = aframe.reference_openings(collection)
+        collection = aframe.reference_animations(collection)
+        entities_dict = aframe.make_html(self.scene, collection, mode)
+        entities = {'message': 'Hello World'}
         return entities
+
+    def add_partitions(collection, part_dict):
+        return collection
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
@@ -557,6 +569,24 @@ def prepare_material_dict():
         pass
 
     return material_dict
+
+def prepare_partition_dict():
+    part_dict = {}
+    try:
+        parts = PartitionPage.objects.all()
+        if parts:
+            for p in parts:
+                components = PartitionPageComponent.objects.filter(page_id=p.id)
+                x=0
+                component_dict = {}
+                for component in components:
+                    component_dict[x] = [component.name, component.thickness, component.weight]
+                    x += 1
+                part_dict[p.title] = component_dict
+    except:
+        pass
+
+    return part_dict
 
 def prepare_layer_dict(page_obj):
     layer_dict = {}
