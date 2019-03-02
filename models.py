@@ -77,7 +77,7 @@ class MaterialPage(Page):
             x += 1
         material_dict[self.title] = component_dict
         layer_dict = {}
-        layer_dict['0'] = [self.title, False, False, False]
+        layer_dict['0'] = [self.title, False, False, False, '#ffffff']
         collection = aframe.parse_dxf(self, material_dict, layer_dict)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
