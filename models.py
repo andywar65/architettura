@@ -249,6 +249,10 @@ class ScenePage(Page):
     def get_ambient_light(self):
         return get_ambient_light_ext(self)
 
+    def get_survey(self):
+        survey = SurveyPage.objects.filter(scene_id=self.id)
+        return survey
+
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
     name = models.CharField(max_length=250, default="0",

@@ -72,4 +72,14 @@
     {% endif %}
 
   </a-scene>
+  {% with survey_list=page.get_survey %}
+    {% if survey_list %}
+      <h3 id="survey-list-title">Click to survey this Scene:</h3>
+      <ul id="survey-list">
+      {% for survey in survey_list %}
+      <li><a id="{{ survey.title }}-survey" href="{{ survey.url }}">{{ survey.title }}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 {% endblock %}
