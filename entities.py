@@ -646,8 +646,8 @@ def make_wall(d):
 
     return oput
 
-def survey_wall(page, d):
-    oput = ''
+def survey_wall(page):
+    oput = 'Wall '
     return oput
 
 def make_stair(page, d):

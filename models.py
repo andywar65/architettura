@@ -478,7 +478,7 @@ class SurveyPage(Page):
         return
 
     def get_entities(self):
-        mode = 'scene'
+
         material_dict = prepare_material_dict()
         part_dict = prepare_partition_dict()
         layer_dict = prepare_layer_dict(self.scene)
@@ -486,7 +486,12 @@ class SurveyPage(Page):
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
         collection = self.add_partitions(collection, part_dict, layer_dict)
-        entities_dict = aframe.make_survey(self.scene, collection, mode)
+        layer_dict = {}
+        layers = SurveyPageLayer.objects.filter(page_id=self.id)
+        if layers:
+            for layer in layers:
+                layer_dict[layer.name] = layer.invisible
+        entities_dict = aframe.make_survey(collection, layer_dict)
         return entities_dict
 
     def add_partitions(self, collection, part_dict, layer_dict):

@@ -660,12 +660,14 @@ def make_html(page, collection, mode):
 
     return entities_dict
 
-def make_survey(page, collection, mode):
+def make_survey(collection, layer_dict):
     entities_dict = {}
     for x, d in collection.items():
-        if d['2'] == 'a-wall':
-            entities_dict[x] = entities.survey_wall(page, d)
-    entities_dict = {'message': 'Hello World'}
+        if layer_dict[d['layer']]:
+            pass
+        else:
+            if d['2'] == 'a-wall':
+                entities_dict[x] = entities.survey_wall(d)
     return entities_dict
 
 def cad2hex(cad_color):
