@@ -580,7 +580,8 @@ def prepare_partition_dict():
                 x=0
                 component_dict = {}
                 for component in components:
-                    component_dict[x] = [component.name, component.thickness, component.weight]
+                    component_dict[x] = [component.name, component.thickness,
+                    component.weight]
                     x += 1
                 part_dict[p.title] = component_dict
     except:
@@ -596,9 +597,16 @@ def prepare_layer_dict(page_obj):
             for layer in layers:
                 try:
                     m = MaterialPage.objects.get(id=layer.material_id)
-                    layer_dict[layer.name] = [m.title, layer.invisible, layer.wireframe, layer.no_shadows]
+                    layer_dict[layer.name] = [m.title, layer.invisible,
+                    layer.wireframe, layer.no_shadows]
                 except:
-                    layer_dict[layer.name] = ['default', layer.invisible, layer.wireframe, layer.no_shadows]
+                    layer_dict[layer.name] = ['default', layer.invisible,
+                    layer.wireframe, layer.no_shadows]
+                try:
+                    p = PartitionPage.objects.get(id=layer.partition_id)
+                    layer_dict[layer.name].append(p.title)
+                except:
+                    layer_dict[layer.name].append('default')
     except:
         pass
 
