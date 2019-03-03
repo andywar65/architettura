@@ -1,7 +1,7 @@
 """Collection of functions for writing HTML of entities and blocks.
 
 Functions are referenced from architettura.aframe.make_html, a-block CAD blocks
-have NAME attribute that are essentially block names, while BIM blocks use TYPE
+have NAME attribute that are essentially block names, while BIM blocks use PART
 attribute for setting 'partition type'. Block appearance is determined by
 MATERIAL attribute (multiple components may be used depending on NAME), other
 features depend on PARAM attributes.
@@ -420,7 +420,7 @@ def make_door(d):
     """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
-    dimension. TYPE sets door features. If set to 'ghost' panel will not be
+    dimension. PART sets door features. If set to 'ghost' panel will not be
     rendered. SLIDING and DOUBLE are boolean. Gets panel material from first
     component and frame material from third component.
     """
@@ -431,7 +431,7 @@ def make_door(d):
     d = prepare_material_values(values, d)
 
     oput = ''
-    if d["TYPE"] == 'ghost':
+    if d["PART"] == 'ghost':
         return oput
 
     d['prefix'] = 'frame'
@@ -544,7 +544,7 @@ def make_door(d):
 def make_slab(d):
     """Slab default BIM block.
 
-    An horizontal partition. Gets dimensions from block scaling. TYPE sets
+    An horizontal partition. Gets dimensions from block scaling. PART sets
     partition type (TODO). Gets ceiling material from first component and
     floor material from third component.
     """
@@ -578,7 +578,7 @@ def make_wall(d):
     """Wall default BIM block.
 
     A vertical partition. Gets dimensions from block scaling, TILING and
-    SKIRTING height from respective attributes. TYPE sets partition type
+    SKIRTING height from respective attributes. PART sets partition type
     (TODO). Gets two different MATERIALs for internal and external surface, and
     respectively first component for wall, second for tiling and third for
     skirting.
@@ -1077,10 +1077,10 @@ def make_branch(branch, lb, lp, angle, rotx, d):
     d['ry'] = lb
     ang = gauss(angle, 10)
     rot = gauss(rotx, 20)
-    oput = f'<a-entity id="{d["TYPE"]}-{d["num"]}-branch-{branch}-ent" \n'
+    oput = f'<a-entity id="{d["NAME"]}-{d["num"]}-branch-{branch}-ent" \n'
     oput += f'position="0 {lp*.95-lp*fabs(gauss(0, .2))} 0" \n'
     oput += f'rotation="{ang} {rot} 0"> \n'
-    oput += f'<a-cone id="{d["TYPE"]}-{d["num"]}-branch-{branch}" \n'
+    oput += f'<a-cone id="{d["NAME"]}-{d["num"]}-branch-{branch}" \n'
     oput += f'position="0 {lb/2} 0" \n'
     oput += f'geometry="height: {lb}; radius-bottom: {lb/12}; radius-top: {lb/14};" \n'
     oput += entity_material(d)
