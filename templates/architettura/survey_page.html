@@ -17,9 +17,11 @@
 
 	{% with entities=page.get_entities %}
 	 {% if entities %}
+   <table>
 		{% for key, value in entities.items %}
-		{{ value|safe }}
+		<tr>{{ value|safe }}</tr>
 		{% endfor %}
+  </table>
 	 {% endif %}
 	{% endwith %}
 
