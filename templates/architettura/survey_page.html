@@ -18,11 +18,14 @@
 	{% with entities=page.get_entities %}
 	 {% if entities %}
    <table>
+    <tr><th>NUM</th><th>LAYER</th><th>IDENTITY</th><th>MATERIAL</th><th>COMPONENT</th><th>WIDTH</th><th>HEIGTH</th></tr>
 		{% for key, value in entities.items %}
-		<tr>{{ value|safe }}</tr>
+		  {{ value|safe }}
 		{% endfor %}
   </table>
 	 {% endif %}
 	{% endwith %}
+
+  <p id="survey-scene">Back to Scene <a href="{{ page.scene.url }}">{{ page.scene }}</a></p>
 
 {% endblock %}

@@ -667,6 +667,7 @@ def make_survey(collection, layer_dict):
             pass
         else:
             if d['2'] == 'a-wall':
+                d['ide'] = 'wall'
                 entities_dict[x] = entities.survey_wall(d)
     return entities_dict
 

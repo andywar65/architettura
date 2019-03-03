@@ -646,8 +646,59 @@ def make_wall(d):
 
     return oput
 
-def survey_wall(page):
-    oput = '<td>Wall</td>'
+def survey_wall(d):
+    wall_h = wall2_h = fabs(d['43'])
+    tile_h = fabs(float(d['TILING']))
+    skirt_h = fabs(float(d['SKIRTING']))
+    tile2_h = fabs(float(d['TILING2']))
+    skirt2_h = fabs(float(d['SKIRTING2']))
+    if d['ide'] == 'openwall-above':
+        door_h = d['door_height']
+    else:
+        door_h = 0
+    if tile_h > wall_h:
+        tile_h = wall_h
+    if skirt_h > wall_h:
+        skirt_h = wall_h
+    if skirt_h < door_h:
+        skirt_h = door_h
+    if skirt_h > tile_h:
+        tile_h = skirt_h
+    if tile2_h > wall2_h:
+        tile2_h = wall2_h
+    if skirt2_h > wall2_h:
+        skirt2_h = wall2_h
+    if skirt2_h < door_h:
+        skirt2_h = door_h
+    if skirt2_h > tile2_h:
+        tile2_h = skirt2_h
+    wall_h = wall_h - tile_h
+    tile_h = tile_h - skirt_h
+    skirt_h = skirt_h - door_h
+    wall2_h = wall2_h - tile2_h
+    tile2_h = tile2_h - skirt2_h
+    skirt2_h = skirt2_h - door_h
+    oput = ''
+    values = (
+        (wall_h, 'int-plaster', d['MATERIAL'], d['pool'], 0),
+        (tile_h, 'int-tile', d['MATERIAL'], d['pool'], 1),
+        (skirt_h, 'int-skirt', d['MATERIAL'], d['pool'], 2),
+        (wall2_h, 'ext-plaster', d['MATERIAL2'], d['pool2'], 0),
+        (tile2_h, 'ext-tile', d['MATERIAL2'], d['pool2'], 1),
+        (skirt2_h, 'ext-skirt', d['MATERIAL2'], d['pool2'], 2),
+    )
+    for v in values:
+        if v[0]:
+            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+            try:
+                component = v[3][v[4]]
+                name = component[0]
+            except:
+                name = 'Null'
+            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
+            oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+            oput += f'<td>{round(v[0], 4)}</td></tr> \n'
+
     return oput
 
 def make_stair(page, d):
