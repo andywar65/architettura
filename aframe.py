@@ -249,7 +249,7 @@ def parse_dxf(page, material_dict, layer_dict):
                             d['wpool'] = d['pool2'] = d['pool']
                             d['TILING2'] = d['TILING'] = 0
                             d['SKIRTING2'] = d['SKIRTING'] = 0
-                        elif d['2'] == 'a-wall':
+                        elif d['2'] == 'a-wall' or d['2'] == 'a-mason':
                             if d['MATERIAL2']:
                                 try:
                                     d['pool2'] = material_dict[d['MATERIAL2']]
