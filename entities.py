@@ -646,6 +646,10 @@ def make_wall(d):
 
     return oput
 
+def survey_wall(page, d):
+    oput = ''
+    return oput
+
 def make_stair(page, d):
     values = (
         ('pool', 0, 'steps', 'MATERIAL'),

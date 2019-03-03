@@ -487,8 +487,7 @@ class SurveyPage(Page):
         collection = aframe.reference_animations(collection)
         collection = add_partitions(collection, part_dict, layer_dict)
         entities_dict = aframe.make_survey(self.scene, collection, mode)
-        entities = {'message': 'Hello World'}
-        return entities
+        return entities_dict
 
     def add_partitions(collection, part_dict, layer_dict):
         for x, d in collection.items():

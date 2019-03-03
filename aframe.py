@@ -662,6 +662,10 @@ def make_html(page, collection, mode):
 
 def make_survey(page, collection, mode):
     entities_dict = {}
+    for x, d in collection.items():
+        if d['2'] == 'a-wall':
+            entities_dict[x] = entities.survey_wall(page, d)
+    entities_dict = {'message': 'Hello World'}
     return entities_dict
 
 def cad2hex(cad_color):
