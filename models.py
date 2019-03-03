@@ -483,14 +483,42 @@ class SurveyPage(Page):
         part_dict = prepare_partition_dict()
         layer_dict = prepare_layer_dict(self.scene)
         collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
-        collection = add_partitions(collection, part_dict)
+        collection = add_partitions(collection, part_dict, layer_dict)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
         entities_dict = aframe.make_html(self.scene, collection, mode)
         entities = {'message': 'Hello World'}
         return entities
 
-    def add_partitions(collection, part_dict):
+    def add_partitions(collection, part_dict, layer_dict):
+        for x, d in collection.items():
+            flag = False
+            if d['2'] == 'a-wall':
+                flag = True
+            elif d['2'] == 'a-openwall':
+                flag = True
+            elif d['2'] == 'a-window':
+                flag = True
+            elif d['2'] == 'a-door':
+                flag = True
+            elif d['2'] == 'a-slab':
+                flag = True
+            elif d['2'] == 'a-stair':
+                flag = True
+            if flag:
+                layer = layer_dict[d['layer']]
+                d['PART'] = d.get('PART', layer[5])
+                d['p-pool'] = {}
+                if d['PART'] == '':
+                    d['PART'] = layer[5]
+                if d['PART'] != 'default':
+                    try:
+                        component_pool = part_dict[d['PART']]
+                        if component_pool:
+                            d['p-pool'] = component_pool
+                    except:
+                        pass
+
         return collection
 
 class SurveyPageLayer(Orderable):
