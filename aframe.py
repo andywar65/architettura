@@ -207,7 +207,6 @@ def parse_dxf(page, material_dict, layer_dict):
                         except:
                             pass
 
-
                     if d['ent'] == '3df':
                         d['2'] = 'a-triangle'
 
@@ -557,10 +556,15 @@ def reference_animations(collection):
                     dz = fabs(d['30']-d2['30'])
                     if dx < 0.01 and dy < 0.01 and dz < 0.01:
                         if d['2'] == 'a-mason':
+                            d2['PART'] = d['PART']
                             d2['MATERIAL'] = d['MATERIAL']
                             d2['pool'] = d['pool']
                             d2['TILING'] = d['TILING']
                             d2['SKIRTING'] = d['SKIRTING']
+                            d2['MATERIAL2'] = d['MATERIAL2']
+                            d2['pool2'] = d['pool2']
+                            d2['TILING2'] = d['TILING2']
+                            d2['SKIRTING2'] = d['SKIRTING2']
 
                         elif d['2'] == 'a-animation':
                             d2['animation'] = True
