@@ -485,11 +485,19 @@ class SurveyPage(Page):
         collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
-        collection = add_partitions(collection, part_dict, layer_dict)
+        collection = self.add_partitions(collection, part_dict, layer_dict)
         entities_dict = aframe.make_survey(self.scene, collection, mode)
         return entities_dict
 
-    def add_partitions(collection, part_dict, layer_dict):
+    def add_partitions(self, collection, part_dict, layer_dict):
+        layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
+        if layers:
+            for layer in layers:
+                try:
+                    p = PartitionPage.objects.get(id=layer.partition_id)
+                    layer_dict[layer.name].append(p.title)
+                except:
+                    layer_dict[layer.name].append('default')
         for x, d in collection.items():
             flag = False
             if d['2'] == 'a-wall':
@@ -629,11 +637,6 @@ def prepare_layer_dict(page_obj):
                 except:
                     layer_dict[layer.name] = ['default', layer.invisible,
                     layer.wireframe, layer.no_shadows]
-                try:
-                    p = PartitionPage.objects.get(id=layer.partition_id)
-                    layer_dict[layer.name].append(p.title)
-                except:
-                    layer_dict[layer.name].append('default')
     except:
         pass
 
