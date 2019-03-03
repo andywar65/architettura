@@ -660,6 +660,10 @@ def make_html(page, collection, mode):
 
     return entities_dict
 
+def make_survey(page, collection, mode):
+    entities_dict = {}
+    return entities_dict
+
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
     if cad_color<0 or cad_color>255:

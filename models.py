@@ -483,10 +483,10 @@ class SurveyPage(Page):
         part_dict = prepare_partition_dict()
         layer_dict = prepare_layer_dict(self.scene)
         collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
-        collection = add_partitions(collection, part_dict, layer_dict)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
-        entities_dict = aframe.make_html(self.scene, collection, mode)
+        collection = add_partitions(collection, part_dict, layer_dict)
+        entities_dict = aframe.make_survey(self.scene, collection, mode)
         entities = {'message': 'Hello World'}
         return entities
 
