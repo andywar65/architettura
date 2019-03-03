@@ -647,6 +647,32 @@ def make_wall(d):
     return oput
 
 def survey_wall(d):
+    #partitions
+    unit_weight = 0
+    if d['p-pool']:
+        total_thickness = 0
+        var_thickness = -1
+        for x, component in d['p-pool'].items():
+            thickness = float(component[1]/1000)
+            weight = float(component[2])
+            if thickness == 0:
+                var_thickness = x
+            total_thickness = total_thickness + thickness
+            unit_weight = unit_weight + weight*thickness
+        if total_thickness == d['42']:
+            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
+        elif total_thickness > d['42']:
+            unit_weight = 'Thin'
+        elif total_thickness < d['42'] and var_thickness > -1:
+            component = d['p-pool'][var_thickness]
+            thickness = d['42'] - total_thickness
+            weight = float(component[2])
+            unit_weight = unit_weight + weight*thickness
+            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
+        else:
+            unit_weight = 'Thick'
+        print(total_thickness, d['42'])
+    #materials
     wall_h = wall2_h = fabs(d['43'])
     tile_h = fabs(float(d['TILING']))
     skirt_h = fabs(float(d['SKIRTING']))
@@ -679,6 +705,12 @@ def survey_wall(d):
     tile2_h = tile2_h - skirt2_h
     skirt2_h = skirt2_h - door_h
     oput = ''
+    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+    oput += f'<td>{d["ide"]}</td><td>-</td><td>-</td>'
+    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+    oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
+    oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
+    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td></tr> \n'
     values = (
         (wall_h, 'int-plaster', d['MATERIAL'], d['pool'], 0),
         (tile_h, 'int-tile', d['MATERIAL'], d['pool'], 1),
@@ -697,7 +729,8 @@ def survey_wall(d):
                 name = 'Null'
             oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
             oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-            oput += f'<td>{round(v[0], 4)}</td></tr> \n'
+            oput += f'<td>{round(v[0], 4)}</td>'
+            oput += f'<td>-</td><td>-</td><td>-</td></tr> \n'
 
     return oput
 
