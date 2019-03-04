@@ -608,23 +608,22 @@ def survey_slab(d):
     oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
     oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
     oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td></tr> \n'
-    
+
     values = (
         (0, 'floor', d['MATERIAL'], d['pool'], 2),
         (0, 'ceiling', d['MATERIAL'], d['pool'], 0),
     )
     for v in values:
-        if v[0]:
-            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-            try:
-                component = v[3][v[4]]
-                name = component[0]
-            except:
-                name = 'Null'
-            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
-            oput += f'<td>{round(fabs(d["41"]), 4)}</td><td>-</td>'
-            oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-            oput += '<td>-</td><td>-</td></tr> \n'
+        oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+        try:
+            component = v[3][v[4]]
+            name = component[0]
+        except:
+            name = 'Null'
+        oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
+        oput += f'<td>{round(fabs(d["41"]), 4)}</td><td>-</td>'
+        oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
+        oput += '<td>-</td><td>-</td></tr> \n'
 
     return oput
 
