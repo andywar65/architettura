@@ -607,7 +607,8 @@ def survey_slab(d):
     oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
     oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
     oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td></tr> \n'
+    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td>'
+    oput += '<td>-</td><td>-</td></tr> \n'
 
     values = (
         (0, 'floor', d['MATERIAL'], d['pool'], 2),
@@ -623,7 +624,7 @@ def survey_slab(d):
         oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
         oput += f'<td>{round(fabs(d["41"]), 4)}</td><td>-</td>'
         oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-        oput += '<td>-</td><td>-</td></tr> \n'
+        oput += '<td>-</td><td>-</td><td>-</td><td>-</td></tr> \n'
 
     return oput
 
@@ -699,6 +700,51 @@ def make_wall(d):
 
     return oput
 
+def survey_door(d):
+    oput = ''
+    values = (
+        (0, 'panel', d['MATERIAL'], d['pool'], 0),
+        (0, 'frame', d['MATERIAL'], d['pool'], 2),
+    )
+
+    for v in values:
+        oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+        try:
+            component = v[3][v[4]]
+            name = component[0]
+        except:
+            name = 'Null'
+        oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
+        oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+        oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
+        oput += f'<td>-</td><td>{d["PART"]}</td><td>-</td>'
+        oput += f'<td>{d["DOUBLE"]}</td><td>{d["SLIDING"]}</td></tr> \n'
+    return oput
+
+def survey_window(d):
+    oput = ''
+    if d['SILL'] == '':
+        d['SILL'] = 0
+    else:
+        d['SILL'] = float(d['SILL'])
+    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+    try:
+        component = d['wpool'][2]
+        name = component[0]
+    except:
+        name = 'Null'
+    oput += f'<td>{d["ide"]}-frame</td><td>{d["WMATERIAL"]}</td><td>{name}</td>'
+    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+    oput += f'<td>{round(fabs(d["43"]) - fabs(d["SILL"]), 4)}</td>'
+    oput += f'<td>-</td><td>{d["PART"]}</td><td>-</td>'
+    oput += f'<td>{d["DOUBLE"]}</td><td>-</td></tr> \n'
+    if d['SILL']:
+        d['43'] = d['SILL']
+        d['ide'] = 'window-under'
+        oput += survey_wall(d)
+
+    return oput
+
 def survey_wall(d):
     #partitions
     unit_weight = 0
@@ -763,7 +809,8 @@ def survey_wall(d):
     oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
     oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
     oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td></tr> \n'
+    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td>'
+    oput += '<td>-</td><td>-</td></tr> \n'
     values = (
         (wall_h, 'int-plaster', d['MATERIAL'], d['pool'], 0),
         (tile_h, 'int-tile', d['MATERIAL'], d['pool'], 1),
@@ -783,7 +830,8 @@ def survey_wall(d):
             oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
             oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
             oput += f'<td>{round(v[0], 4)}</td>'
-            oput += f'<td>-</td><td>-</td><td>-</td></tr> \n'
+            oput += f'<td>-</td><td>-</td><td>-</td>'
+            oput += '<td>-</td><td>-</td></tr> \n'
 
     return oput
 
