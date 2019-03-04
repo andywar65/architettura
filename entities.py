@@ -574,6 +574,60 @@ def make_slab(d):
 
     return oput
 
+def survey_slab(d):
+    #partitions
+    #this part equal to survey_wall except 42-43, output unit_weight
+    unit_weight = 0
+    if d['p-pool']:
+        total_thickness = 0
+        var_thickness = -1
+        for x, component in d['p-pool'].items():
+            thickness = float(component[1]/1000)
+            weight = float(component[2])
+            if thickness == 0:
+                var_thickness = x
+            total_thickness = total_thickness + thickness
+            unit_weight = unit_weight + weight*thickness
+        if total_thickness == d['43']:
+            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
+        elif total_thickness > d['43']:
+            unit_weight = 'Thin'
+        elif total_thickness < d['43'] and var_thickness > -1:
+            component = d['p-pool'][var_thickness]
+            thickness = d['43'] - total_thickness
+            weight = float(component[2])
+            unit_weight = unit_weight + weight*thickness
+            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
+        else:
+            unit_weight = 'Thick'
+    #next part is identical in survey wall
+    oput = ''
+    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+    oput += f'<td>{d["ide"]}</td><td>-</td><td>-</td>'
+    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+    oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
+    oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
+    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td></tr> \n'
+    
+    values = (
+        (0, 'floor', d['MATERIAL'], d['pool'], 2),
+        (0, 'ceiling', d['MATERIAL'], d['pool'], 0),
+    )
+    for v in values:
+        if v[0]:
+            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+            try:
+                component = v[3][v[4]]
+                name = component[0]
+            except:
+                name = 'Null'
+            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
+            oput += f'<td>{round(fabs(d["41"]), 4)}</td><td>-</td>'
+            oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
+            oput += '<td>-</td><td>-</td></tr> \n'
+
+    return oput
+
 def make_wall(d):
     """Wall default BIM block.
 
