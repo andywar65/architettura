@@ -669,6 +669,8 @@ def make_survey(collection, layer_dict):
             if d['2'] == 'a-wall':
                 d['ide'] = 'wall'
                 entities_dict[x] = entities.survey_wall(d)
+            if d['2'] == 'a-openwall':
+                entities_dict[x] = entities.survey_openwall(d)
     return entities_dict
 
 def cad2hex(cad_color):

@@ -671,7 +671,7 @@ def survey_wall(d):
             unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
         else:
             unit_weight = 'Thick'
-        print(total_thickness, d['42'])
+
     #materials
     wall_h = wall2_h = fabs(d['43'])
     tile_h = fabs(float(d['TILING']))
@@ -853,6 +853,26 @@ def make_openwall(d):
     oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
+
+    return oput
+
+def survey_openwall(d):
+    oput = ''
+    tot = d['41']
+
+    d2 = d.copy()
+    #survey left wall
+    d2['41'] = d2['door_off_1']
+    d2['ide'] = 'openwall-left'
+    oput += survey_wall(d2)
+    #survey part above door
+    d2['41'] = d2['door_off_2'] - d2['door_off_1']
+    d2['ide'] = 'openwall-above'
+    oput += survey_wall(d2)
+    #survey right wall
+    d2['41'] = tot - d2['door_off_2']
+    d2['ide'] = 'openwall-right'
+    oput += survey_wall(d2)
 
     return oput
 

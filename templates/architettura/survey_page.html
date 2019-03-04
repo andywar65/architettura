@@ -19,8 +19,8 @@
 	 {% if entities %}
    <table>
     <tr><th>NUM</th><th>LAYER</th><th>IDENTITY</th><th>MATERIAL</th>
-    <th>COMPONENT</th><th>WIDTH</th><th>HEIGTH</th><th>DEPTH</th>
-    <th>PARTITION</th><th>WEIGHT</th></tr>
+    <th>COMPONENT</th><th>WIDTH(m)</th><th>HEIGTH(m)</th><th>DEPTH(m)</th>
+    <th>PARTITION</th><th>WEIGHT(N)</th></tr>
 		{% for key, value in entities.items %}
 		  {{ value|safe }}
 		{% endfor %}
