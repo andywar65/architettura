@@ -153,18 +153,18 @@ def parse_dxf(page, material_dict, layer_dict):
     while value !='ENTITIES':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
-        if value == 'AcDbLayerTableRecord':#dict of layer names and colors
-            key = dxf_f.readline().strip()
-            layer_name = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            value = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            if layer_name in layer_dict:
-                layer_dict[layer_name].append(cad2hex(dxf_f.readline().strip()))
-            else:
-                value = dxf_f.readline().strip()
+        #if value == 'AcDbLayerTableRecord':#dict of layer names and colors
+            #key = dxf_f.readline().strip()
+            #layer_name = dxf_f.readline().strip()
+            #key = dxf_f.readline().strip()
+            #value = dxf_f.readline().strip()
+            #key = dxf_f.readline().strip()
+            #if layer_name in layer_dict:
+                #layer_dict[layer_name].append(cad2hex(dxf_f.readline().strip()))
+            #else:
+                #value = dxf_f.readline().strip()
 
-        elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
+        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
             return collection
 
     while value !='ENDSEC':

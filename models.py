@@ -493,7 +493,7 @@ def get_material_assets_ext(page_obj):
 
 def get_entities_ext(page_obj, mode):
     material_dict = prepare_material_dict()
-    layer_dict = prepare_layer_dict(page_obj)
+    layer_dict = page_obj.layer_dict#prepare_layer_dict(page_obj)
     collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
     collection = aframe.reference_openings(collection)
     collection = aframe.reference_animations(collection)
