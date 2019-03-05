@@ -11,7 +11,7 @@ def get_layer_list(page):
     """
     dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
-    layer_dict = {}
+    page.layer_dict = {}
     value = 'dummy'
 
     while value !='ENTITIES':
@@ -27,15 +27,15 @@ def get_layer_list(page):
                 name == 'frustum' or name == '3D'):
                 value = dxf_f.readline().strip()
             else:
-                layer_dict[name] = ['default', False, False, False,
-                cad2hex(dxf_f.readline().strip()), 'default']
+                page.layer_dict[name] = ['default', False, False, False,
+                    cad2hex(dxf_f.readline().strip()), 'default']
         #security to avoid loops if file is corrupted
         elif value=='EOF' or key=='':
             dxf_f.close()
-            return layer_dict
+            return
 
     dxf_f.close()
-    return layer_dict
+    return
 
 def get_object_dict(page):
     """Gets MTL (filename) of object blocks from DXF file.
