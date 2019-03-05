@@ -103,6 +103,7 @@ def get_entity_material(page):
     dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
     material_dict = {}
+    part_dict = {}
     value = 'dummy'
     flag = False
     attr_value = ''
@@ -111,13 +112,13 @@ def get_entity_material(page):
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
         if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return collection
+            return material_dict, part_dict
 
     while value !='ENDSEC':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
         if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return material_dict
+            return material_dict, part_dict
 
         if flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
@@ -125,6 +126,8 @@ def get_entity_material(page):
             elif key == '2':#attribute key
                 if value == 'MATERIAL':
                     material_dict[attr_value] = 'path'
+                elif value == 'PART':
+                    part_dict[attr_value] = 'path'
                 flag = False
         if key == '0':
 
@@ -133,7 +136,7 @@ def get_entity_material(page):
                 flag = 'attrib'
 
     dxf_f.close()
-    return material_dict
+    return material_dict, part_dict
 
 def parse_dxf(page, material_dict, layer_dict):
     """Collects entities from DXF file.

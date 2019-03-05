@@ -466,7 +466,9 @@ def add_new_layers_ext(page_obj):
     return
 
 def get_material_assets_ext(page_obj):
-    material_dict = aframe.get_entity_material(page_obj)
+    double_dict = aframe.get_entity_material(page_obj)
+    material_dict = double_dict[0]
+    part_dict = double_dict[1]
     try:
         layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
         for layer in layers:
