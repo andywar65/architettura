@@ -469,16 +469,17 @@ def get_material_assets_ext(page_obj):
     double_dict = aframe.get_entity_material(page_obj)
     material_dict = double_dict[0]
     part_dict = double_dict[1]
-    try:
-        layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
-        for layer in layers:
-            try:
-                m = MaterialPage.objects.get(id=layer.material_id)
-                material_dict[m.title] = 'dummy'
-            except:
-                pass
-    except:
-        pass
+    for name, list in page_obj.layer_dict.items():
+        try:
+            m = MaterialPage.objects.get(title=list[0])
+            material_dict[m.title] = []
+        except:
+            pass
+        try:
+            p = PartitionPage.objects.get(title=list[0])
+            part_dict[p.title] = []
+        except:
+            pass
     image_dict = {}
     if material_dict:
         for material, dummy in material_dict.items():
