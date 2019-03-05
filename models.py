@@ -465,24 +465,24 @@ def add_new_layers_ext(page_obj):
     return
 
 def get_material_assets_ext(page_obj):
-    double_dict = aframe.get_entity_material(page_obj)
-    material_dict = double_dict[0]
-    part_dict = double_dict[1]
+    aframe.get_entity_material(page_obj)
+    #material_dict = double_dict[0]
+    #part_dict = double_dict[1]
     for name, list in page_obj.layer_dict.items():
         try:
             m = MaterialPage.objects.get(title=list[0])
-            material_dict[m.title] = 'dummy'
+            page_obj.material_dict[m.title] = 'dummy'
         except:
             pass
         try:
             p = PartitionPage.objects.get(title=list[0])
-            part_dict[p.title] = 'dummy'
+            page_obj.part_dict[p.title] = 'dummy'
         except:
             pass
 
     image_dict = {}
-    if material_dict:
-        for material, dummy in material_dict.items():
+    if page_obj.material_dict:
+        for material, dummy in page_obj.material_dict.items():
             try:
                 m = MaterialPage.objects.get(title=material)
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
@@ -495,13 +495,13 @@ def get_material_assets_ext(page_obj):
                     if component.image:
                         image_dict[m.title + '-' +
                             component.name] = component.image
-                material_dict[material] = component_dict
+                page_obj.material_dict[material] = component_dict
             except:
                 pass
-    page_obj.material_dict = material_dict
+    #page_obj.material_dict = material_dict
 
-    if part_dict:
-        for partition, dummy in part_dict.items():
+    if page_obj.part_dict:
+        for partition, dummy in page_obj.part_dict.items():
             try:
                 p = PartitionPage.objects.get(title=partition)
                 components = PartitionPageComponent.objects.filter(page_id=p.id)
@@ -511,10 +511,10 @@ def get_material_assets_ext(page_obj):
                     component_dict[x] = [component.name, component.thickness,
                         component.weight]
                     x += 1
-                part_dict[partition] = component_dict
+                page_obj.part_dict[partition] = component_dict
             except:
                 pass
-    page_obj.part_dict = part_dict
+    #page_obj.part_dict = part_dict
 
     return image_dict
 
