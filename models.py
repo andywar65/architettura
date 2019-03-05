@@ -447,14 +447,20 @@ class SurveyPageLayer(Orderable):
     ]
 
 def add_new_layers_ext(page_obj):
-    layer_list = aframe.get_layer_list(page_obj)
-    for layer in layer_list:
+    layer_dict = aframe.get_layer_list(page_obj)
+    for name, list in layer_dict.items():
         try:
-            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=layer)
+            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=name)
+            list[0] = a.material
+            list[1] = a.invisible
+            list[2] = a.wireframe
+            list[3] = a.no_shadows
+            list[5] = a.partition
+            layer_dict[name] = list
         except:
-            b = ScenePageLayer(page_id=page_obj.id, name=layer)
+            b = ScenePageLayer(page_id=page_obj.id, name=name)
             b.save()
-
+    page_obj.layer_dict = layer_dict
     return
 
 def get_material_assets_ext(page_obj):

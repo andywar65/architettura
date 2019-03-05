@@ -11,7 +11,7 @@ def get_layer_list(page):
     """
     dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
-    layer_list = []
+    layer_dict = {}
     value = 'dummy'
 
     while value !='ENTITIES':
@@ -19,18 +19,23 @@ def get_layer_list(page):
         value = dxf_f.readline().strip()
         if value == 'AcDbLayerTableRecord':#list of layer names
             key = dxf_f.readline().strip()
-            layer_name = dxf_f.readline().strip()
-            if layer_name == 'Defpoints' or layer_name == 'vectors' or layer_name == 'meshes' or layer_name == 'frustum' or layer_name == '3D':
-                pass
+            name = dxf_f.readline().strip()
+            key = dxf_f.readline().strip()
+            value = dxf_f.readline().strip()
+            key = dxf_f.readline().strip()
+            if (name == 'Defpoints' or name == 'vectors' or name == 'meshes' or
+                name == 'frustum' or name == '3D'):
+                value = dxf_f.readline().strip()
             else:
-                layer_list.append(layer_name)
-
-        elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
+                layer_dict[name] = ('default', False, False, False,
+                cad2hex(dxf_f.readline().strip()), 'default')
+        #security to avoid loops if file is corrupted
+        elif value=='EOF' or key=='':
             dxf_f.close()
-            return layer_list
+            return layer_dict
 
     dxf_f.close()
-    return layer_list
+    return layer_dict
 
 def get_object_dict(page):
     """Gets MTL (filename) of object blocks from DXF file.
