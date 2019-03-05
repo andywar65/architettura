@@ -451,11 +451,13 @@ def add_new_layers_ext(page_obj):
     for name, list in layer_dict.items():
         try:
             a = ScenePageLayer.objects.get(page_id=page_obj.id, name=name)
-            list[0] = a.material
+            if a.material:
+                list[0] = a.material.title
             list[1] = a.invisible
             list[2] = a.wireframe
             list[3] = a.no_shadows
-            list[5] = a.partition
+            if a.partition:
+                list[5] = a.partition.title
             layer_dict[name] = list
         except:
             b = ScenePageLayer(page_id=page_obj.id, name=name)

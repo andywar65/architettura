@@ -27,8 +27,8 @@ def get_layer_list(page):
                 name == 'frustum' or name == '3D'):
                 value = dxf_f.readline().strip()
             else:
-                layer_dict[name] = ('default', False, False, False,
-                cad2hex(dxf_f.readline().strip()), 'default')
+                layer_dict[name] = ['default', False, False, False,
+                cad2hex(dxf_f.readline().strip()), 'default']
         #security to avoid loops if file is corrupted
         elif value=='EOF' or key=='':
             dxf_f.close()
