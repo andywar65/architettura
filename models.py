@@ -466,8 +466,6 @@ def add_new_layers_ext(page_obj):
 
 def get_material_assets_ext(page_obj):
     aframe.get_entity_material(page_obj)
-    #material_dict = double_dict[0]
-    #part_dict = double_dict[1]
     for name, list in page_obj.layer_dict.items():
         try:
             m = MaterialPage.objects.get(title=list[0])
@@ -498,7 +496,6 @@ def get_material_assets_ext(page_obj):
                 page_obj.material_dict[material] = component_dict
             except:
                 pass
-    #page_obj.material_dict = material_dict
 
     if page_obj.part_dict:
         for partition, dummy in page_obj.part_dict.items():
@@ -514,14 +511,11 @@ def get_material_assets_ext(page_obj):
                 page_obj.part_dict[partition] = component_dict
             except:
                 pass
-    #page_obj.part_dict = part_dict
 
     return image_dict
 
 def get_entities_ext(page_obj, mode):
-    material_dict = page_obj.material_dict#prepare_material_dict()
-    layer_dict = page_obj.layer_dict#prepare_layer_dict(page_obj)
-    collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
+    collection = aframe.parse_dxf(page_obj)
     collection = aframe.reference_openings(collection)
     collection = aframe.reference_animations(collection)
     entities_dict = aframe.make_html(page_obj, collection, mode)
