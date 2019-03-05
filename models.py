@@ -472,32 +472,55 @@ def get_material_assets_ext(page_obj):
     for name, list in page_obj.layer_dict.items():
         try:
             m = MaterialPage.objects.get(title=list[0])
-            material_dict[m.title] = []
+            material_dict[m.title] = 'dummy'
         except:
             pass
         try:
             p = PartitionPage.objects.get(title=list[0])
-            part_dict[p.title] = []
+            part_dict[p.title] = 'dummy'
         except:
             pass
+
     image_dict = {}
     if material_dict:
         for material, dummy in material_dict.items():
             try:
                 m = MaterialPage.objects.get(title=material)
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
+                x=0
+                component_dict = {}
                 for component in components:
-                    try:
-                        if component.image:
-                            image_dict[m.title + '-' + component.name] = component.image
-                    except:
-                        pass
+                    component_dict[x] = [component.name, component.color,
+                        component.pattern]
+                    x += 1
+                    if component.image:
+                        image_dict[m.title + '-' +
+                            component.name] = component.image
+                material_dict[material] = component_dict
             except:
                 pass
+    page_obj.material_dict = material_dict
+
+    if part_dict:
+        for partition, dummy in part_dict.items():
+            try:
+                p = PartitionPage.objects.get(title=partition)
+                components = PartitionPageComponent.objects.filter(page_id=p.id)
+                x=0
+                component_dict = {}
+                for component in components:
+                    component_dict[x] = [component.name, component.thickness,
+                        component.weight]
+                    x += 1
+                part_dict[partition] = component_dict
+            except:
+                pass
+    page_obj.part_dict = part_dict
+
     return image_dict
 
 def get_entities_ext(page_obj, mode):
-    material_dict = prepare_material_dict()
+    material_dict = page_obj.material_dict#prepare_material_dict()
     layer_dict = page_obj.layer_dict#prepare_layer_dict(page_obj)
     collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
     collection = aframe.reference_openings(collection)
