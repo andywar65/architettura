@@ -482,7 +482,7 @@ def get_material_assets_ext(page_obj):
         except:
             pass
         try:
-            p = PartitionPage.objects.get(title=list[0])
+            p = PartitionPage.objects.get(title=list[5])
             page_obj.part_dict[p.title] = {'0': ['Null']}
         except:
             pass
@@ -505,7 +505,7 @@ def get_material_assets_ext(page_obj):
                 page_obj.material_dict[material] = component_dict
             except:
                 pass
-
+    print(page_obj.part_dict)
     if page_obj.part_dict:
         for partition, dummy in page_obj.part_dict.items():
             try:
