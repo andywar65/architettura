@@ -82,4 +82,14 @@
       </ul>
     {% endif %}
   {% endwith %}
+  {% with material_list=page.get_material_list %}
+    {% if material_list %}
+      <h3 id="material-list-title">Click to see Materials used in this Scene:</h3>
+      <ul id="material-list">
+      {% for material in material_list %}
+      <li><a id="{{ material.title }}-material" href="{{ material.url }}">{{ material.title }}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 {% endblock %}

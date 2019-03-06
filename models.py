@@ -68,17 +68,17 @@ class MaterialPage(Page):
     def get_entities(self):
         self.path_to_dxf = os.path.join(settings.STATIC_ROOT, 'architettura/samples/materials.dxf')
 
-        material_dict = {}
+        self.material_dict = {}
         components = MaterialPageComponent.objects.filter(page_id=self.id)
         x=0
         component_dict = {}
         for component in components:
             component_dict[x] = [component.name, component.color, component.pattern]
             x += 1
-        material_dict[self.title] = component_dict
-        layer_dict = {}
-        layer_dict['0'] = [self.title, False, False, False, '#ffffff']
-        collection = aframe.parse_dxf(self, material_dict, layer_dict)
+        self.material_dict[self.title] = component_dict
+        self.layer_dict = {}
+        self.layer_dict['0'] = [self.title, False, False, False, '#ffffff']
+        collection = aframe.parse_dxf(self)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
         for x, d in collection.items():
@@ -225,6 +225,16 @@ class ScenePage(Page):
     def get_survey(self):
         survey = SurveyPage.objects.filter(scene_id=self.id)
         return survey
+
+    def get_material_list(self):
+        material_list = []
+        for name, list in self.material_dict.items():
+            try:
+                m = MaterialPage.objects.get(title=name)
+                material_list.append(m)
+            except:
+                pass
+        return material_list
 
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
