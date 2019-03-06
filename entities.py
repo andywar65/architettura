@@ -271,7 +271,26 @@ def survey_line(d):
     if d['39']:
         d['43'] = d['39']
         d['41'] = sqrt( pow(d['10'] - d['11'], 2) + pow(d['20'] - d['21'], 2))
-        oput = survey_w_plane(d)
+        oput += survey_w_plane(d)
+    return oput
+
+def survey_poly(d):
+    oput = ''
+    if d['39']:
+        d['43'] = d['39']
+        d['num1'] = d['num']
+        for i in range(d['90']-1):
+            d['num'] = str(d['num1']) + '-' + str(i)
+            dx = d['vx'][i]-d['vx'][i+1]
+            dy = d['vy'][i]-d['vy'][i+1]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            oput += survey_w_plane(d)
+        if d['70']:
+            d['num'] = str(d['num1']) + '-' + str(i+1)
+            dx = d['vx'][i+1]-d['vx'][0]
+            dy = d['vy'][i+1]-d['vy'][0]
+            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
+            oput += survey_w_plane(d)
     return oput
 
 def make_triangle(page, d):

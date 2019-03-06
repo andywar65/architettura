@@ -687,6 +687,9 @@ def make_survey(collection, layer_dict):
             elif d['2'] == 'a-line':
                 d['ide'] = 'wall'
                 entities_dict[x] = entities.survey_line(d)
+            elif d['2'] == 'a-poly':
+                d['ide'] = 'wall'
+                entities_dict[x] = entities.survey_poly(d)
     return entities_dict
 
 def cad2hex(cad_color):
