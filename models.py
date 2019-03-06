@@ -1,4 +1,5 @@
 import os
+from math import fabs
 from architettura import aframe
 
 from django.db import models
@@ -28,6 +29,34 @@ class PartitionPage(Page):
         FieldPanel('introduction'),
         InlinePanel('layers', label="Components",),
     ]
+
+    def write_html(self):
+        output = ''
+        i = 1
+        layers = self.layers.all()
+        if layers:
+
+            for layer in layers:
+
+                thickness = fabs(float(layer.thickness)/1000)
+                if thickness == 0:
+                    thickness = 0.1
+                    name = str(i) + '- ' + layer.name + ' (variable)'
+                else:
+                    name = str(i) + '- ' + layer.name + ' (' + str(thickness*1000) + ' mm)'
+                if i == 1:
+                    dist = 0
+                else:
+                    dist += dist2 + thickness/2
+                i += 1
+                output += f'<a-box position="0 1.5 {-dist}" \n'
+                output += f' material="color: {aframe.cad2hex(i)}" \n'
+                output += f'depth="{thickness}" height="3" width="1"> \n'
+                output += f'<a-entity text="anchor: left; width: 1.5; color: black; value:{name}" \n'
+                output += 'position="0.55 -1.5 0 "rotation="-90 0 0"></a-entity></a-box> \n'
+                dist2 = thickness/2
+
+        return output
 
 class PartitionPageComponent(Orderable):
     page = ParentalKey(PartitionPage, related_name='layers')
@@ -68,17 +97,17 @@ class MaterialPage(Page):
     def get_entities(self):
         self.path_to_dxf = os.path.join(settings.STATIC_ROOT, 'architettura/samples/materials.dxf')
 
-        material_dict = {}
+        self.material_dict = {}
         components = MaterialPageComponent.objects.filter(page_id=self.id)
         x=0
         component_dict = {}
         for component in components:
             component_dict[x] = [component.name, component.color, component.pattern]
             x += 1
-        material_dict[self.title] = component_dict
-        layer_dict = {}
-        layer_dict['0'] = [self.title, False, False, False, '#ffffff']
-        collection = aframe.parse_dxf(self, material_dict, layer_dict)
+        self.material_dict[self.title] = component_dict
+        self.layer_dict = {}
+        self.layer_dict['0'] = [self.title, False, False, False, '#ffffff']
+        collection = aframe.parse_dxf(self)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
         for x, d in collection.items():
@@ -226,6 +255,26 @@ class ScenePage(Page):
         survey = SurveyPage.objects.filter(scene_id=self.id)
         return survey
 
+    def get_material_list(self):
+        material_list = []
+        for name, list in self.material_dict.items():
+            try:
+                m = MaterialPage.objects.get(title=name)
+                material_list.append(m)
+            except:
+                pass
+        return material_list
+
+    def get_part_list(self):
+        part_list = []
+        for name, list in self.part_dict.items():
+            try:
+                m = PartitionPage.objects.get(title=name)
+                part_list.append(m)
+            except:
+                pass
+        return part_list
+
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
     name = models.CharField(max_length=250, default="0",
@@ -369,25 +418,24 @@ class SurveyPage(Page):
     ]
 
     def add_new_layers(self):
-        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.scene.dxf_file.filename)
-        layer_list = aframe.get_layer_list(self.scene)
-        for layer in layer_list:
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+                                self.scene.dxf_file.filename)
+        aframe.get_layer_list(self.scene)
+        for name, list in self.scene.layer_dict.items():
             try:
-                a = SurveyPageLayer.objects.get(page_id=self.id, name=layer)
+                a = SurveyPageLayer.objects.get(page_id=self.id, name=name)
             except:
-                b = SurveyPageLayer(page_id=self.id, name=layer)
+                b = SurveyPageLayer(page_id=self.id, name=name)
                 b.save()
         return
 
     def get_entities(self):
-
-        material_dict = prepare_material_dict()
-        part_dict = prepare_partition_dict()
-        layer_dict = prepare_layer_dict(self.scene)
-        collection = aframe.parse_dxf(self.scene, material_dict, layer_dict)
+        #image dict is useless here, but that's how we get dicts
+        image_dict = get_material_assets_ext(self.scene)
+        collection = aframe.parse_dxf(self.scene)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
-        collection = self.add_partitions(collection, part_dict, layer_dict)
+        collection = add_partitions(self.scene, collection)
         layer_dict = {}
         layers = SurveyPageLayer.objects.filter(page_id=self.id)
         if layers:
@@ -395,45 +443,6 @@ class SurveyPage(Page):
                 layer_dict[layer.name] = layer.invisible
         entities_dict = aframe.make_survey(collection, layer_dict)
         return entities_dict
-
-    def add_partitions(self, collection, part_dict, layer_dict):
-        layers = ScenePageLayer.objects.filter(page_id=self.scene.id)
-        if layers:
-            for layer in layers:
-                try:
-                    p = PartitionPage.objects.get(id=layer.partition_id)
-                    layer_dict[layer.name].append(p.title)
-                except:
-                    layer_dict[layer.name].append('default')
-        for x, d in collection.items():
-            flag = False
-            if d['2'] == 'a-wall':
-                flag = True
-            elif d['2'] == 'a-openwall':
-                flag = True
-            elif d['2'] == 'a-window':
-                flag = True
-            elif d['2'] == 'a-door':
-                flag = True
-            elif d['2'] == 'a-slab':
-                flag = True
-            elif d['2'] == 'a-stair':
-                flag = True
-            if flag:
-                layer = layer_dict[d['layer']]
-                d['PART'] = d.get('PART', layer[5])
-                d['p-pool'] = {}
-                if d['PART'] == '':
-                    d['PART'] = layer[5]
-                if d['PART'] != 'default':
-                    try:
-                        component_pool = part_dict[d['PART']]
-                        if component_pool:
-                            d['p-pool'] = component_pool
-                    except:
-                        pass
-
-        return collection
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
@@ -447,110 +456,103 @@ class SurveyPageLayer(Orderable):
     ]
 
 def add_new_layers_ext(page_obj):
-    layer_list = aframe.get_layer_list(page_obj)
-    for layer in layer_list:
+    aframe.get_layer_list(page_obj)
+    for name, list in page_obj.layer_dict.items():
         try:
-            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=layer)
+            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=name)
+            if a.material:
+                list[0] = a.material.title
+            list[1] = a.invisible
+            list[2] = a.wireframe
+            list[3] = a.no_shadows
+            if a.partition:
+                list[5] = a.partition.title
+            page_obj.layer_dict[name] = list
         except:
-            b = ScenePageLayer(page_id=page_obj.id, name=layer)
+            b = ScenePageLayer(page_id=page_obj.id, name=name)
             b.save()
-
     return
 
 def get_material_assets_ext(page_obj):
-    material_dict = aframe.get_entity_material(page_obj)
-    try:
-        layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
-        for layer in layers:
-            try:
-                m = MaterialPage.objects.get(id=layer.material_id)
-                material_dict[m.title] = 'dummy'
-            except:
-                pass
-    except:
-        pass
+    aframe.get_entity_material(page_obj)
+    for name, list in page_obj.layer_dict.items():
+        try:
+            m = MaterialPage.objects.get(title=list[0])
+            page_obj.material_dict[m.title] = {'0': ['Null']}
+        except:
+            pass
+        try:
+            p = PartitionPage.objects.get(title=list[5])
+            page_obj.part_dict[p.title] = {'0': ['Null']}
+        except:
+            pass
+
     image_dict = {}
-    if material_dict:
-        for material, dummy in material_dict.items():
+    if page_obj.material_dict:
+        for material, dummy in page_obj.material_dict.items():
             try:
                 m = MaterialPage.objects.get(title=material)
-                components = MaterialPageComponent.objects.filter(page_id=m.id)
-                for component in components:
-                    try:
-                        if component.image:
-                            image_dict[m.title + '-' + component.name] = component.image
-                    except:
-                        pass
-            except:
-                pass
-    return image_dict
-
-def get_entities_ext(page_obj, mode):
-    material_dict = prepare_material_dict()
-    layer_dict = prepare_layer_dict(page_obj)
-    collection = aframe.parse_dxf(page_obj, material_dict, layer_dict)
-    collection = aframe.reference_openings(collection)
-    collection = aframe.reference_animations(collection)
-    entities_dict = aframe.make_html(page_obj, collection, mode)
-    return entities_dict
-
-def prepare_material_dict():
-    material_dict = {}
-    try:
-        materials = MaterialPage.objects.all()
-        if materials:
-            for m in materials:
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
                 x=0
                 component_dict = {}
                 for component in components:
-                    component_dict[x] = [component.name, component.color, component.pattern]
+                    component_dict[x] = [component.name, component.color,
+                        component.pattern]
                     x += 1
-                material_dict[m.title] = component_dict
-    except:
-        pass
-
-    return material_dict
-
-def prepare_partition_dict():
-    part_dict = {}
-    try:
-        parts = PartitionPage.objects.all()
-        if parts:
-            for p in parts:
+                    if component.image:
+                        image_dict[m.title + '-' +
+                            component.name] = component.image
+                page_obj.material_dict[material] = component_dict
+            except:
+                pass
+    print(page_obj.part_dict)
+    if page_obj.part_dict:
+        for partition, dummy in page_obj.part_dict.items():
+            try:
+                p = PartitionPage.objects.get(title=partition)
                 components = PartitionPageComponent.objects.filter(page_id=p.id)
                 x=0
                 component_dict = {}
                 for component in components:
                     component_dict[x] = [component.name, component.thickness,
-                    component.weight]
+                        component.weight]
                     x += 1
-                part_dict[p.title] = component_dict
-    except:
-        pass
+                page_obj.part_dict[partition] = component_dict
+            except:
+                pass
 
-    return part_dict
+    return image_dict
 
-def prepare_layer_dict(page_obj):
-    layer_dict = {}
-    try:
-        layers = ScenePageLayer.objects.filter(page_id=page_obj.id)
-        if layers:
-            for layer in layers:
-                try:
-                    m = MaterialPage.objects.get(id=layer.material_id)
-                    layer_dict[layer.name] = [m.title, layer.invisible,
-                    layer.wireframe, layer.no_shadows]
-                except:
-                    layer_dict[layer.name] = ['default', layer.invisible,
-                    layer.wireframe, layer.no_shadows]
-    except:
-        pass
-
-    return layer_dict
+def get_entities_ext(page_obj, mode):
+    collection = aframe.parse_dxf(page_obj)
+    collection = aframe.reference_openings(collection)
+    collection = aframe.reference_animations(collection)
+    entities_dict = aframe.make_html(page_obj, collection, mode)
+    return entities_dict
 
 def get_ambient_light_ext(page_obj):
     ambient_light = f'color: {page_obj.ambient_light_color}; '
     ambient_light += f'groundColor: {page_obj.hemispheric_color}; '
     ambient_light += f'intensity: {page_obj.ambient_light_intensity}; '
     return ambient_light
+
+def add_partitions(page, collection):
+    for x, d in collection.items():
+        if (d['2'] == 'a-wall' or d['2'] == 'a-openwall' or
+            d['2'] == 'a-window' or d['2'] == 'a-door' or d['2'] == 'a-slab' or
+            d['2'] == 'a-stair'):
+
+            layer = page.layer_dict[d['layer']]
+            d['PART'] = d.get('PART', layer[5])
+            d['p-pool'] = {}
+            if d['PART'] == '':
+                d['PART'] = layer[5]
+            if d['PART'] != 'default':
+                try:
+                    component_pool = page.part_dict[d['PART']]
+                    if component_pool:
+                        d['p-pool'] = component_pool
+                except:
+                    pass
+
+    return collection

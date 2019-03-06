@@ -11,7 +11,7 @@ def get_layer_list(page):
     """
     dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
-    layer_list = []
+    page.layer_dict = {}
     value = 'dummy'
 
     while value !='ENTITIES':
@@ -19,18 +19,23 @@ def get_layer_list(page):
         value = dxf_f.readline().strip()
         if value == 'AcDbLayerTableRecord':#list of layer names
             key = dxf_f.readline().strip()
-            layer_name = dxf_f.readline().strip()
-            if layer_name == 'Defpoints' or layer_name == 'vectors' or layer_name == 'meshes' or layer_name == 'frustum' or layer_name == '3D':
-                pass
+            name = dxf_f.readline().strip()
+            key = dxf_f.readline().strip()
+            value = dxf_f.readline().strip()
+            key = dxf_f.readline().strip()
+            if (name == 'Defpoints' or name == 'vectors' or name == 'meshes' or
+                name == 'frustum' or name == '3D'):
+                value = dxf_f.readline().strip()
             else:
-                layer_list.append(layer_name)
-
-        elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
+                page.layer_dict[name] = ['default', False, False, False,
+                    cad2hex(dxf_f.readline().strip()), 'default']
+        #security to avoid loops if file is corrupted
+        elif value=='EOF' or key=='':
             dxf_f.close()
-            return layer_list
+            return
 
     dxf_f.close()
-    return layer_list
+    return
 
 def get_object_dict(page):
     """Gets MTL (filename) of object blocks from DXF file.
@@ -97,7 +102,8 @@ def get_entity_material(page):
     """
     dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
 
-    material_dict = {}
+    page.material_dict = {}
+    page.part_dict = {}
     value = 'dummy'
     flag = False
     attr_value = ''
@@ -106,20 +112,22 @@ def get_entity_material(page):
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
         if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return collection
+            return #material_dict, part_dict
 
     while value !='ENDSEC':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
         if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return material_dict
+            return #material_dict, part_dict
 
         if flag == 'attrib':#stores values for attributes within block
             if key == '1':#attribute value
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'MATERIAL':
-                    material_dict[attr_value] = 'path'
+                    page.material_dict[attr_value] = {'0': ['Null']}
+                elif value == 'PART':
+                    page.part_dict[attr_value] = {'0': ['Null']}
                 flag = False
         if key == '0':
 
@@ -128,9 +136,9 @@ def get_entity_material(page):
                 flag = 'attrib'
 
     dxf_f.close()
-    return material_dict
+    return #material_dict, part_dict
 
-def parse_dxf(page, material_dict, layer_dict):
+def parse_dxf(page):
     """Collects entities from DXF file.
 
     This function does too many things and maybe should be cut down. Scans
@@ -148,30 +156,21 @@ def parse_dxf(page, material_dict, layer_dict):
     while value !='ENTITIES':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
-        if value == 'AcDbLayerTableRecord':#dict of layer names and colors
-            key = dxf_f.readline().strip()
-            layer_name = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            value = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            if layer_name in layer_dict:
-                layer_dict[layer_name].append(cad2hex(dxf_f.readline().strip()))
-            else:
-                value = dxf_f.readline().strip()
-
-        elif value=='EOF' or key=='':#security to avoid loops if file is corrupted
+        #security to avoid loops if file is corrupted
+        if value=='EOF' or key=='':
             return collection
 
     while value !='ENDSEC':
         key = dxf_f.readline().strip()
         value = dxf_f.readline().strip()
-        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
+        #security to avoid loops if file is corrupted
+        if value=='EOF' or key=='':
             return collection
-
-        if flag == 'ent':#stores values for all entities (with arbitrary axis algorithm)
+        #stores values for all entities (with arbitrary axis algorithm)
+        if flag == 'ent':
             d = store_entity_values(d, key, value)
-
-        elif flag == 'attrib':#stores values for attributes within block
+        #stores values for attributes within block
+        elif flag == 'attrib':
             if key == '1':#attribute value
                 attr_value = html.escape(value, quote=True)
             elif key == '2':#attribute key
@@ -185,7 +184,7 @@ def parse_dxf(page, material_dict, layer_dict):
                 flag = 'attrib'
 
             elif flag == 'ent':#close all other entities
-                layer = layer_dict[d['layer']]
+                layer = page.layer_dict[d['layer']]
                 invisible = layer[1]
                 if invisible:
                     flag = False
@@ -201,7 +200,7 @@ def parse_dxf(page, material_dict, layer_dict):
                         d['MATERIAL'] = layer[0]
                     if d['MATERIAL'] != 'default':
                         try:
-                            component_pool = material_dict[d['MATERIAL']]
+                            component_pool = page.material_dict[d['MATERIAL']]
                             if component_pool:
                                 d['pool'] = component_pool
                         except:
@@ -213,7 +212,8 @@ def parse_dxf(page, material_dict, layer_dict):
                         d['num'] = x
                         collection[x] = d
 
-                        if d['12']!=d['13'] or d['22']!=d['23'] or d['32']!=d['33']:
+                        if (d['12']!=d['13'] or d['22']!=d['23'] or
+                            d['32']!=d['33']):
                             d2 = d.copy()
                             d2['11'] = d['12']
                             d2['12'] = d['13']
@@ -252,7 +252,8 @@ def parse_dxf(page, material_dict, layer_dict):
                         elif d['2'] == 'a-wall' or d['2'] == 'a-mason':
                             if d['MATERIAL2']:
                                 try:
-                                    d['pool2'] = material_dict[d['MATERIAL2']]
+                                    d['pool2'] = page.material_dict[
+                                        d['MATERIAL2']]
                                 except:
                                     d['pool2'] = d['pool']
                             else:

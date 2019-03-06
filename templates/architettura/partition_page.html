@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.9.0.min.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}template-partitionpage{% endblock %}
+
+{% block content %}
+  <h1 id="partition-title">{{ page.title }}</h1>
+
+    <a-scene style="width: 100%; height: 768px" embedded>
+
+    <a-asset>
+      <img id="sky" src="{% static 'architettura/images/target.png' %}">
+
+    </a-asset>
+
+    <a-entity id="dxf-ent" shadow="receive: true; cast: true">
+      <a-circle rotation="-90 0 0" color="white" radius="5"></a-circle>
+      <a-entity id="partition-ent" position="1 0 -3" rotation="0 -60 0">
+			{% with elements=page.write_html %}
+			 {% if elements %}
+				{{ elements|safe }}
+			 {% endif %}
+			{% endwith %}
+        </a-entity></a-entity>
+            <a-sky src="#sky"></a-sky>
+            <a-entity id="camera-ent">
+
+                  <a-camera id="camera" >
+
+                    <a-light type="point"></a-light>
+                    <a-entity position="0 -1.6 0" id="camera-foot"></a-entity>
+                    <a-cursor color="#2E3A87"></a-cursor>
+                  </a-camera>
+            </a-entity>
+        </a-scene>
+{% endblock %}
