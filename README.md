@@ -22,9 +22,10 @@ To include meshes, explode them to 3Dfaces (I know it's bad, but this is how it 
 
 Create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date). In the VR Settings panel load the most important stuff: the DXF file. It will be stored in the `media/documents` folder. You can add other CAD files to the Scene, but this function isn't active yet. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided. Insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models). In the Ambient Setting panel load the Equirectangular Image for the VR background (if none, a default one will be picked). Equirectangular images are like those planispheres where Greenland is bigger than Africa. You can also set ambient background colors and lights.
 
-At first entities inherit the original layer color, but you can change that associating `Materials` to layers. Layers are extracted from DXF first time you view the page, set them to `Invisible` if you want to turn them off. You can also set layer to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
+At first entities inherit the original layer color, but you can change that associating `Materials` and `Partitions` to layers. Layers are extracted from DXF first time you view the page, set them to `Invisible` if you want to turn them off. You can also set layer to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
 
 Each `Material Page` can contain as many `Components` as you want. A Component needs a Name, an Image and a Color. If the image is a 1x1 meter pattern, check the appropriate box. Default color is `white`, but you can change it with the color picker. Color affects appearance of the image. Entities use Components in different ways, some blocks use up to three components for different surfaces.
+`Partitions` are taken in account only during surveys (see further). Also Partitions have `Components`, but they refer more to physical characteristics, like `thickness` and unit `weight`. Partition displays what your wall or slab is made of.
 
 Okay, now publish and go to the frontend to see how your model behaves.
 
@@ -32,8 +33,9 @@ Okay, now publish and go to the frontend to see how your model behaves.
 
 The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. On some mobiles you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
 Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that makes you inspect and modify the entities of the model. Modifications can be saved to HTML files.
+Notice that under the model window you have some lists, with links to surveys (see further), materials and partitions used in the scene.
 
-If you view a `Material Page`, a mockup scene will be presented, showing how different entities react to inspected material.
+If you click a `Material`, a mockup scene will be presented, showing how different entities react to inspected material. Similarly, the `Partition` displays a sample of a wall made of different layers.
 
 ### digitalkOmiX mode
 
@@ -41,7 +43,7 @@ In this mode interaction has a different behaviour: keyboard movements are disab
 
 ### Nesting Pages
 
-When you have several `Scene Pages` or `Material Pages` you can collect them under a `Scene Index / Material Index Page`. These page act like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually uncomment `navigation_tags` from the templates, it's not a Wagtail native tag.
+When you have several `Scene Pages` you can collect them under a `Scene Index Page`. These pages act like a blog index. Style is borrowed by the [Bakery](https://github.com/wagtail/bakerydemo) CSS, modify it for your needs. Eventually uncomment `navigation_tags` from the templates, it's not a Wagtail native tag.
 
 ## Entities
 
@@ -78,8 +80,12 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 You can load a Wavefront OBJ file setting block `NAME` to `obj-mtl` and `PARAM1` to the OBJ filename. OBJ and MTL must have same filename and must be loaded to media/documents with lowercase extension. New standard is GLTF. Set the `NAME` to `gltf` and `PARAM1` to the GLTF filename.
 
-BIM (Building Information Management) standard blocks are recognized as real life building elements. By now we have `Wall`, `Slab`, `Door` and `Window` BIM entities. If you put a `Door/Window` inside a `Wall`, you get a `Openwall`.
+BIM (Building Information Management) standard blocks are recognized as real life building elements. By now we have `Wall`, `Slab`, `Door`, `Window` and `Stair` BIM entities. If you put a `Door/Window` inside a `Wall`, you get a `Openwall`.
 
-In a Wall block you can define it's `PART` to set the partition type (physical characteristics, TODO) and `MATERIALs` for interior and exterior surfaces. A single material can describe three stripes of the same surface. In Slabs a single material describes ceiling and floor patterns.
+In a Wall block you can define it's `PART` to set the partition type (physical characteristics) and `MATERIALs` for interior and exterior surfaces. A single material can describe three stripes of the same wall surface. In Slabs a single material describes ceiling and floor patterns.
 
 Doors can be hinged or sliding, single or double. Geometry and behaviour are defined in CAD (block dimension and attributes), appearance is defined by `MATERIAL`. If you set `PART` attribute to `ghost`, door is not rendered. If a door panel is clicked, an animation is triggered. Windows are similar, but they also have a `SILL`, representing the height of the window sill from the floor. Wall underneath will inherit the material from the wall entity you have poked.
+
+### Survey Pages
+
+A `Survey Page` is useful to calculate surfaces and weights. Create a Survey and select the Scene you want to survey. Save and view the survey. A table of entities is displayed, with informations regarding materials, partitions and dimensions, along with weights of walls and slabs if you provided them with a `Partition`. You can copy and paste the table to a spreadsheet to calculate surfaces and volumes. Edit again the Survey Page: you will notice that Scene Page Layers have been imported, with the ability to exclude them from the survey. This is pretty handy, because you can have multiple surveys targeting the same Scene, taking in account different dimensional aspects (i.e. Demolitions and Reconstructions).
