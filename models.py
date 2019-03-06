@@ -381,10 +381,8 @@ class SurveyPage(Page):
         return
 
     def get_entities(self):
+        #image dict is useless here, but that's how we get dicts
         image_dict = get_material_assets_ext(self.scene)
-        #material_dict = prepare_material_dict()
-        #part_dict = prepare_partition_dict()
-        #layer_dict = prepare_layer_dict(self.scene)
         collection = aframe.parse_dxf(self.scene)
         collection = aframe.reference_openings(collection)
         collection = aframe.reference_animations(collection)
@@ -431,12 +429,12 @@ def get_material_assets_ext(page_obj):
     for name, list in page_obj.layer_dict.items():
         try:
             m = MaterialPage.objects.get(title=list[0])
-            page_obj.material_dict[m.title] = 'dummy'
+            page_obj.material_dict[m.title] = {'0': ['Null']}
         except:
             pass
         try:
             p = PartitionPage.objects.get(title=list[0])
-            page_obj.part_dict[p.title] = 'dummy'
+            page_obj.part_dict[p.title] = {'0': ['Null']}
         except:
             pass
 

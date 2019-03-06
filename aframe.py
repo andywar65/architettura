@@ -125,9 +125,9 @@ def get_entity_material(page):
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'MATERIAL':
-                    page.material_dict[attr_value] = 'dummy'
+                    page.material_dict[attr_value] = {'0': ['Null']}
                 elif value == 'PART':
-                    page.part_dict[attr_value] = 'dummy'
+                    page.part_dict[attr_value] = {'0': ['Null']}
                 flag = False
         if key == '0':
 
