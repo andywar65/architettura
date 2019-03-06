@@ -266,6 +266,14 @@ def survey_w_plane(d):
             oput += '<td>-</td><td>-</td></tr> \n'
     return oput
 
+def survey_line(d):
+    oput = ''
+    if d['39']:
+        d['43'] = d['39']
+        d['41'] = sqrt( pow(d['10'] - d['11'], 2) + pow(d['20'] - d['21'], 2))
+        oput = survey_w_plane(d)
+    return oput
+
 def make_triangle(page, d):
     d['10b'] = d['10']
     d['20b'] = d['20']
