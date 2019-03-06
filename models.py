@@ -265,6 +265,16 @@ class ScenePage(Page):
                 pass
         return material_list
 
+    def get_part_list(self):
+        part_list = []
+        for name, list in self.part_dict.items():
+            try:
+                m = PartitionPage.objects.get(title=name)
+                part_list.append(m)
+            except:
+                pass
+        return part_list
+
 class ScenePageLayer(Orderable):
     page = ParentalKey(ScenePage, related_name='layers')
     name = models.CharField(max_length=250, default="0",
