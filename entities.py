@@ -377,8 +377,8 @@ def make_table_01(d):
     from third component.
     """
     values = (
-        ('pool', 0, 'top', 'MATERIAL'),
-        ('pool', 2, 'leg', 'MATERIAL'),
+        ('pool', 2, 'top', 'MATERIAL'),
+        ('pool', 1, 'leg', 'MATERIAL'),
     )
     d = prepare_material_values(values, d)
     oput = ''
