@@ -681,6 +681,9 @@ def make_survey(collection, layer_dict):
                 entities_dict[x] = entities.survey_window(d)
             elif d['2'] == 'a-openwall':
                 entities_dict[x] = entities.survey_openwall(d)
+            elif d['2'] == 'a-plane':
+                d['ide'] = 'wall'
+                entities_dict[x] = entities.survey_w_plane(d)
     return entities_dict
 
 def cad2hex(cad_color):

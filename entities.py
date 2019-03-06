@@ -226,6 +226,46 @@ def make_w_plane(page, d):
 
     return oput
 
+def survey_w_plane(d):
+    #prepare height values
+    wall_h = fabs(d['43'])
+    if 'TILING' in d:
+        tile_h = fabs(float(d['TILING']))
+    else:
+        tile_h = 0
+    if 'SKIRTING' in d:
+        skirt_h = fabs(float(d['SKIRTING']))
+    else:
+        skirt_h = 0
+    if tile_h > wall_h:
+        tile_h = wall_h
+    if skirt_h > wall_h:
+        skirt_h = wall_h
+    if skirt_h > tile_h:
+        tile_h = skirt_h
+    wall_h = wall_h - tile_h
+    tile_h = tile_h - skirt_h
+    oput = ''
+    values = (
+        (wall_h, 'plaster', d['MATERIAL'], d['pool'], 0),
+        (tile_h, 'tile', d['MATERIAL'], d['pool'], 1),
+        (skirt_h, 'skirt', d['MATERIAL'], d['pool'], 2),
+    )
+    for v in values:
+        if v[0]:
+            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
+            try:
+                component = v[3][v[4]]
+                name = component[0]
+            except:
+                name = 'Null'
+            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
+            oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
+            oput += f'<td>{round(v[0], 4)}</td>'
+            oput += f'<td>-</td><td>-</td><td>-</td>'
+            oput += '<td>-</td><td>-</td></tr> \n'
+    return oput
+
 def make_triangle(page, d):
     d['10b'] = d['10']
     d['20b'] = d['20']
