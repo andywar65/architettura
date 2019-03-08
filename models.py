@@ -492,6 +492,21 @@ def get_material_assets_ext(page_obj):
         for material, dummy in page_obj.material_dict.items():
             try:
                 m = MaterialPage.objects.get(title=material)
+            except:
+                if material and material != 'default':
+                    numchild = str(page_obj.numchild+1)
+                    length = 4-len(numchild)
+                    if length >= 0:
+                        zero = ''
+                        for z in range(length):
+                            zero = zero + '0'
+                        path = page_obj.path+zero+numchild
+                        depth = page_obj.depth+1
+                        page_obj.numchild = page_obj.numchild+1
+                        page_obj.save()
+                        m = MaterialPage(title=material, path=path, depth=depth)
+                        m.save()
+            try:
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
                 x=0
                 component_dict = {}
@@ -505,11 +520,27 @@ def get_material_assets_ext(page_obj):
                 page_obj.material_dict[material] = component_dict
             except:
                 pass
-    print(page_obj.part_dict)
     if page_obj.part_dict:
         for partition, dummy in page_obj.part_dict.items():
             try:
                 p = PartitionPage.objects.get(title=partition)
+            except:
+                if (partition and
+                    partition != 'default' and partition != 'ghost'):
+                    numchild = str(page_obj.numchild+1)
+                    length = 4-len(numchild)
+                    if length >= 0:
+                        zero = ''
+                        for z in range(length):
+                            zero = zero + '0'
+                        path = page_obj.path+zero+numchild
+                        depth = page_obj.depth+1
+                        page_obj.numchild = page_obj.numchild+1
+                        page_obj.save()
+                        p = PartitionPage(title=partition,
+                            path=path, depth=depth)
+                        p.save()
+            try:
                 components = PartitionPageComponent.objects.filter(page_id=p.id)
                 x=0
                 component_dict = {}
