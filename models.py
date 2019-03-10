@@ -342,7 +342,8 @@ class DigkomPage(Page):
     author = models.ForeignKey(User, blank=True, null=True,
         on_delete=models.PROTECT)
     scene = models.ForeignKey(ScenePage, blank=True, null=True,
-        on_delete=models.PROTECT, help_text="Choose Scene you'd like to see digitalkOmiX style")
+        on_delete=models.PROTECT,
+        help_text="Choose Scene you'd like to see digitalkOmiX style")
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -365,7 +366,8 @@ class DigkomPage(Page):
         return self.scene.equirectangular_image
 
     def add_new_layers(self):
-        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.scene.dxf_file.filename)
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.scene.dxf_file.filename)
         add_new_layers_ext(self.scene)
         return
 
@@ -494,18 +496,8 @@ def get_material_assets_ext(page_obj):
                 m = MaterialPage.objects.get(title=material)
             except:
                 if material and material != 'default':
-                    numchild = str(page_obj.numchild+1)
-                    length = 4-len(numchild)
-                    if length >= 0:
-                        zero = ''
-                        for z in range(length):
-                            zero = zero + '0'
-                        path = page_obj.path+zero+numchild
-                        depth = page_obj.depth+1
-                        page_obj.numchild = page_obj.numchild+1
-                        page_obj.save()
-                        m = MaterialPage(title=material, path=path, depth=depth)
-                        m.save()
+                    m = MaterialPage(title=material)
+                    page_obj.add_child(instance=m)
             try:
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
                 x=0
@@ -527,19 +519,8 @@ def get_material_assets_ext(page_obj):
             except:
                 if (partition and
                     partition != 'default' and partition != 'ghost'):
-                    numchild = str(page_obj.numchild+1)
-                    length = 4-len(numchild)
-                    if length >= 0:
-                        zero = ''
-                        for z in range(length):
-                            zero = zero + '0'
-                        path = page_obj.path+zero+numchild
-                        depth = page_obj.depth+1
-                        page_obj.numchild = page_obj.numchild+1
-                        page_obj.save()
-                        p = PartitionPage(title=partition,
-                            path=path, depth=depth)
-                        p.save()
+                    p = PartitionPage(title=partition)
+                    page_obj.add_child(instance=p)
             try:
                 components = PartitionPageComponent.objects.filter(page_id=p.id)
                 x=0
