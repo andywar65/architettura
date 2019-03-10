@@ -20,7 +20,9 @@ To include meshes, explode them to 3Dfaces (I know it's bad, but this is how it 
 
 ### Wagtail backend
 
-Create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date). In the VR Settings panel load the most important stuff: the DXF file. It will be stored in the `media/documents` folder. You can add other CAD files to the Scene, but this function isn't active yet. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided. Insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models). In the Ambient Setting panel load the Equirectangular Image for the VR background (if none, a default one will be picked). Equirectangular images are like those planispheres where Greenland is bigger than Africa. You can also set ambient background colors and lights.
+Create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date).
+In the VR Settings panel first select how you want to move around in the scene, with keyboard input or clicking on checkpoints (see interaction), then load the most important stuff: the DXF file. It will be stored in the `media/documents` folder. You can add other CAD files to the Scene, but this function isn't active yet. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided. Insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models).
+In the Ambient Setting panel load the Equirectangular Image for the VR background (if none, a default one will be picked). Equirectangular images are like those planispheres where Greenland is bigger than Africa. You can also set ambient background colors and lights.
 
 At first entities inherit the original layer color, but you can change that associating `Materials` and `Partitions` to layers. Layers are extracted from DXF first time you view the page, set them to `Invisible` if you want to turn them off. You can also set layer to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
 
@@ -29,7 +31,7 @@ Each `Material Page` can contain as many `Components` as you want. A Component n
 
 Okay, now publish and go to the frontend to see how your model behaves.
 
-### Interaction
+### Interaction, keyboard mode
 
 The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. On some mobiles you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
 Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that makes you inspect and modify the entities of the model. Modifications can be saved to HTML files.
@@ -37,9 +39,9 @@ Notice that under the model window you have some lists, with links to surveys (s
 
 If you click a `Material`, a mockup scene will be presented, showing how different entities react to inspected material. Similarly, the `Partition` displays a sample of a wall made of different layers.
 
-### digitalkOmiX mode
+### Checkpoint mode
 
-In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `animation block` with `PROPERTY` set to `checkpoint`in CAD. Create a `digkom Page` and select the `Scene Page` you want to see with this different kind of interaction.
+In this mode interaction has a different behaviour: keyboard movements are disabled, and you move around clicking on (or gazing at on mobiles) checkpoint entities. Any entity may be transformed into a checkpoint by associating it to a `animation block` with `PROPERTY` set to `checkpoint`in CAD.
 
 ### Nesting Pages
 

@@ -97,3 +97,63 @@ class ArScenePage(Page):
     def get_entities(self):
         mode = 'ar'
         return get_entities_ext(self.scene, mode)
+
+class DigkomPage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="Scene description",)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
+    )
+    date_published = models.DateField(
+        "Date article published", blank=True, null=True
+        )
+    author = models.ForeignKey(User, blank=True, null=True,
+        on_delete=models.PROTECT)
+    scene = models.ForeignKey(ScenePage, blank=True, null=True,
+        on_delete=models.PROTECT,
+        help_text="Choose Scene you'd like to see digitalkOmiX style")
+
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
+    ]
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            FieldPanel('introduction'),
+            ImageChooserPanel('image'),
+            FieldPanel('author'),
+            FieldPanel('date_published'),
+        ], heading="Presentation", classname="collapsible collapsed"),
+        FieldPanel('scene'),
+    ]
+
+    def background(self):
+        return self.scene.background
+
+    def equirectangular_image(self):
+        return self.scene.equirectangular_image
+
+    def add_new_layers(self):
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.scene.dxf_file.filename)
+        add_new_layers_ext(self.scene)
+        return
+
+    def get_material_assets(self):
+        return get_material_assets_ext(self.scene)
+
+    def get_object_assets(self):
+        object_dict = aframe.get_object_dict(self.scene)
+        return object_dict
+
+    def get_entities(self):
+        mode = 'digkom'
+        return get_entities_ext(self.scene, mode)
+
+    def get_ambient_light(self):
+        return get_ambient_light_ext(self.scene)

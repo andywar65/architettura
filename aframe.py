@@ -602,6 +602,7 @@ def reference_animations(collection):
     return collection
 
 def make_html(page, collection, mode):
+    mode = page.mode
     entities_dict = {}
     if mode == 'ar':
         no_camera = False
