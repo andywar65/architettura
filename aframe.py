@@ -615,7 +615,8 @@ def make_html(page, collection):
             entities_dict[x] = entities.make_camera(page, d)
         elif d['2'] == 'a-box':
             entities_dict[x] = entities.make_box(page, d)
-        elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
+        elif (d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or
+                d['2'] == 'a-circle' or d['2'] == 'a-sphere'):
             entities_dict[x] = entities.make_circular(page, d)
         elif d['2'] == 'a-curvedimage':
             entities_dict[x] = entities.make_curvedimage(page, d)

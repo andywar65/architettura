@@ -95,14 +95,16 @@ class MaterialPage(Page):
         return image_dict
 
     def get_entities(self):
-        self.path_to_dxf = os.path.join(settings.STATIC_ROOT, 'architettura/samples/materials.dxf')
+        self.path_to_dxf = os.path.join(settings.STATIC_ROOT,
+            'architettura/samples/materials.dxf')
 
         self.material_dict = {}
         components = MaterialPageComponent.objects.filter(page_id=self.id)
         x=0
         component_dict = {}
         for component in components:
-            component_dict[x] = [component.name, component.color, component.pattern]
+            component_dict[x] = [component.name, component.color,
+                component.pattern]
             x += 1
         self.material_dict[self.title] = component_dict
         self.layer_dict = {}
@@ -142,8 +144,26 @@ class MaterialPageComponent(Orderable):
         ImageChooserPanel('image'),
         FieldPanel('pattern'),
         FieldPanel('color'),
-        #FieldPanel('thickness'),
-        #FieldPanel('weight'),
+    ]
+
+class DxfPage(Page):
+    introduction = models.CharField(max_length=250, null=True, blank=True,
+    help_text="File description",)
+    dxf_file = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        on_delete = models.SET_NULL,
+        related_name = '+',
+        help_text="CAD file of your project",
+        )
+
+    search_fields = Page.search_fields + [
+        index.SearchField('introduction'),
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('introduction'),
+        DocumentChooserPanel('dxf_file'),
     ]
 
 class ScenePage(Page):
@@ -168,13 +188,15 @@ class ScenePage(Page):
     )
     mode = models.CharField(max_length=250, blank=False, choices=mode_choices,
         default='scene', help_text="How do you move in the scene",)
-    dxf_file = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        on_delete = models.SET_NULL,
-        related_name = '+',
-        help_text="CAD file of your project",
-        )
+    #dxf_file = models.ForeignKey(
+        #'wagtaildocs.Document',
+        #null=True,
+        #on_delete = models.SET_NULL,
+        #related_name = '+',
+        #help_text="CAD file of your project",
+        #)
+    dxf_file = models.ForeignKey(DxfPage, blank=True, null=True,
+        on_delete=models.SET_NULL)
     shadows = models.BooleanField(default=False, help_text="Want to cast shadows?",)
     fly_camera = models.BooleanField(default=False,
         help_text="Vertical movement of camera?",)
@@ -214,7 +236,8 @@ class ScenePage(Page):
         ], heading="Presentation", classname="collapsible collapsed"),
         MultiFieldPanel([
             FieldPanel('mode'),
-            DocumentChooserPanel('dxf_file'),
+            FieldPanel('dxf_file'),
+            #DocumentChooserPanel('dxf_file'),
             #InlinePanel('cad_files', label="Other CAD file/s",),
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
@@ -239,7 +262,8 @@ class ScenePage(Page):
         return 'architettura/scene_page.html'
 
     def add_new_layers(self):
-        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents', self.dxf_file.filename)
+        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.dxf_file.dxf_file.filename)
         add_new_layers_ext(self)
         return
 
@@ -369,7 +393,7 @@ class SurveyPage(Page):
 
     def add_new_layers(self):
         self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-                                self.scene.dxf_file.filename)
+                                self.scene.dxf_file.dxf_file.filename)
         aframe.get_layer_list(self.scene)
         for name, list in self.scene.layer_dict.items():
             try:
