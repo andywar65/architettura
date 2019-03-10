@@ -601,7 +601,7 @@ def reference_animations(collection):
                         collection[x2] = d2
     return collection
 
-def make_html(page, collection, mode):
+def make_html(page, collection):
     mode = page.mode
     entities_dict = {}
     if mode == 'ar':
@@ -612,7 +612,7 @@ def make_html(page, collection, mode):
 
         if d['2'] == 'a-camera' and no_camera:
             no_camera = False
-            entities_dict[x] = entities.make_camera(page, d, mode)
+            entities_dict[x] = entities.make_camera(page, d)
         elif d['2'] == 'a-box':
             entities_dict[x] = entities.make_box(page, d)
         elif d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or d['2'] == 'a-circle' or d['2'] == 'a-sphere':
@@ -658,7 +658,7 @@ def make_html(page, collection, mode):
         '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
         'LIGHT-INT': 1,
         }
-        entities_dict[x] = entities.make_camera(page, d, mode)
+        entities_dict[x] = entities.make_camera(page, d)
 
     return entities_dict
 

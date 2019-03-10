@@ -115,11 +115,10 @@ class MaterialPage(Page):
             d['WMATERIAL'] = self.title
             d['pool'] = component_dict
             d['wpool'] = component_dict
-        mode = 'scene'
         self.shadows = True
         self.double_face = False
         self.fly_camera = False
-        entities_dict = aframe.make_html(self, collection, mode)
+        entities_dict = aframe.make_html(self, collection)
         return entities_dict
 
 class MaterialPageComponent(Orderable):
@@ -137,8 +136,6 @@ class MaterialPageComponent(Orderable):
         help_text="Component color",)
     pattern = models.BooleanField(default=False,
         help_text="Is it a 1x1 meter pattern?",)
-    #thickness = models.IntegerField(default=0, help_text="In millimeters")
-    #weight = models.IntegerField(default=0, help_text="In Newtons per cubic meter")
 
     panels = [
         FieldPanel('name'),
@@ -257,8 +254,7 @@ class ScenePage(Page):
         return object_dict
 
     def get_entities(self):
-        mode = 'scene'
-        return get_entities_ext(self, mode)
+        return get_entities_ext(self)
 
     def get_ambient_light(self):
         return get_ambient_light_ext(self)
@@ -487,11 +483,11 @@ def get_material_assets_ext(page_obj):
 
     return image_dict
 
-def get_entities_ext(page_obj, mode):
+def get_entities_ext(page_obj):
     collection = aframe.parse_dxf(page_obj)
     collection = aframe.reference_openings(collection)
     collection = aframe.reference_animations(collection)
-    entities_dict = aframe.make_html(page_obj, collection, mode)
+    entities_dict = aframe.make_html(page_obj, collection)
     return entities_dict
 
 def get_ambient_light_ext(page_obj):
