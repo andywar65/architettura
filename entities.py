@@ -10,10 +10,10 @@ features depend on PARAM attributes.
 from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
-def make_camera(page, d, mode):
+def make_camera(page, d):
     oput = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
     oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
-    if mode == 'digkom':
+    if page.mode == 'digkom':
         oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
     else:
