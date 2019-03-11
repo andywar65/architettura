@@ -76,8 +76,8 @@ def get_object_dict(page):
                 attr_value = value
             elif key == '2':#attribute key
                 if value == 'PARAM1':
-                    if page.object_repository:
-                        path = page.object_repository
+                    if page.dxf_file.object_repository:
+                        path = page.dxf_file.object_repository
                     else:
                         path = os.path.join(settings.MEDIA_URL, 'documents')
                     if flag == 'obj':

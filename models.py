@@ -156,6 +156,9 @@ class DxfPage(Page):
         related_name = '+',
         help_text="CAD file of your project",
         )
+    object_repository = models.URLField(
+        help_text="URL of external repository for OBJ/GLTF files",
+        blank=True, null=True)
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -164,6 +167,7 @@ class DxfPage(Page):
     content_panels = Page.content_panels + [
         FieldPanel('introduction'),
         DocumentChooserPanel('dxf_file'),
+        FieldPanel('object_repository'),
     ]
 
 class ScenePage(Page):
@@ -202,9 +206,6 @@ class ScenePage(Page):
         help_text="Vertical movement of camera?",)
     double_face = models.BooleanField(default=False,
         help_text="Planes are visible on both sides?",)
-    object_repository = models.URLField(
-        help_text="URL of external repository for OBJ files", blank=True, null=True
-        )
 
     background = RGBColorField(default='#000000',
         help_text="Background color",)
@@ -242,7 +243,6 @@ class ScenePage(Page):
             FieldPanel('shadows'),
             FieldPanel('fly_camera'),
             FieldPanel('double_face'),
-            FieldPanel('object_repository'),
         ], heading="VR settings", classname="collapsible"
         ),
         MultiFieldPanel([
@@ -266,9 +266,6 @@ class ScenePage(Page):
             self.dxf_file.dxf_file.filename)
         add_new_layers_ext(self)
         return
-
-    def get_object_repository(self):
-        return get_object_repository_ext(self)
 
     def get_material_assets(self):
         return get_material_assets_ext(self)
