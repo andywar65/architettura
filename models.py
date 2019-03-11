@@ -293,12 +293,30 @@ class ScenePage(Page):
         return 'architettura/scene_page.html'
 
     def add_new_layers(self):
-        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-            self.dxf_file.dxf_file.filename)
-        add_new_layers_ext(self)
+        self.layer_dict = {}
+        dxf_layers = DxfPageLayer.objects.filter(page_id=self.dxf_file.id)
+        for layer in dxf_layers:
+            self.layer_dict[layer.name] = ['default', False, False, False,
+                layer.color, 'default']
+        for name, list in self.layer_dict.items():
+            try:
+                a = ScenePageLayer.objects.get(page_id=self.id, name=name)
+                if a.material:
+                    list[0] = a.material.title
+                list[1] = a.invisible
+                list[2] = a.wireframe
+                list[3] = a.no_shadows
+                if a.partition:
+                    list[5] = a.partition.title
+                self.layer_dict[name] = list
+            except:
+                b = ScenePageLayer(page_id=self.id, name=name)
+                b.save()
         return
 
     def get_material_assets(self):
+        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.dxf_file.dxf_file.filename)
         return get_material_assets_ext(self)
 
     def get_object_assets(self):
