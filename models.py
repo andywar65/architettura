@@ -175,6 +175,12 @@ class DxfPage(Page):
         self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
             self.dxf_file.filename)
         layer_dict = dxf.get_layer_dict(self)
+        for name, color in layer_dict.items():
+            try:
+                la = DxfPageLayer.objects.get(page_id=self.id, name=name)
+            except:
+                lb = DxfPageLayer(page_id=self.id, name=name, color=color)
+                lb.save()
         return
 
     def get_object_assets(self):
