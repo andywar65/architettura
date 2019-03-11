@@ -187,8 +187,8 @@ class DxfPageLayer(Orderable):
     page = ParentalKey(DxfPage, related_name='layers')
     name = models.CharField(max_length=250, default="0",
         help_text="As in CAD file",)
-    color = models.CharField(max_length=250, default="#ffffff",
-        help_text="As in CAD file",)
+    color = RGBColorField(default='#ffffff',
+        help_text="Layer color",)
 
     panels = [
         FieldPanel('name'),
