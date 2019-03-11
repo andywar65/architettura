@@ -4,39 +4,6 @@ from django.conf import settings
 
 from architettura import entities
 
-def get_layer_list(page):
-    """Gets layer list from DXF file.
-
-    Skips some default layers. Returns a list.
-    """
-    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
-
-    page.layer_dict = {}
-    value = 'dummy'
-
-    while value !='ENTITIES':
-        key = dxf_f.readline().strip()
-        value = dxf_f.readline().strip()
-        if value == 'AcDbLayerTableRecord':#list of layer names
-            key = dxf_f.readline().strip()
-            name = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            value = dxf_f.readline().strip()
-            key = dxf_f.readline().strip()
-            if (name == 'Defpoints' or name == 'vectors' or name == 'meshes' or
-                name == 'frustum' or name == '3D'):
-                value = dxf_f.readline().strip()
-            else:
-                page.layer_dict[name] = ['default', False, False, False,
-                    cad2hex(dxf_f.readline().strip()), 'default']
-        #security to avoid loops if file is corrupted
-        elif value=='EOF' or key=='':
-            dxf_f.close()
-            return
-
-    dxf_f.close()
-    return
-
 def get_object_dict(page):
     """Gets MTL (filename) of object blocks from DXF file.
 

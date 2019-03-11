@@ -438,9 +438,8 @@ class SurveyPage(Page):
     ]
 
     def add_new_layers(self):
-        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-                                self.scene.dxf_file.dxf_file.filename)
-        aframe.get_layer_list(self.scene)
+        #we still have to produce the scene page layer dict
+        self.scene.add_new_layers()
         for name, list in self.scene.layer_dict.items():
             try:
                 a = SurveyPageLayer.objects.get(page_id=self.id, name=name)
@@ -450,6 +449,8 @@ class SurveyPage(Page):
         return
 
     def get_entities(self):
+        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+                                self.scene.dxf_file.dxf_file.filename)
         #image dict is useless here, but that's how we get dicts
         image_dict = get_material_assets_ext(self.scene)
         collection = aframe.parse_dxf(self.scene)
@@ -474,24 +475,6 @@ class SurveyPageLayer(Orderable):
         FieldPanel('name'),
         FieldPanel('invisible'),
     ]
-
-def add_new_layers_ext(page_obj):
-    aframe.get_layer_list(page_obj)
-    for name, list in page_obj.layer_dict.items():
-        try:
-            a = ScenePageLayer.objects.get(page_id=page_obj.id, name=name)
-            if a.material:
-                list[0] = a.material.title
-            list[1] = a.invisible
-            list[2] = a.wireframe
-            list[3] = a.no_shadows
-            if a.partition:
-                list[5] = a.partition.title
-            page_obj.layer_dict[name] = list
-        except:
-            b = ScenePageLayer(page_id=page_obj.id, name=name)
-            b.save()
-    return
 
 def get_material_assets_ext(page_obj):
     aframe.get_entity_material(page_obj)
