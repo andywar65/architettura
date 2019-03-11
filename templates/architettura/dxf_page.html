@@ -15,11 +15,14 @@
 
     <a-scene style="width: 100%; height: 768px" embedded>
 
+    {% with nl=page.add_new_layers %}
+    {% endwith %}
+
+    {% with ae=page.add_entities %}
+    {% endwith %}
+
     <a-asset>
       <img id="sky" src="{% static 'architettura/images/target.png' %}">
-
-      {% with nl=page.add_new_layers %}
-      {% endwith %}
 
       {% with object_dict=page.get_object_assets %}
         {% if object_dict %}
@@ -42,7 +45,7 @@
 
 
     <a-sky src="#sky"></a-sky>
-  
+
   </a-scene>
 
 {% endblock %}

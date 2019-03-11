@@ -183,6 +183,9 @@ class DxfPage(Page):
                 lb.save()
         return
 
+    def add_entities(self):
+        return
+
     def get_object_assets(self):
         return
 
