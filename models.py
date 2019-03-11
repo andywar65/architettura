@@ -175,12 +175,19 @@ class DxfPage(Page):
         self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
             self.dxf_file.filename)
         layer_dict = dxf.get_layer_dict(self)
+        page_layers = DxfPageLayer.objects.filter(page_id=self.id)
+        #add layers if they are not in db, don't touch them if they exist
         for name, color in layer_dict.items():
             try:
-                la = DxfPageLayer.objects.get(page_id=self.id, name=name)
+                la = page_layers.get(name=name)
             except:
                 lb = DxfPageLayer(page_id=self.id, name=name, color=color)
                 lb.save()
+        #erase if they are not in dxf
+        for layer in page_layers:
+            if layer.name not in layer_dict:
+                layer.delete()
+
         return
 
     def add_entities(self):
@@ -203,6 +210,13 @@ class DxfPageLayer(Orderable):
         FieldPanel('name'),
         FieldPanel('color'),
     ]
+
+#class DxfPageEntity(Orderable):
+    #page = ParentalKey(DxfPage, related_name='entities')
+    #name = models.CharField(max_length=250, default="0",
+        #help_text="As in CAD file",)
+    #color = RGBColorField(default='#ffffff',
+        #help_text="Layer color",)
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
