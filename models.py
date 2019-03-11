@@ -1,6 +1,6 @@
 import os
 from math import fabs
-from architettura import aframe
+from architettura import aframe, dxf
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -171,6 +171,9 @@ class DxfPage(Page):
     ]
 
     def add_new_layers(self):
+        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.dxf_file.filename)
+        layer_dict = dxf.get_layer_dict(self)
         return
 
     def get_object_assets(self):
