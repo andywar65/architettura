@@ -170,6 +170,15 @@ class DxfPage(Page):
         FieldPanel('object_repository'),
     ]
 
+    def add_new_layers(self):
+        return
+
+    def get_object_assets(self):
+        return
+
+    def get_entities(self):
+        return
+
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
     help_text="Scene description",)
