@@ -168,6 +168,7 @@ class DxfPage(Page):
         FieldPanel('introduction'),
         DocumentChooserPanel('dxf_file'),
         FieldPanel('object_repository'),
+        InlinePanel('layers', label="Layers",),
     ]
 
     def add_new_layers(self):
@@ -181,6 +182,18 @@ class DxfPage(Page):
 
     def get_entities(self):
         return
+
+class DxfPageLayer(Orderable):
+    page = ParentalKey(DxfPage, related_name='layers')
+    name = models.CharField(max_length=250, default="0",
+        help_text="As in CAD file",)
+    color = models.CharField(max_length=250, default="#ffffff",
+        help_text="As in CAD file",)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('color'),
+    ]
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
