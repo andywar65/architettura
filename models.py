@@ -203,6 +203,11 @@ class DxfPage(Page):
         return
 
     def add_entities(self):
+        collection = dxf.parse_dxf(self)
+        collection = dxf.reference_openings(collection)
+        collection = dxf.reference_animations(collection)
+        dxf.make_entities_dict(self, collection)
+        print(self.ent_dict)
         return
 
     def get_object_assets(self):
@@ -237,10 +242,7 @@ class DxfPageEntity(Orderable):
     text = models.CharField(max_length=250, null=True, blank=True,)
     link = models.CharField(max_length=250, null=True, blank=True,)
     animation = models.CharField(max_length=250, null=True, blank=True,)
-    checkpoint = models.BooleanField(default=False, )
-    look_at = models.BooleanField(default=False, )
-    stalker = models.BooleanField(default=False, )
-    event = models.BooleanField(default=False, )
+    animator = models.CharField(max_length=250, null=True, blank=True,)
     camera = models.BooleanField(default=False, )
     closing = models.IntegerField(default=1, )
 
@@ -266,13 +268,6 @@ class ScenePage(Page):
     )
     mode = models.CharField(max_length=250, blank=False, choices=mode_choices,
         default='scene', help_text="How do you move in the scene",)
-    #dxf_file = models.ForeignKey(
-        #'wagtaildocs.Document',
-        #null=True,
-        #on_delete = models.SET_NULL,
-        #related_name = '+',
-        #help_text="CAD file of your project",
-        #)
     dxf_file = models.ForeignKey(DxfPage, blank=True, null=True,
         on_delete=models.SET_NULL)
     shadows = models.BooleanField(default=False, help_text="Want to cast shadows?",)

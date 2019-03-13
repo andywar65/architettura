@@ -2,7 +2,7 @@ import os, html
 from math import radians, sin, cos, asin, acos, degrees, pi, sqrt, pow, fabs, atan2
 from django.conf import settings
 
-from architettura import entities
+from architettura import dxf_entities
 
 def get_layer_dict(page):
     """Gets layer dict from DXF file.
@@ -183,27 +183,27 @@ def parse_dxf(page):
                 flag = 'attrib'
 
             elif flag == 'ent':#close all other entities
-                layer = page.layer_dict[d['layer']]
-                invisible = layer[1]
-                if invisible:
-                    flag = False
-                else:
-                    d['wireframe'] = layer[2]
-                    d['no_shadows'] = layer[3]
-                    d['color'] = d.get('color', layer[4])
-                    d['8'] = d['image'] = layer[0]
-                    d['repeat'] = False#TO DELETE?
-                    d['MATERIAL'] = d.get('MATERIAL', layer[0])
-                    d['pool'] = {}
-                    if d['MATERIAL'] == '':
-                        d['MATERIAL'] = layer[0]
-                    if d['MATERIAL'] != 'default':
-                        try:
-                            component_pool = page.material_dict[d['MATERIAL']]
-                            if component_pool:
-                                d['pool'] = component_pool
-                        except:
-                            pass
+                #layer = page.layer_dict[d['layer']]
+                #invisible = layer[1]
+                #if invisible:
+                    #flag = False
+                #else:
+                    #d['wireframe'] = layer[2]
+                    #d['no_shadows'] = layer[3]
+                    #d['color'] = d.get('color', layer[4])
+                    #d['8'] = d['image'] = layer[0]
+                    #d['repeat'] = False#TO DELETE?
+                    #d['MATERIAL'] = d.get('MATERIAL', layer[0])
+                    #d['pool'] = {}
+                    #if d['MATERIAL'] == '':
+                        #d['MATERIAL'] = layer[0]
+                    #if d['MATERIAL'] != 'default':
+                        #try:
+                            #component_pool = page.material_dict[d['MATERIAL']]
+                            #if component_pool:
+                                #d['pool'] = component_pool
+                        #except:
+                            #pass
 
                     if d['ent'] == '3df':
                         d['2'] = 'a-triangle'
@@ -245,19 +245,20 @@ def parse_dxf(page):
                     elif d['ent'] == 'insert':
                         if d['2'] == 'a-window':
                             d['WMATERIAL'] = d['MATERIAL2'] = d['MATERIAL']
-                            d['wpool'] = d['pool2'] = d['pool']
+                            #d['wpool'] = d['pool2'] = d['pool']
                             d['TILING2'] = d['TILING'] = 0
                             d['SKIRTING2'] = d['SKIRTING'] = 0
                         elif d['2'] == 'a-wall' or d['2'] == 'a-mason':
                             if d['MATERIAL2']:
-                                try:
-                                    d['pool2'] = page.material_dict[
-                                        d['MATERIAL2']]
-                                except:
-                                    d['pool2'] = d['pool']
+                                pass
+                                #try:
+                                    #d['pool2'] = page.material_dict[
+                                        #d['MATERIAL2']]
+                                #except:
+                                    #d['pool2'] = d['pool']
                             else:
                                 d['MATERIAL2'] = d['MATERIAL']
-                                d['pool2'] = d['pool']
+                                #d['pool2'] = d['pool']
                                 d['TILING2'] = d['TILING']
                                 d['SKIRTING2'] = d['SKIRTING']
 
@@ -267,16 +268,18 @@ def parse_dxf(page):
                         flag = False
 
             if value == '3DFACE':#start 3D face
+                #default values
                 d = {'ID': '', '50': 0, '210': 0, '220': 0, '230': 1,
-                'PROPERTY': False, 'animation': False, 'RIG': False,}#default values
+                'PROPERTY': False, 'animation': False, 'RIG': False,}
                 flag = 'ent'
                 d['ent'] = '3df'
                 x += 1
 
             elif value == 'INSERT':#start block
+                #default values
                 d = {'ID': '', '41': 1, '42': 1, '43': 1, '50': 0, '210': 0, '220': 0,
                  '230': 1,'repeat': False, 'TYPE': '','NAME': '', 'RIG': False,
-                 'animation': False, 'PROPERTY': False, 'PART': '',}#default values
+                 'animation': False, 'PROPERTY': False, 'PART': '',}
                 flag = 'ent'
                 d['ent'] = 'insert'
                 x += 1
@@ -451,9 +454,9 @@ def reference_openings(collection):
                         collection[x2] = d2
                         if d['2'] == 'a-window':
                             d['MATERIAL'] = d2['MATERIAL']
-                            d['pool'] = d2['pool']
+                            #d['pool'] = d2['pool']
                             d['MATERIAL2'] = d2['MATERIAL2']
-                            d['pool2'] = d2['pool2']
+                            #d['pool2'] = d2['pool2']
                             d['TILING'] = d2['TILING']
                             d['SKIRTING'] = d2['SKIRTING']
                             d['TILING2'] = d2['TILING2']
@@ -558,11 +561,11 @@ def reference_animations(collection):
                         if d['2'] == 'a-mason':
                             d2['PART'] = d['PART']
                             d2['MATERIAL'] = d['MATERIAL']
-                            d2['pool'] = d['pool']
+                            #d2['pool'] = d['pool']
                             d2['TILING'] = d['TILING']
                             d2['SKIRTING'] = d['SKIRTING']
                             d2['MATERIAL2'] = d['MATERIAL2']
-                            d2['pool2'] = d['pool2']
+                            #d2['pool2'] = d['pool2']
                             d2['TILING2'] = d['TILING2']
                             d2['SKIRTING2'] = d['SKIRTING2']
 
@@ -600,67 +603,67 @@ def reference_animations(collection):
                         collection[x2] = d2
     return collection
 
-def make_html(page, collection):
-    mode = page.mode
-    entities_dict = {}
-    if mode == 'ar':
-        no_camera = False
-    else:
-        no_camera = True
+def make_entities_dict(page, collection):
+    #mode = page.mode
+    page.ent_dict = {}
+    #if mode == 'ar':
+        #no_camera = False
+    #else:
+        #no_camera = True
     for x, d in collection.items():
 
-        if d['2'] == 'a-camera' and no_camera:
-            no_camera = False
-            entities_dict[x] = entities.make_camera(page, d)
-        elif d['2'] == 'a-box':
-            entities_dict[x] = entities.make_box(page, d)
-        elif (d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or
-                d['2'] == 'a-circle' or d['2'] == 'a-sphere'):
-            entities_dict[x] = entities.make_circular(page, d)
-        elif d['2'] == 'a-curvedimage':
-            entities_dict[x] = entities.make_curvedimage(page, d)
-        elif d['2'] == 'a-plane':
-            entities_dict[x] = entities.make_plane(page, d)
-        elif d['2'] == 'a-triangle':
-            entities_dict[x] = entities.make_triangle(page, d)
-        elif d['2'] == 'a-line':
-            entities_dict[x] = entities.make_line(page, d)
-        elif d['2'] == 'a-poly':
-            entities_dict[x] = entities.make_poly(page, d)
-        elif d['2'] == 'a-light':
-            entities_dict[x] = entities.make_light(page, d)
-        elif d['2'] == 'a-link':
-            entities_dict[x] = entities.make_link(page, d)
-        elif d['2'] == 'a-text':
-            entities_dict[x] = entities.make_text(page, d)
-        elif d['2'] == 'a-wall':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-door':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-window':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-slab':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-openwall':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-stair':
-            entities_dict[x] = entities.make_bim_block(page, d)
-        elif d['2'] == 'a-block':
-            d['NAME'] = d.get('NAME', 't01')
-            entities_dict[x] = entities.make_block(page, d)
+        #if d['2'] == 'a-camera' and no_camera:
+            #no_camera = False
+            #entities_dict[x] = entities.make_camera(page, d)
+        if d['2'] == 'a-box':
+            dxf_entities.make_box(page, d)
+        #elif (d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or
+                #d['2'] == 'a-circle' or d['2'] == 'a-sphere'):
+            #entities_dict[x] = entities.make_circular(page, d)
+        #elif d['2'] == 'a-curvedimage':
+            #entities_dict[x] = entities.make_curvedimage(page, d)
+        #elif d['2'] == 'a-plane':
+            #entities_dict[x] = entities.make_plane(page, d)
+        #elif d['2'] == 'a-triangle':
+            #entities_dict[x] = entities.make_triangle(page, d)
+        #elif d['2'] == 'a-line':
+            #entities_dict[x] = entities.make_line(page, d)
+        #elif d['2'] == 'a-poly':
+            #entities_dict[x] = entities.make_poly(page, d)
+        #elif d['2'] == 'a-light':
+            #entities_dict[x] = entities.make_light(page, d)
+        #elif d['2'] == 'a-link':
+            #entities_dict[x] = entities.make_link(page, d)
+        #elif d['2'] == 'a-text':
+            #entities_dict[x] = entities.make_text(page, d)
+        #elif d['2'] == 'a-wall':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-door':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-window':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-slab':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-openwall':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-stair':
+            #entities_dict[x] = entities.make_bim_block(page, d)
+        #elif d['2'] == 'a-block':
+            #d['NAME'] = d.get('NAME', 't01')
+            #entities_dict[x] = entities.make_block(page, d)
 
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
 
-    if no_camera:
-        x += 1
-        d = {
-        '10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
-        'LIGHT-INT': 1,
-        }
-        entities_dict[x] = entities.make_camera(page, d)
+    #if no_camera:
+        #x += 1
+        #d = {
+        #'10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
+        #'LIGHT-INT': 1,
+        #}
+        #entities_dict[x] = entities.make_camera(page, d)
 
-    return entities_dict
+    return
 
 def make_survey(collection, layer_dict):
     entities_dict = {}
