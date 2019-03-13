@@ -151,7 +151,7 @@ class DxfPage(Page):
     help_text="File description",)
     dxf_file = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
+        null=True, blank=True,
         on_delete = models.SET_NULL,
         related_name = '+',
         help_text="CAD file of your project",
@@ -172,9 +172,21 @@ class DxfPage(Page):
     ]
 
     def add_new_layers(self):
-        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-            self.dxf_file.filename)
+        """Confronts layers in dxf and Dxf Page Layers
+
+        Works only if dxf_file is set. Gets a dictionary of layers from dxf and
+        confronts it with layers in db. Adds and/or erases layers in db, no
+        updates. Returns nothing.
+        """
+        if self.dxf_file:
+            #set path to dxf, once and for all
+            self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+                self.dxf_file.filename)
+        else:
+            return
+        #get layers in dxf
         layer_dict = dxf.get_layer_dict(self)
+        #get existing Dxf Page Layers
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
         #add layers if they are not in db, don't touch them if they exist
         for name, color in layer_dict.items():
@@ -183,7 +195,7 @@ class DxfPage(Page):
             except:
                 lb = DxfPageLayer(page_id=self.id, name=name, color=color)
                 lb.save()
-        #erase if they are not in dxf
+        #erase them if they are not in dxf
         for layer in page_layers:
             if layer.name not in layer_dict:
                 layer.delete()
@@ -211,12 +223,26 @@ class DxfPageLayer(Orderable):
         FieldPanel('color'),
     ]
 
-#class DxfPageEntity(Orderable):
-    #page = ParentalKey(DxfPage, related_name='entities')
-    #name = models.CharField(max_length=250, default="0",
-        #help_text="As in CAD file",)
-    #color = RGBColorField(default='#ffffff',
-        #help_text="Layer color",)
+class DxfPageEntity(Orderable):
+    page = ParentalKey(DxfPage, related_name='entities')
+    layer = models.CharField(max_length=250, )
+    identity = models.CharField(max_length=250, )
+    position = models.CharField(max_length=250, null=True, blank=True,)
+    rotation = models.CharField(max_length=250, null=True, blank=True,)
+    geometry = models.CharField(max_length=250, null=True, blank=True,)
+    line = models.CharField(max_length=250, null=True, blank=True,)
+    material = models.CharField(max_length=250, null=True, blank=True,)
+    component = models.IntegerField(default=0, )
+    partition = models.CharField(max_length=250, null=True, blank=True,)
+    text = models.CharField(max_length=250, null=True, blank=True,)
+    link = models.CharField(max_length=250, null=True, blank=True,)
+    animation = models.CharField(max_length=250, null=True, blank=True,)
+    checkpoint = models.BooleanField(default=False, )
+    look_at = models.BooleanField(default=False, )
+    stalker = models.BooleanField(default=False, )
+    event = models.BooleanField(default=False, )
+    camera = models.BooleanField(default=False, )
+    closing = models.IntegerField(default=1, )
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
@@ -310,6 +336,7 @@ class ScenePage(Page):
         return 'architettura/scene_page.html'
 
     def add_new_layers(self):
+        #TODO erase layers if they are no more in dxf page
         self.layer_dict = {}
         dxf_layers = DxfPageLayer.objects.filter(page_id=self.dxf_file.id)
         for layer in dxf_layers:
@@ -456,6 +483,7 @@ class SurveyPage(Page):
 
     def add_new_layers(self):
         #we still have to produce the scene page layer dict
+        #TODO erase layers if they are no more in dxf
         self.scene.add_new_layers()
         for name, list in self.scene.layer_dict.items():
             try:
