@@ -273,8 +273,11 @@ class DxfPage(Page):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
         page_ent = DxfPageEntity.objects.filter(page_id=self.id)
         for entity in page_ent:
-            layer = page_layers.get(name=entity.layer)
-            entity.material = f'color: {layer.color}; '
+            try:
+                layer = page_layers.get(name=entity.layer)
+                entity.material = f'color: {layer.color}; '
+            except:
+                entity.material = ''
             close = []
             for c in range(entity.closing):
                 close.append(c)

@@ -12,15 +12,9 @@
 
 {% block content %}
   <h1 id="scene-title">{{ page.title }}</h1>
-
     <a-scene style="width: 100%; height: 768px" embedded>
-
-    {% with nl=page.add_new_layers %}
-    {% endwith %}
-
-    {% with ae=page.add_entities %}
-    {% endwith %}
-
+    {% with nl=page.add_new_layers %}{% endwith %}
+    {% with ae=page.add_entities %}{% endwith %}
     <a-asset>
       <img id="sky" src="{% static 'architettura/images/target.png' %}">
 
@@ -34,31 +28,12 @@
 
     </a-asset>
 
-			{% with entities=page.get_entities %}
-			 {% if entities %}
-				{% for ent in entities %}
-				<a-entity id="{{ ent.identity }}"
-        {% if ent.position %}
-          position="{{ ent.position }}"
-        {% endif %}
-        {% if ent.rotation %}
-          rotation="{{ ent.rotation }}"
-        {% endif %}
-        {% if ent.geometry %}
-          geometry="{{ ent.geometry }}"
-        {% endif %}
-        {% if ent.material %}
-          material="{{ ent.material }}"
-        {% endif %}
-        >
-          {% for c in ent.closing %}
-            </a-entity>
-          {% endfor %}
-				{% endfor %}
-			 {% endif %}
-			{% endwith %}
-
-
+			{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
+				<a-entity id="{{ ent.identity }}" {% if ent.position %}position="{{ ent.position }}"{% endif %}
+        {% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}{% if ent.geometry %}geometry="{{ ent.geometry }}"{% endif %}
+        {% if ent.material %}material="{{ ent.material }}" {% endif %}>
+        {% for c in ent.closing %}</a-entity>{% endfor %}
+			{% endfor %}{% endif %}{% endwith %}
 
     <a-sky src="#sky"></a-sky>
 
