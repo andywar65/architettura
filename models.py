@@ -151,11 +151,13 @@ class DxfPage(Page):
     help_text="File description",)
     dxf_file = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True, blank=True,
+        null=True,
         on_delete = models.SET_NULL,
         related_name = '+',
         help_text="CAD file of your project",
         )
+    block = models.BooleanField(default=False,
+        help_text="Prevent DXF from changing Database?",)
     object_repository = models.URLField(
         help_text="URL of external repository for OBJ/GLTF files",
         blank=True, null=True)
@@ -166,24 +168,26 @@ class DxfPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('introduction'),
-        DocumentChooserPanel('dxf_file'),
-        FieldPanel('object_repository'),
+        MultiFieldPanel([
+            DocumentChooserPanel('dxf_file'),
+            FieldPanel('block'),
+            FieldPanel('object_repository'),
+        ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
     ]
 
     def add_new_layers(self):
         """Confronts layers in dxf and Dxf Page Layers
 
-        Works only if dxf_file is set. Gets a dictionary of layers from dxf and
+        Works only if unblocked. Gets a dictionary of layers from dxf and
         confronts it with layers in db. Adds and/or erases layers in db, no
         updates. Returns nothing.
         """
-        if self.dxf_file:
-            #set path to dxf, once and for all
-            self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-                self.dxf_file.filename)
-        else:
+        if self.block:
             return
+        #set path to dxf, once and for all
+        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
+            self.dxf_file.filename)
         #get layers in dxf
         layer_dict = dxf.get_layer_dict(self)
         #get existing Dxf Page Layers
@@ -203,6 +207,8 @@ class DxfPage(Page):
         return
 
     def add_entities(self):
+        if self.block:
+            return
         collection = dxf.parse_dxf(self)
         collection = dxf.reference_openings(collection)
         collection = dxf.reference_animations(collection)
