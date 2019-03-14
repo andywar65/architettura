@@ -271,7 +271,7 @@ class DxfPage(Page):
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id)
+        page_ent = DxfPageEntity.objects.filter(page_id=self.id).order_by('id')
         for entity in page_ent:
             try:
                 layer = page_layers.get(name=entity.layer)
@@ -285,7 +285,7 @@ class DxfPage(Page):
             for c in range(entity.closing):
                 close.append(c)
             entity.closing = close
-
+        print(page_ent)
         return page_ent
 
 class DxfPageLayer(Orderable):

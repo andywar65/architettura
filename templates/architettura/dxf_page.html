@@ -17,25 +17,19 @@
     {% with ae=page.add_entities %}{% endwith %}
     <a-asset>
       <img id="sky" src="{% static 'architettura/images/target.png' %}">
-
-      {% with object_dict=page.get_object_assets %}
-        {% if object_dict %}
-          {% for name, path in object_dict.items %}
-            <a-asset-item id="{{ name }}" src="{{ path }}/{{ name }}"></a-asset-item>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-
+      {% with object_dict=page.get_object_assets %}{% if object_dict %}{% for name, path in object_dict.items %}
+      <a-asset-item id="{{ name }}" src="{{ path }}/{{ name }}"></a-asset-item>
+      {% endfor %}{% endif %}{% endwith %}
     </a-asset>
 
-			{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
-				<a-entity id="{{ ent.identity }}" {% if ent.animator %}{% for n, l in ent.animator.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
-        {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
-        {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}line_{{ n }}="{{ l }}" {% endfor %}{% endif %}
-        {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
-        {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.link %}link="{{ ent.link }}" {% endif %}>
-        {% for c in ent.closing %}</a-entity>{% endfor %}
-			{% endfor %}{% endif %}{% endwith %}
+		{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
+			<a-entity id="{{ ent.identity }}" {% if ent.animator %}{% for n, l in ent.animator.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
+      {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
+      {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}line_{{ n }}="{{ l }}" {% endfor %}{% endif %}
+      {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
+      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.link %}link="{{ ent.link }}" {% endif %}>
+      {% for c in ent.closing %}</a-entity>{% endfor %}
+		{% endfor %}{% endif %}{% endwith %}
 
     <a-sky src="#sky"></a-sky>
 

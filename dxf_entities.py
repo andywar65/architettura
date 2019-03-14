@@ -1581,7 +1581,7 @@ def add_animation(d):
     oput += f'startEvents: {d["START_EVENTS"]}; '
     oput += f'dir: {d["DIRECTION"]}; '
     oput += f'loop: {d["LOOP"]}; '
-    oput += f'dur: {d["DURATION"]};" '
+    oput += f'dur: {d["DURATION"]}; '
     return oput
 
 def add_stalker(page, d):
