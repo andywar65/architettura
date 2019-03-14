@@ -1424,6 +1424,7 @@ def open_entity(page, d):
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
+
                 rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
                 page.ent_dict[identity]={'rotation': rotation,
                     'animator': animator, }
@@ -1443,6 +1444,7 @@ def open_entity(page, d):
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
+
                 position = f'{l[0]} {l[1]} {l[2]}'
                 page.ent_dict[identity]={'position': position,
                     'animator': animator, }
@@ -1450,6 +1452,7 @@ def open_entity(page, d):
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
+
                 position = make_position(d)
                 rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
                 animation = add_animation(d)
@@ -1460,6 +1463,7 @@ def open_entity(page, d):
         insertion = make_insertion(page, d)
         identity = insertion[0]
         animator = insertion[1]
+
         position = make_position(d)
         rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
         page.ent_dict[identity]={'position': position,
@@ -1473,33 +1477,19 @@ def make_insertion(page, d):
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    animator = ''
+    animator = {}
     if d['PROPERTY'] == 'checkpoint':
-        animator = 'checkpoint'
+        animator = {'checkpoint': 'checkpoint'}
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            animator = f'look-at="#{d["TARGET"]}" '
+            animator = {'look-at': f'#{d["TARGET"]}'}
         else:
-            animator = 'look-at="#camera" '
+            animator = {'look-at': '#camera'}
     elif d['PROPERTY'] == 'stalker':
-        animator = 'look-at="#camera" '
+        animator = {'look-at': '#camera'}
     elif d['PROPERTY'] == 'event':
-        animator = f'event-proxy="listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}" '
-    #if page.shadows:
-        #if d['2'] == 'a-light':
-            #pass
-        #elif d['no_shadows']:
-            #if d['2'] == 'a-poly' or d['2'] == 'a-line':
-                #pass
-            #else:
-                #oput += 'shadow="receive: false; cast: false" \n'
-        #elif d['2'] == 'a-poly' or d['2'] == 'a-line':
-            #if d['39']:
-                #oput += 'shadow="receive: true; cast: true" \n'
-            #else:
-                #pass
-        #else:
-            #oput += 'shadow="receive: true; cast: true" \n'
+        animator = {'event-proxy': f'listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}'}
+
     return identity, animator
 
 def make_position(d):

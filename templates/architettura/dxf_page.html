@@ -29,7 +29,7 @@
     </a-asset>
 
 			{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
-				<a-entity id="{{ ent.identity }}" {% if ent.look_at %}id="{{ ent.look_at }}" {% endif %}{% if ent.check %}checkpoint {% endif %}
+				<a-entity id="{{ ent.identity }}" {% if ent.animator %}{% for n, l in ent.animator.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
         {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
         {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}line_{{ n }}="{{ l }}" {% endfor %}{% endif %}
         {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
