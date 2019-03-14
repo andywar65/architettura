@@ -1390,7 +1390,7 @@ def open_entity(page, d):
             position = make_position(d)
             rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
             page.ent_dict[identity]={'position': position, 'rotation': rotation,
-                'closing': 0, }
+                'closing': 0, 'layer': d['layer'], }
             if d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-leash'
                 l = d['TO'].split()
@@ -1400,7 +1400,7 @@ def open_entity(page, d):
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
                 animation = add_animation(d)
                 page.ent_dict[identity]={'animation': animation,
-                    'closing': 0, }
+                    'closing': 0,  'layer': d['layer'],}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
@@ -1420,7 +1420,7 @@ def open_entity(page, d):
                 position = make_position(d)
                 animation = add_animation(d)
                 page.ent_dict[identity]={'position': position,
-                    'animation': animation, 'closing': 0, }
+                    'animation': animation, 'closing': 0, 'layer': d['layer'],}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
@@ -1439,7 +1439,7 @@ def open_entity(page, d):
                 animation = add_animation(d)
                 page.ent_dict[identity]={'position': position,
                     'rotation': rotation, 'animation': animation,
-                    'closing': 0, }
+                    'closing': 0, 'layer': d['layer'],}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]

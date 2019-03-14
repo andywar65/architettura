@@ -178,11 +178,10 @@ class DxfPage(Page):
     ]
 
     def add_new_layers(self):
-        """Confronts layers in dxf and Dxf Page Layers
+        """Collects layers in dxf and adds Dxf Page Layers
 
         Works only if unblocked. Gets a dictionary of layers from dxf and
-        confronts it with layers in db. Adds and/or erases layers in db, no
-        updates. Returns nothing.
+        adds and/or erases layers in db, no updates. Returns nothing.
         """
         #skip if blocked
         if self.block:
@@ -262,6 +261,7 @@ class DxfPage(Page):
         for entity in page_ent:
             if entity.identity not in self.ent_dict:
                 entity.delete()
+        #prevent dxf file from overriding again database
         self.block = True
         self.save()
         return
