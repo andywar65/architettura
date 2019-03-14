@@ -267,7 +267,22 @@ class DxfPage(Page):
         return
 
     def get_object_assets(self):
-        return
+        page_ent_obj = DxfPageEntity.objects.filter(page_id=self.id,
+            obj_mtl__isnull=False)
+        page_ent_gltf = DxfPageEntity.objects.filter(page_id=self.id,
+            gltf__isnull=False)
+        if self.object_repository:
+            path = self.object_repository
+        else:
+            path = os.path.join(settings.MEDIA_URL, 'documents')
+        object_dict = {}
+        for ent in page_ent_obj:
+            object_dict[ent.obj_mtl + '.' + 'obj'] = path
+            object_dict[ent.obj_mtl + '.' + 'mtl'] = path
+        for ent in page_ent_gltf:
+            object_dict[ent.gltf + '.' + 'gltf'] = path
+
+        return object_dict
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
@@ -285,7 +300,6 @@ class DxfPage(Page):
             for c in range(entity.closing):
                 close.append(c)
             entity.closing = close
-        print(page_ent)
         return page_ent
 
 class DxfPageLayer(Orderable):
@@ -315,6 +329,8 @@ class DxfPageEntity(Orderable):
     link = models.CharField(max_length=250, null=True, blank=True,)
     animation = models.CharField(max_length=250, null=True, blank=True,)
     animator = models.CharField(max_length=250, null=True, blank=True,)
+    obj_mtl = models.CharField(max_length=250, null=True, blank=True,)
+    gltf = models.CharField(max_length=250, null=True, blank=True,)
     camera = models.BooleanField(default=False, )
     closing = models.IntegerField(default=1, )
 
