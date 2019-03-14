@@ -47,7 +47,7 @@ def make_box(page, d):
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
     geometry = f'primitive: {d["ide"]}; '
     geometry += f'width: {round(d["41"], 4)}; '
-    geometry += f'heigth: {round(d["43"], 4)}; '
+    geometry += f'height: {round(d["43"], 4)}; '
     geometry += f'depth: {round(d["42"], 4)}; '
     scale = f'{round(d["41"], 4)} {round(d["43"], 4)} {round(d["42"], 4)}'
     page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],

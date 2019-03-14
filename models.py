@@ -224,7 +224,6 @@ class DxfPage(Page):
         page_ent = DxfPageEntity.objects.filter(page_id=self.id)
         #add entities in db
         for identity, data in self.ent_dict.items():
-            print(data)
             try:
                 ea = page_ent.get(identity=identity)
                 ea.delete()
@@ -297,8 +296,8 @@ class DxfPageLayer(Orderable):
 
 class DxfPageEntity(Orderable):
     page = ParentalKey(DxfPage, related_name='entities')
-    layer = models.CharField(max_length=250, )
     identity = models.CharField(max_length=250, )
+    layer = models.CharField(max_length=250, )
     position = models.CharField(max_length=250, null=True, blank=True,)
     rotation = models.CharField(max_length=250, null=True, blank=True,)
     geometry = models.CharField(max_length=250, null=True, blank=True,)
@@ -312,6 +311,14 @@ class DxfPageEntity(Orderable):
     animator = models.CharField(max_length=250, null=True, blank=True,)
     camera = models.BooleanField(default=False, )
     closing = models.IntegerField(default=1, )
+
+    panels = [
+        FieldPanel('identity'),
+        FieldPanel('layer'),
+        FieldPanel('position'),
+        FieldPanel('rotation'),
+        FieldPanel('geometry'),
+    ]
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
