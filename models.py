@@ -174,6 +174,7 @@ class DxfPage(Page):
             FieldPanel('object_repository'),
         ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
+        InlinePanel('entities', label="Entities",),
     ]
 
     def add_new_layers(self):
@@ -183,6 +184,7 @@ class DxfPage(Page):
         confronts it with layers in db. Adds and/or erases layers in db, no
         updates. Returns nothing.
         """
+        #skip if blocked
         if self.block:
             return
         #set path to dxf, once and for all
@@ -192,13 +194,15 @@ class DxfPage(Page):
         layer_dict = dxf.get_layer_dict(self)
         #get existing Dxf Page Layers
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        #add layers if they are not in db, don't touch them if they exist
+        #add layers in db, modify them if they exist
         for name, color in layer_dict.items():
             try:
                 la = page_layers.get(name=name)
+                la.delete()
             except:
-                lb = DxfPageLayer(page_id=self.id, name=name, color=color)
-                lb.save()
+                pass
+            lb = DxfPageLayer(page_id=self.id, name=name, color=color)
+            lb.save()
         #erase them if they are not in dxf
         for layer in page_layers:
             if layer.name not in layer_dict:
@@ -207,20 +211,77 @@ class DxfPage(Page):
         return
 
     def add_entities(self):
+        #skip if blocked
         if self.block:
             return
+        #collect entities from dxf
         collection = dxf.parse_dxf(self)
         collection = dxf.reference_openings(collection)
         collection = dxf.reference_animations(collection)
+        #make entity dictionary
         dxf.make_entities_dict(self, collection)
-        print(self.ent_dict)
+        #get existing Dxf Page Entities
+        page_ent = DxfPageEntity.objects.filter(page_id=self.id)
+        #add entities in db
+        for identity, data in self.ent_dict.items():
+            print(data)
+            try:
+                ea = page_ent.get(identity=identity)
+                ea.delete()
+            except:
+                pass
+            eb = DxfPageEntity(page_id=self.id, identity=identity,
+                layer=data['layer'])
+            if 'position' in data:
+                eb.position = data['position']
+            if 'rotation' in data:
+                eb.rotation = data['rotation']
+            if 'geometry' in data:
+                eb.geometry = data['geometry']
+            if 'line' in data:
+                eb.line = data['line']
+            if 'material' in data:
+                eb.material = data['material']
+            if 'component' in data:
+                eb.component = data['component']
+            if 'partition' in data:
+                eb.partition = data['partition']
+            if 'text' in data:
+                eb.text = data['text']
+            if 'link' in data:
+                eb.link = data['link']
+            if 'animation' in data:
+                eb.animation = data['animation']
+            if 'animator' in data:
+                eb.animator = data['animator']
+            if 'camera' in data:
+                eb.camera = data['camera']
+            if 'closing' in data:
+                eb.closing = data['closing']
+            eb.save()
+        #erase them if they are not in dxf
+        for entity in page_ent:
+            if entity.identity not in self.ent_dict:
+                entity.delete()
+        self.block = True
+        self.save()
         return
 
     def get_object_assets(self):
         return
 
     def get_entities(self):
-        return
+        page_layers = DxfPageLayer.objects.filter(page_id=self.id)
+        page_ent = DxfPageEntity.objects.filter(page_id=self.id)
+        for entity in page_ent:
+            layer = page_layers.get(name=entity.layer)
+            entity.material = f'color: {layer.color}; '
+            close = []
+            for c in range(entity.closing):
+                close.append(c)
+            entity.closing = close
+
+        return page_ent
 
 class DxfPageLayer(Orderable):
     page = ParentalKey(DxfPage, related_name='layers')

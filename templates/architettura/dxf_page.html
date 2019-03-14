@@ -36,8 +36,24 @@
 
 			{% with entities=page.get_entities %}
 			 {% if entities %}
-				{% for key, value in entities.items %}
-				{{ value|safe }}
+				{% for ent in entities %}
+				<a-entity id="{{ ent.identity }}"
+        {% if ent.position %}
+          position="{{ ent.position }}"
+        {% endif %}
+        {% if ent.rotation %}
+          rotation="{{ ent.rotation }}"
+        {% endif %}
+        {% if ent.geometry %}
+          geometry="{{ ent.geometry }}"
+        {% endif %}
+        {% if ent.material %}
+          material="{{ ent.material }}"
+        {% endif %}
+        >
+          {% for c in ent.closing %}
+            </a-entity>
+          {% endfor %}
 				{% endfor %}
 			 {% endif %}
 			{% endwith %}
