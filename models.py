@@ -192,7 +192,7 @@ class DxfPage(Page):
         #get layers in dxf
         layer_dict = dxf.get_layer_dict(self)
         #delete existing Dxf Page Layers
-        page_layers = DxfPageLayer.objects.filter(page_id=self.id).delete()
+        DxfPageLayer.objects.filter(page_id=self.id).delete()
         #add layers in db, modify them if they exist
         for name, color in layer_dict.items():
             lb = DxfPageLayer(page_id=self.id, name=name, color=color)
@@ -211,7 +211,7 @@ class DxfPage(Page):
         #make entity dictionary
         dxf.make_entities_dict(self, collection)
         #delete existing Dxf Page Entities
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id).delete()
+        DxfPageEntity.objects.filter(page_id=self.id).delete()
         #add entities in db
         for identity, data in self.ent_dict.items():
             eb = DxfPageEntity(page_id=self.id, identity=identity,
