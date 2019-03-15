@@ -34,7 +34,7 @@ def make_box(page, d):
     #d = prepare_material_values(values, d)
 
     d['rx'] = fabs(d["41"])
-    d['ry'] = fabs(d["42"])
+    d['ry'] = fabs(d["43"])
     d['dx'] = d['41']/2
     d['dy'] = -d['42']/2
     d['dz'] = d['43']/2
@@ -49,9 +49,10 @@ def make_box(page, d):
     geometry += f'width: {round(d["41"], 4)}; '
     geometry += f'height: {round(d["43"], 4)}; '
     geometry += f'depth: {round(d["42"], 4)}; '
-    scale = f'{round(d["41"], 4)} {round(d["43"], 4)} {round(d["42"], 4)}'
+    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
     page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0)
+        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
+        repeat=repeat)
 
     return
 

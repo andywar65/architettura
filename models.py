@@ -226,6 +226,8 @@ class DxfPage(Page):
                 eb.line = data['line']
             if 'material' in data:
                 eb.material = data['material']
+            if 'repeat' in data:
+                eb.repeat = data['repeat']
             if 'component' in data:
                 eb.component = data['component']
             if 'partition' in data:
@@ -305,6 +307,7 @@ class DxfPageEntity(Orderable):
     geometry = models.CharField(max_length=250, null=True, blank=True,)
     line = models.CharField(max_length=250, null=True, blank=True,)
     material = models.CharField(max_length=250, null=True, blank=True,)
+    repeat = models.CharField(max_length=250, null=True, blank=True,)
     component = models.IntegerField(default=0, )
     partition = models.CharField(max_length=250, null=True, blank=True,)
     text = models.CharField(max_length=250, null=True, blank=True,)
