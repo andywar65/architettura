@@ -112,11 +112,11 @@ def make_bim_block(page, d):
     return oput
 
 def make_circular(page, d):
-    d['prefix'] = d['ide'] = d['2'].replace('a-', '')
-    values = (
-        ('pool', 0, d['prefix'], 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
+    #d['prefix'] = d['ide'] = d['2'].replace('a-', '')
+    #values = (
+        #('pool', 0, d['prefix'], 'MATERIAL'),
+    #)
+    #d = prepare_material_values(values, d)
 
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
@@ -128,19 +128,27 @@ def make_circular(page, d):
         d['dz'] = 0
     else:
         d['dz'] = d['43']/2
-    d['tag'] = d['2']
-    oput = ''
-    oput += open_entity(page, d)
-    if d['2'] == 'a-circle':
-        oput += f'radius="{fabs(d["41"])}" \n'
+    #d['tag'] = d['2']
+    d['ide'] = d['2'].replace('a-', '')
+    open_entity(page, d)
+    if d['ID']:
+        identity = f'{page.id}-{d["ID"]}'
     else:
-        oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
-    oput += entity_geometry(d)
-    oput += entity_material(d)
-    oput += '"> \n'
-    oput += close_entity(page, d)
+        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    geometry = f'primitive: {d["ide"]}; '
+    if d['2'] == 'a-circle':
+        geometry += f'radius: {fabs(d["41"])}; '
+    else:
+        geometry += f'width: {round(d["41"], 4)}; '
+        geometry += f'height: {round(d["43"], 4)}; '
+        geometry += f'depth: {round(d["42"], 4)}; '
+    geometry += entity_geometry(d)
+    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
+    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
+        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
+        repeat=repeat)
 
-    return oput
+    return
 
 def make_curvedimage(page, d):
     d['prefix'] = d['ide'] = 'curvedim'
@@ -1535,7 +1543,7 @@ def entity_geometry(d):
         'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
     }
     attributes = attr_dict[d['2']]
-    oput = 'geometry="'
+    oput = ''
     for attribute in attributes:
         try:
             if d[attribute]:
@@ -1543,7 +1551,6 @@ def entity_geometry(d):
         except:
             pass
 
-    oput += '" \n'
     return oput
 
 def add_animation(d):
