@@ -191,21 +191,12 @@ class DxfPage(Page):
             self.dxf_file.filename)
         #get layers in dxf
         layer_dict = dxf.get_layer_dict(self)
-        #get existing Dxf Page Layers
-        page_layers = DxfPageLayer.objects.filter(page_id=self.id)
+        #delete existing Dxf Page Layers
+        page_layers = DxfPageLayer.objects.filter(page_id=self.id).delete()
         #add layers in db, modify them if they exist
         for name, color in layer_dict.items():
-            try:
-                la = page_layers.get(name=name)
-                la.delete()
-            except:
-                pass
             lb = DxfPageLayer(page_id=self.id, name=name, color=color)
             lb.save()
-        #erase them if they are not in dxf
-        for layer in page_layers:
-            if layer.name not in layer_dict:
-                layer.delete()
 
         return
 
@@ -219,15 +210,10 @@ class DxfPage(Page):
         collection = dxf.reference_animations(collection)
         #make entity dictionary
         dxf.make_entities_dict(self, collection)
-        #get existing Dxf Page Entities
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id)
+        #delete existing Dxf Page Entities
+        page_ent = DxfPageEntity.objects.filter(page_id=self.id).delete()
         #add entities in db
         for identity, data in self.ent_dict.items():
-            try:
-                ea = page_ent.get(identity=identity)
-                ea.delete()
-            except:
-                pass
             eb = DxfPageEntity(page_id=self.id, identity=identity,
                 layer=data['layer'])
             if 'position' in data:
@@ -257,10 +243,6 @@ class DxfPage(Page):
             if 'closing' in data:
                 eb.closing = data['closing']
             eb.save()
-        #erase them if they are not in dxf
-        for entity in page_ent:
-            if entity.identity not in self.ent_dict:
-                entity.delete()
         #prevent dxf file from overriding again database
         self.block = True
         self.save()
