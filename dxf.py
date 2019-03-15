@@ -622,8 +622,8 @@ def make_entities_dict(page, collection):
             dxf_entities.make_circular(page, d)
         elif d['2'] == 'a-curvedimage':
             dxf_entities.make_curvedimage(page, d)
-        #elif d['2'] == 'a-plane':
-            #entities_dict[x] = entities.make_plane(page, d)
+        elif d['2'] == 'a-plane':
+            dxf_entities.make_plane(page, d)
         #elif d['2'] == 'a-triangle':
             #entities_dict[x] = entities.make_triangle(page, d)
         #elif d['2'] == 'a-line':

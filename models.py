@@ -279,9 +279,9 @@ class DxfPage(Page):
                 entity.material = f'color: {layer.color}; '
             except:
                 entity.material = ''
-            if entity.animator == 'checkpoint':
+            if entity.animator == {'checkpoint': 'checkpoint'}:
                 entity.check = 'checkpoint'
-                entity.animator = ''
+                entity.animator = {}
             close = []
             for c in range(entity.closing):
                 if c == 0:

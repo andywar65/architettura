@@ -157,11 +157,11 @@ def make_curvedimage(page, d):
     d['dx'] = 0
     d['dy'] = 0
     d['dz'] = d['43']/2
+    open_entity(page, d)
     if d['ID']:
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    open_entity(page, d)
     geometry = f'radius: {round(fabs(d["41"]), 4)*2}; '
     geometry += f'height: {round(d["43"], 4)}; '
     geometry += entity_geometry(d)
@@ -173,17 +173,21 @@ def make_curvedimage(page, d):
     return
 
 def make_plane(page, d):
-    d['prefix'] = d['ide'] = 'plane'
+    d['ide'] = 'plane'
     d['dx'] = d['41']/2
     d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    oput = ''
-    oput += open_entity(page, d)
-    oput += '> \n'
-    oput += make_w_plane(page, d)
-    oput += close_entity(page, d)
-    return oput
+    open_entity(page, d)
+    if d['ID']:
+        identity = f'{page.id}-{d["ID"]}'
+    else:
+        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    page.ent_dict[identity].update(layer=d['layer'], closing=0, tag=d['tag'])
+    d['closing'] = close_entity(page, d)
+    make_w_plane(page, d)
+
+    return
 
 def make_w_plane(page, d):
     """Wall plane default BIM block.
@@ -193,12 +197,12 @@ def make_w_plane(page, d):
     first for wall, second for tiling and third for skirting.
     """
     #prepare values for materials
-    values = (
-        ('pool', 0, 'plaster', 'MATERIAL'),
-        ('pool', 1, 'tile', 'MATERIAL'),
-        ('pool', 2, 'skirt', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
+    #values = (
+        #('pool', 0, 'plaster', 'MATERIAL'),
+        #('pool', 1, 'tile', 'MATERIAL'),
+        #('pool', 2, 'skirt', 'MATERIAL'),
+    #)
+    #d = prepare_material_values(values, d)
     #prepare height values
     wall_h = fabs(d['43'])
     if 'TILING' in d:
@@ -217,30 +221,31 @@ def make_w_plane(page, d):
         tile_h = skirt_h
     wall_h = wall_h - tile_h
     tile_h = tile_h - skirt_h
-    oput = ''
+
     #prepare values for surfaces
     values = (
-        (skirt_h, 'skirt', skirt_h/2,),
-        (tile_h, 'tile', tile_h/2+skirt_h,),
-        (wall_h, 'plaster', wall_h/2+tile_h+skirt_h,),
+        (skirt_h, 'skirt', skirt_h/2, 2),
+        (tile_h, 'tile', tile_h/2+skirt_h, 1),
+        (wall_h, 'plaster', wall_h/2+tile_h+skirt_h, 0),
     )
     #loop surfaces
     d['rx'] = fabs(d["41"])
-    if d['rx'] == 0:
-        return oput
+
     for v in values:
         if v[0]:
-            d['prefix'] = v[1]
             d['ry'] = v[0]
-            oput += f'<a-plane id="{d["ide"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0" \n'
-            oput += f'width="{round(d["rx"], 4)}" height="{v[0]}" \n'
-            oput += entity_material(d)
-            if page.double_face:
-                oput += 'side: double; '
-            oput += '"></a-plane>\n'
+            identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
+            geometry = 'primitive: plane; '
+            geometry += f'width: {round(d["rx"], 4)}; height: {v[0]}; '
+            repeat = f'repeat: {round(d["rx"], 4)} {v[0]}; '
+            position=f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
+            page.ent_dict[identity]={'position': position, 'geometry': geometry,
+                'material': d['MATERIAL'], 'repeat': repeat, 'component': v[0],
+                'closing': 1, 'layer': d['layer'], 'tag': 'a-entity'}
+    #last one closes all
+    page.ent_dict[identity].update(closing=d['closing']+1)
 
-    return oput
+    return
 
 def survey_w_plane(d):
     #prepare height values
