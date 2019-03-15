@@ -216,6 +216,8 @@ class DxfPage(Page):
         for identity, data in self.ent_dict.items():
             eb = DxfPageEntity(page_id=self.id, identity=identity,
                 layer=data['layer'])
+            if 'tag' in data:
+                eb.tag = data['tag']
             if 'position' in data:
                 eb.position = data['position']
             if 'rotation' in data:
@@ -282,7 +284,10 @@ class DxfPage(Page):
                 entity.animator = ''
             close = []
             for c in range(entity.closing):
-                close.append(c)
+                if c == 0:
+                    close.append(entity.tag)
+                else:
+                    close.append('a-entity')
             entity.closing = close
         return page_ent
 
@@ -301,6 +306,7 @@ class DxfPageLayer(Orderable):
 class DxfPageEntity(Orderable):
     page = ParentalKey(DxfPage, related_name='entities')
     identity = models.CharField(max_length=250, )
+    tag = models.CharField(max_length=250, null=True, blank=True,)
     layer = models.CharField(max_length=250, )
     position = models.CharField(max_length=250, null=True, blank=True,)
     rotation = models.CharField(max_length=250, null=True, blank=True,)

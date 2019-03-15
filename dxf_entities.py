@@ -52,7 +52,7 @@ def make_box(page, d):
     repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
     page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
         closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat)
+        repeat=repeat, tag='a-entity')
 
     return
 
@@ -146,30 +146,31 @@ def make_circular(page, d):
     repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
     page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
         closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat)
+        repeat=repeat, tag='a-entity')
 
     return
 
 def make_curvedimage(page, d):
-    d['prefix'] = d['ide'] = 'curvedim'
-    values = (
-        ('pool', 0, d['prefix'], 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
+    d['ide'] = 'curvedimage'
     d['rx'] = 1
     d['ry'] = 1
     d['dx'] = 0
     d['dy'] = 0
     d['dz'] = d['43']/2
-    d['tag'] = d['2']
-    oput = ''
-    oput += open_entity(page, d)
-    oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
-    oput += entity_geometry(d)
-    oput += entity_material(d)
-    oput += '"> \n'
-    oput += close_entity(page, d)
-    return oput
+    if d['ID']:
+        identity = f'{page.id}-{d["ID"]}'
+    else:
+        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    open_entity(page, d)
+    geometry = f'radius: {round(fabs(d["41"]), 4)*2}; '
+    geometry += f'height: {round(d["43"], 4)}; '
+    geometry += entity_geometry(d)
+    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
+    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
+        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
+        repeat=repeat, tag='a-curvedimage')
+
+    return
 
 def make_plane(page, d):
     d['prefix'] = d['ide'] = 'plane'
@@ -1399,7 +1400,7 @@ def open_entity(page, d):
             position = make_position(d)
             rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
             page.ent_dict[identity]={'position': position, 'rotation': rotation,
-                'closing': 0, 'layer': d['layer'], }
+                'closing': 0, 'layer': d['layer'], 'tag': 'a-entity'}
             if d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-leash'
                 l = d['TO'].split()
@@ -1409,7 +1410,7 @@ def open_entity(page, d):
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
                 animation = add_animation(d)
                 page.ent_dict[identity]={'animation': animation,
-                    'closing': 0,  'layer': d['layer'],}
+                    'closing': 0,  'layer': d['layer'], 'tag': 'a-entity'}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
@@ -1429,7 +1430,8 @@ def open_entity(page, d):
                 position = make_position(d)
                 animation = add_animation(d)
                 page.ent_dict[identity]={'position': position,
-                    'animation': animation, 'closing': 0, 'layer': d['layer'],}
+                    'animation': animation, 'closing': 0, 'layer': d['layer'],
+                     'tag': 'a-entity'}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]
@@ -1449,7 +1451,7 @@ def open_entity(page, d):
                 animation = add_animation(d)
                 page.ent_dict[identity]={'position': position,
                     'rotation': rotation, 'animation': animation,
-                    'closing': 0, 'layer': d['layer'],}
+                    'closing': 0, 'layer': d['layer'], 'tag': 'a-entity'}
                 insertion = make_insertion(page, d)
                 identity = insertion[0]
                 animator = insertion[1]

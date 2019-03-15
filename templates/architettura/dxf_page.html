@@ -23,17 +23,17 @@
     </a-asset>
 
 		{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
-			<a-entity id="{{ ent.identity }}" {% if ent.animator %}{% for n, l in ent.animator.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
+			<{{ ent.tag }} id="{{ ent.identity }}" {% if ent.animator %}{% for n, l in ent.animator.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
       {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
       {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}line_{{ n }}="{{ l }}" {% endfor %}{% endif %}
       {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
       {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.link %}link="{{ ent.link }}" {% endif %}>
-      {% for c in ent.closing %}</a-entity>{% endfor %}
+      {% for c in ent.closing %}</{{c}}>{% endfor %}
 		{% endfor %}{% endif %}{% endwith %}
 
     <a-sky src="#sky"></a-sky>
     <a-entity id="camera-ent">
-      <a-camera id="camera" look-controls="pointerLockEnabled: true" position="0 1.6 0">
+      <a-camera id="camera" look-controls="pointerLockEnabled: true">
         <a-cursor color="#2E3A87"></a-cursor>
         <a-light type="point" distance="10"></a-light>
         <a-entity position="0 -1.6 0" id="camera-foot"></a-entity>
