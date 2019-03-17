@@ -1493,18 +1493,18 @@ def make_insertion(page, d):
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    animator = {}
+    animator = 'Null,Null'
     if d['PROPERTY'] == 'checkpoint':
-        animator = {'checkpoint': 'checkpoint'}
+        animator = 'checkpoint,checkpoint'
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            animator = {'look-at': f'#{d["TARGET"]}'}
+            animator = f'look-at,#{d["TARGET"]}'
         else:
-            animator = {'look-at': '#camera'}
+            animator = 'look-at,#camera'
     elif d['PROPERTY'] == 'stalker':
-        animator = {'look-at': '#camera'}
+        animator = 'look-at:#camera'
     elif d['PROPERTY'] == 'event':
-        animator = {'event-proxy': f'listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}'}
+        animator = f'event-proxy,listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}'
 
     return identity, animator
 

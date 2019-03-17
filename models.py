@@ -242,6 +242,8 @@ class DxfPage(Page):
                 eb.animation = data['animation']
             if 'animator' in data:
                 eb.animator = data['animator']
+            else:
+                eb.animator = 'Null,Null'
             if 'camera' in data:
                 eb.camera = data['camera']
             if 'closing' in data:
@@ -274,6 +276,9 @@ class DxfPage(Page):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
         page_ent = DxfPageEntity.objects.filter(page_id=self.id).order_by('id')
         for entity in page_ent:
+            print(entity.animator)
+            entity.animator = entity.animator.split(',')
+            entity.animator = {entity.animator[0]: entity.animator[1]}
             try:
                 layer = page_layers.get(name=entity.layer)
                 entity.material = f'color: {layer.color}; '
