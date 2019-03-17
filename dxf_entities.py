@@ -1416,19 +1416,14 @@ def open_entity(page, d):
                 animation = add_animation(d)
                 page.ent_dict[identity]={'animation': animation,
                     'closing': 0,  'layer': d['layer'], 'tag': 'a-entity'}
-                insertion = make_insertion(page, d)
-                identity = insertion[0]
-                animator = insertion[1]
+
+                identity = make_insertion(page, d)
                 position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity]={'position': position,
-                    'animator': animator, }
+                page.ent_dict[identity].update(position=position)
             else:
-                insertion = make_insertion(page, d)
-                identity = insertion[0]
-                animator = insertion[1]
+                identity = make_insertion(page, d)
                 animation = add_animation(d)
-                page.ent_dict[identity]={'animation': animation,
-                    'animator': animator, }
+                page.ent_dict[identity].update(animation=animation)
         else:
             if d['PROPERTY'] == 'rotation':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
@@ -1437,13 +1432,10 @@ def open_entity(page, d):
                 page.ent_dict[identity]={'position': position,
                     'animation': animation, 'closing': 0, 'layer': d['layer'],
                      'tag': 'a-entity'}
-                insertion = make_insertion(page, d)
-                identity = insertion[0]
-                animator = insertion[1]
 
+                identity = make_insertion(page, d)
                 rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                page.ent_dict[identity]={'rotation': rotation,
-                    'animator': animator, }
+                page.ent_dict[identity].update(rotation=rotation)
             elif d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
                 position = make_position(d)
@@ -1457,33 +1449,22 @@ def open_entity(page, d):
                 page.ent_dict[identity]={'position': position,
                     'rotation': rotation, 'animation': animation,
                     'closing': 0, 'layer': d['layer'], 'tag': 'a-entity'}
-                insertion = make_insertion(page, d)
-                identity = insertion[0]
-                animator = insertion[1]
 
+                identity = make_insertion(page, d)
                 position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity]={'position': position,
-                    'animator': animator, }
+                page.ent_dict[identity].update(position=position)
             else:
-                insertion = make_insertion(page, d)
-                identity = insertion[0]
-                animator = insertion[1]
-
+                identity = make_insertion(page, d)
                 position = make_position(d)
                 rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
                 animation = add_animation(d)
-                page.ent_dict[identity]={'position': position,
-                    'rotation': rotation, 'animation': animation,
-                    'animator': animator, }
+                page.ent_dict[identity].update(position=position,
+                    rotation=rotation, animation=animation)
     else:
-        insertion = make_insertion(page, d)
-        identity = insertion[0]
-        animator = insertion[1]
-
+        identity = make_insertion(page, d)
         position = make_position(d)
         rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-        page.ent_dict[identity]={'position': position,
-            'rotation': rotation, 'animator': animator, }
+        page.ent_dict[identity].update(position=position, rotation=rotation, )
 
     return
 
@@ -1493,20 +1474,21 @@ def make_insertion(page, d):
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    animator = 'Null,Null'
+    page.ent_dict[identity]={}
     if d['PROPERTY'] == 'checkpoint':
-        animator = 'checkpoint,checkpoint'
+        page.ent_dict[identity]={'animator': 'checkpoint,checkpoint', }
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            animator = f'look-at,#{d["TARGET"]}'
+            page.ent_dict[identity]={'animator': f'look-at,#{d["TARGET"]}', }
         else:
-            animator = 'look-at,#camera'
+            page.ent_dict[identity]={'animator': 'look-at,#camera', }
     elif d['PROPERTY'] == 'stalker':
-        animator = 'look-at:#camera'
+        page.ent_dict[identity]={'animator': 'look-at,#camera', }
     elif d['PROPERTY'] == 'event':
-        animator = f'event-proxy,listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}'
+        page.ent_dict[identity]={'animator':
+            f'event-proxy,listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}', }
 
-    return identity, animator
+    return identity
 
 def make_position(d):
     sx = sin(radians(-d['210']))
