@@ -40,11 +40,7 @@ def make_box(page, d):
     d['dz'] = d['43']/2
     #d['tag'] = 'a-box'
     d['ide'] = 'box'
-    open_entity(page, d)
-    if d['ID']:
-        identity = f'{page.id}-{d["ID"]}'
-    else:
-        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    identity = open_entity(page, d)
     geometry = f'primitive: {d["ide"]}; '
     geometry += f'width: {round(d["41"], 4)}; '
     geometry += f'height: {round(d["43"], 4)}; '
@@ -130,11 +126,7 @@ def make_circular(page, d):
         d['dz'] = d['43']/2
     #d['tag'] = d['2']
     d['ide'] = d['2'].replace('a-', '')
-    open_entity(page, d)
-    if d['ID']:
-        identity = f'{page.id}-{d["ID"]}'
-    else:
-        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    identity = open_entity(page, d)
     geometry = f'primitive: {d["ide"]}; '
     if d['2'] == 'a-circle':
         geometry += f'radius: {fabs(d["41"])}; '
@@ -157,11 +149,7 @@ def make_curvedimage(page, d):
     d['dx'] = 0
     d['dy'] = 0
     d['dz'] = d['43']/2
-    open_entity(page, d)
-    if d['ID']:
-        identity = f'{page.id}-{d["ID"]}'
-    else:
-        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    identity = open_entity(page, d)
     geometry = f'radius: {round(fabs(d["41"]), 4)*2}; '
     geometry += f'height: {round(d["43"], 4)}; '
     geometry += entity_geometry(d)
@@ -178,11 +166,7 @@ def make_plane(page, d):
     d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    open_entity(page, d)
-    if d['ID']:
-        identity = f'{page.id}-{d["ID"]}'
-    else:
-        identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+    identity = open_entity(page, d)
     page.ent_dict[identity].update(layer=d['layer'], closing=0, tag=d['tag'])
     d['closing'] = close_entity(page, d)
     make_w_plane(page, d)
@@ -326,26 +310,20 @@ def make_triangle(page, d):
         d[value[0]] = d[value[0]] - d[key]
         d[value[1]] = d[value[1]] - d[key]
         d[value[2]] = d[value[2]] - d[key]
-    d['prefix'] = d['ide'] = 'triangle'
-    values = (
-        ('pool', 0, d['prefix'], 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
+    d['ide'] = 'triangle'
     d['rx'] = 1
     d['ry'] = 1
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['tag'] = 'a-triangle'
-    oput = ''
-    oput += open_entity(page, d)
-    oput += f'geometry="vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
-    oput += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
-    oput += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}" \n'
-    oput += entity_material(d)
-    if page.double_face:
-        oput += 'side: double; '
-    oput += '"> \n'
-    oput += close_entity(page, d)
-    return oput
+    identity = open_entity(page, d)
+    geometry = f'vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; '
+    geometry += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; '
+    geometry += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}'
+    material = d.get('MATERIAL', '')
+    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
+        closing=close_entity(page, d), material=material, component=0,
+        tag='a-triangle')
+
+    return
 
 def make_line(page, d):
     d['10b'] = d['10']
@@ -1466,7 +1444,7 @@ def open_entity(page, d):
         rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
         page.ent_dict[identity].update(position=position, rotation=rotation, )
 
-    return
+    return identity
 
 def make_insertion(page, d):
 
