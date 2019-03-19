@@ -314,7 +314,7 @@ class DxfPageEntity(Orderable):
     position = models.CharField(max_length=250, null=True, blank=True,)
     rotation = models.CharField(max_length=250, null=True, blank=True,)
     geometry = models.CharField(max_length=250, null=True, blank=True,)
-    line = models.CharField(max_length=250, null=True, blank=True,)
+    line = models.TextField(max_length=250, null=True, blank=True,)
     material = models.CharField(max_length=250, null=True, blank=True,)
     repeat = models.CharField(max_length=250, null=True, blank=True,)
     component = models.IntegerField(default=0, )

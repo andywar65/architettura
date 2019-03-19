@@ -340,10 +340,9 @@ def make_line(page, d):
     if d['39']:
         d['30'] = d['30'] + d['39']/2
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['prefix'] = d['ide'] = 'line'
+    d['ide'] = 'line'
     d['tag'] = 'a-entity'
-    oput = ''
-    oput += open_entity(page, d)
+    identity = open_entity(page, d)
     if d['39']:
         oput += '> \n'
         d['42'] = 0
