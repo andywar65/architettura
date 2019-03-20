@@ -9,7 +9,7 @@ from django.conf import settings
 from modelcluster.fields import ParentalKey
 
 from wagtail.core.models import Page, Orderable
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel, FieldRowPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.documents.models import Document
@@ -174,7 +174,9 @@ class DxfPage(Page):
             FieldPanel('object_repository'),
         ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
-        InlinePanel('entities', label="Entities",),
+        MultiFieldPanel([
+            InlinePanel('entities', label="Entities",),
+        ], heading="Entities", classname="collapsible collapsed" ),
     ]
 
     def add_new_layers(self):
@@ -319,21 +321,48 @@ class DxfPageEntity(Orderable):
     repeat = models.CharField(max_length=250, null=True, blank=True,)
     component = models.IntegerField(default=0, )
     partition = models.CharField(max_length=250, null=True, blank=True,)
-    text = models.CharField(max_length=250, null=True, blank=True,)
+    text = models.TextField(max_length=250, null=True, blank=True,)
     link = models.CharField(max_length=250, null=True, blank=True,)
     animation = models.CharField(max_length=250, null=True, blank=True,)
     animator = models.CharField(max_length=250, null=True, blank=True,)
     obj_mtl = models.CharField(max_length=250, null=True, blank=True,)
     gltf = models.CharField(max_length=250, null=True, blank=True,)
-    camera = models.BooleanField(default=False, )
     closing = models.IntegerField(default=1, )
 
     panels = [
-        FieldPanel('identity'),
-        FieldPanel('layer'),
-        FieldPanel('position'),
-        FieldPanel('rotation'),
-        FieldPanel('geometry'),
+        FieldRowPanel([
+            FieldPanel('identity'),
+            FieldPanel('layer'),
+            FieldPanel('animator'),
+            FieldPanel('closing'),
+        ], classname="label-above"),
+        FieldRowPanel([
+            FieldPanel('geometry'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('position'),
+            FieldPanel('rotation'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('line'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('material'),
+            FieldPanel('component'),
+            FieldPanel('repeat'),
+            FieldPanel('partition'),
+        ], classname="label-above"),
+        FieldRowPanel([
+            FieldPanel('text'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('animation'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('obj_mtl'),
+            FieldPanel('gltf'),
+            FieldPanel('link'),
+        ], classname="label-above"),
     ]
 
 class ScenePage(Page):
