@@ -604,18 +604,13 @@ def reference_animations(collection):
     return collection
 
 def make_entities_dict(page, collection):
-    #mode = page.mode
+    
     page.ent_dict = {}
-    #if mode == 'ar':
-        #no_camera = False
-    #else:
-        #no_camera = True
     for x, d in collection.items():
 
-        #if d['2'] == 'a-camera' and no_camera:
-            #no_camera = False
-            #entities_dict[x] = entities.make_camera(page, d)
-        if d['2'] == 'a-box':
+        if d['2'] == 'a-camera':
+            dxf_entities.make_camera(page, d)
+        elif d['2'] == 'a-box':
             dxf_entities.make_box(page, d)
         elif (d['2'] == 'a-cone' or d['2'] == 'a-cylinder' or
                 d['2'] == 'a-circle' or d['2'] == 'a-sphere'):

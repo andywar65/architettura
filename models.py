@@ -274,7 +274,8 @@ class DxfPage(Page):
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id).order_by('id')
+        page_ent = DxfPageEntity.objects.filter(page_id=self.id
+            ).order_by('id').exclude(tag='a-camera')
         for ent in page_ent:
             if ent.material:
                 ent.material = f'color: {ent.material}; '

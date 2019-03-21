@@ -11,27 +11,28 @@ from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
 def make_camera(page, d):
-    oput = f'<a-entity id="camera-ent" position="{d["10"]} {d["30"]} {d["20"]}" \n'
-    oput += f'rotation="{d["210"]} {d["50"]} {d["220"]}" \n'
-    if page.mode == 'digkom':
-        oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
-    else:
-        oput += '> \n'
-        oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-    oput += f' position="0 {d["43"]*1.6} 0"> \n'
-    oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
-    oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
-    oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
-    oput += '</a-camera></a-entity> \n'
-    return oput
+    identity = f'{page.id}-camera-{d["num"]}'
+    position = f'{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
+    rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+    geometry = f'{round(d["43"]*1.6, 4)}'
+    light = f'intensity: {d["LIGHT-INT"]}; '
+    tag = 'a-camera'
+    #if page.mode == 'digkom':
+        #oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
+        #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
+    #else:
+        #oput += '> \n'
+        #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="fly: {str(page.fly_camera).lower() }" '
+    #oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
+    #oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
+    #oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
+    #oput += '</a-camera></a-entity> \n'
+    page.ent_dict[identity]={'identity': identity, 'position': position,
+        'rotation': rotation, 'geometry': geometry, 'light': light,
+        'tag': tag, 'layer': d['layer']}
+    return
 
 def make_box(page, d):
-    #d['prefix'] = 'box'
-    #values = (
-        #('pool', 0, d['prefix'], 'MATERIAL'),
-    #)
-    #d = prepare_material_values(values, d)
 
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["43"])
