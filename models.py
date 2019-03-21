@@ -335,6 +335,7 @@ class DxfPageEntity(Orderable):
     link = models.CharField(max_length=250, null=True, blank=True,)
     animation = models.CharField(max_length=250, null=True, blank=True,)
     animator = models.CharField(max_length=250, null=True, blank=True,)
+    light = models.CharField(max_length=250, null=True, blank=True,)
     obj_mtl = models.CharField(max_length=250, null=True, blank=True,)
     gltf = models.CharField(max_length=250, null=True, blank=True,)
     closing = models.IntegerField(default=1, )
@@ -367,6 +368,9 @@ class DxfPageEntity(Orderable):
         ]),
         FieldRowPanel([
             FieldPanel('animation'),
+        ]),
+        FieldRowPanel([
+            FieldPanel('light'),
         ]),
         FieldRowPanel([
             FieldPanel('obj_mtl'),

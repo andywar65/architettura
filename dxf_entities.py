@@ -395,11 +395,11 @@ def make_poly(page, d):
     for i in range(d['90']):
         d['vx'][i] = d['vx'][i]-d['dx']
         d['vy'][i] = d['vy'][i]-d['dy']
-    d['prefix'] = d['ide'] = 'poly'
+    d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
     oput = ''
-    oput += open_entity(page, d)
+    identity = open_entity(page, d)
     if d['39']:
         oput += '> \n'
         d['42'] = 0
@@ -428,17 +428,24 @@ def make_poly(page, d):
             oput +='</a-entity>'
         d['num'] = d['num1']
     else:
+        line = ''
         for i in range(d['90']-1):
-            oput += f'line__{i+1}="start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; \n'
-            oput += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
-            oput += f'color: {d["color"]}" \n'
+            if i==0:
+                line += 'line,'
+            else:
+                line += f',line__{i+1},'
+            line += f'start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; '
+            line += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; '
         if d['70']:
-            oput += f'line__{i+2}="start:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; \n'
-            oput += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; \n'
-            oput += f'color: {d["color"]}" \n'
-        oput += '>'
-    oput += close_entity(page, d)
-    return oput
+            line += f',line__{i+2},start:{round(d["vx"][i+1], 4)} 0 '
+            line += f'{round(d["vy"][i+1], 4)}; '
+            line += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
+        material = d.get('color', '')
+
+        page.ent_dict[identity].update(line=line, layer=d['layer'],
+            closing=close_entity(page, d), material=material, component=0,
+            tag=d['tag'])
+    return
 
 def make_table_01(d):
     """Table 01, default block (t01)

@@ -604,7 +604,7 @@ def reference_animations(collection):
     return collection
 
 def make_entities_dict(page, collection):
-    
+
     page.ent_dict = {}
     for x, d in collection.items():
 
@@ -623,8 +623,8 @@ def make_entities_dict(page, collection):
             dxf_entities.make_triangle(page, d)
         elif d['2'] == 'a-line':
             dxf_entities.make_line(page, d)
-        #elif d['2'] == 'a-poly':
-            #entities_dict[x] = entities.make_poly(page, d)
+        elif d['2'] == 'a-poly':
+            dxf_entities.make_poly(page, d)
         #elif d['2'] == 'a-light':
             #entities_dict[x] = entities.make_light(page, d)
         #elif d['2'] == 'a-link':
