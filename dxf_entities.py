@@ -222,9 +222,10 @@ def make_w_plane(page, d):
             geometry = 'primitive: plane; '
             geometry += f'width: {round(d["rx"], 4)}; height: {v[0]}; '
             repeat = f'repeat: {round(d["rx"], 4)} {v[0]}; '
-            position=f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
+            position = f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
+            material = d.get('MATERIAL', '')
             page.ent_dict[identity]={'position': position, 'geometry': geometry,
-                'material': d['MATERIAL'], 'repeat': repeat, 'component': v[0],
+                'material': material, 'repeat': repeat, 'component': v[0],
                 'closing': 1, 'layer': d['layer'], 'tag': 'a-entity'}
     #last one closes all
     page.ent_dict[identity].update(closing=d['closing']+1)
@@ -344,22 +345,26 @@ def make_line(page, d):
     d['tag'] = 'a-entity'
     identity = open_entity(page, d)
     if d['39']:
-        oput += '> \n'
         d['42'] = 0
         d['43'] = d['39']
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
         d['50'] = -degrees(atan2(d['21'], d['11']))
-        oput += f'<a-entity id="{d["prefix"]}-{d["num"]}-wall-ent" \n'
-        oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
-        oput += make_w_plane(page, d)
-        oput +='</a-entity><!--close wall--> \n'
+        rotation = f'0 {round(d["50"], 4)} 0'
+        page.ent_dict[identity].update(layer=d['layer'],
+            rotation=rotation, closing=0, tag=d['tag'])
+        d['closing'] = close_entity(page, d)
+        make_w_plane(page, d)
     else:
-        oput += f'line="start:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; \n'
-        oput += f'end:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; \n'
-        oput += f'color: {d["color"]};"> \n'
-    oput += close_entity(page, d)
+        line = f'line,start:{round(d["10b"], 4)} '
+        line += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
+        line += f'end:{round(d["11"], 4)} '
+        line += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
+        material = d.get('color', '')
+        page.ent_dict[identity].update(line=line, layer=d['layer'],
+            closing=close_entity(page, d), material=material, component=0,
+            tag=d['tag'])
 
-    return oput
+    return
 
 def make_poly(page, d):
     #normalize vertices relative to first

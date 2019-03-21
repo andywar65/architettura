@@ -275,25 +275,34 @@ class DxfPage(Page):
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
         page_ent = DxfPageEntity.objects.filter(page_id=self.id).order_by('id')
-        for entity in page_ent:
-            if entity.animator:
-                entity.animator = entity.animator.split(',')
-                entity.animator = {entity.animator[0]: entity.animator[1]}
-            try:
-                layer = page_layers.get(name=entity.layer)
-                entity.material = f'color: {layer.color}; '
-            except:
-                entity.material = ''
-            if entity.animator == {'checkpoint': 'checkpoint'}:
-                entity.check = 'checkpoint'
-                entity.animator = {}
+        for ent in page_ent:
+            if ent.material:
+                ent.material = f'color: {ent.material}; '
+            else:
+                try:
+                    layer = page_layers.get(name=ent.layer)
+                    ent.material = f'color: {layer.color}; '
+                except:
+                    ent.material = ''
+            if ent.line:
+                list = ent.line.split(',')
+                ent.line = {}
+                for i in range(int(len(list)/2)):
+                    ent.line[list[i*2]] = list[i*2+1] + ent.material
+                ent.material = ''
+            if ent.animator:
+                ent.animator = ent.animator.split(',')
+                ent.animator = {ent.animator[0]: ent.animator[1]}
+            if ent.animator == {'checkpoint': 'checkpoint'}:
+                ent.check = 'checkpoint'
+                ent.animator = {}
             close = []
-            for c in range(entity.closing):
+            for c in range(ent.closing):
                 if c == 0:
-                    close.append(entity.tag)
+                    close.append(ent.tag)
                 else:
                     close.append('a-entity')
-            entity.closing = close
+            ent.closing = close
         return page_ent
 
 class DxfPageLayer(Orderable):
