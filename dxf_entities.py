@@ -398,34 +398,46 @@ def make_poly(page, d):
     d['ide'] = 'poly'
     d['tag'] = 'a-entity'
     d['num1'] = d['num']
-    oput = ''
     identity = open_entity(page, d)
     if d['39']:
-        oput += '> \n'
+        page.ent_dict[identity].update(layer=d['layer'], closing=0, tag=d['tag'])
         d['42'] = 0
         d['43'] = d['39']
+        stop = d['90']-2
         for i in range(d['90']-1):
             d['num'] = str(d['num1']) + '-' + str(i)
             dx = d['vx'][i]-d['vx'][i+1]
             dy = d['vy'][i]-d['vy'][i+1]
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["ide"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}" \n'
-            oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
-            oput += make_w_plane(page, d)
-            oput +='</a-entity>'
+            identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+            position = f'{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}'
+            rotation = f'0 {round(d["50"], 4)} 0'
+            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
+                'tag': d['tag'], 'position': position, 'rotation': rotation}
+            if d['70']:
+                d['closing'] = 1
+            else:
+                if i == stop:
+                    d['closing'] = close_entity(page, d) + 1
+                    print(i, stop, d['closing'])
+                else:
+                    d['closing'] = 1
+                    print(i, stop, d['closing'])
+            make_w_plane(page, d)
         if d['70']:
             d['num'] = str(d['num1']) + '-' + str(i+1)
             dx = d['vx'][i+1]-d['vx'][0]
             dy = d['vy'][i+1]-d['vy'][0]
             d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
             d['50'] = 180-degrees(atan2(dy, dx))
-            oput += f'<a-entity id="{d["ide"]}-{d["num"]}-wall-ent" \n'
-            oput += f'position="{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}" \n'
-            oput += f'rotation="0 {round(d["50"], 4)} 0"> \n'
-            oput += make_w_plane(page, d)
-            oput +='</a-entity>'
+            identity = f'{page.id}-{d["ide"]}-{d["num"]}'
+            position = f'{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}'
+            rotation = f'0 {round(d["50"], 4)} 0'
+            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
+                'tag': d['tag'], 'position': position, 'rotation': rotation}
+            d['closing'] = close_entity(page, d) + 1
+            make_w_plane(page, d)
         d['num'] = d['num1']
     else:
         line = ''
