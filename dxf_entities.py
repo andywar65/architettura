@@ -39,7 +39,6 @@ def make_box(page, d):
     d['dx'] = d['41']/2
     d['dy'] = -d['42']/2
     d['dz'] = d['43']/2
-    #d['tag'] = 'a-box'
     d['ide'] = 'box'
     identity = open_entity(page, d)
     geometry = f'primitive: {d["ide"]}; '
@@ -181,13 +180,6 @@ def make_w_plane(page, d):
     SKIRTING height from respective attributes. Gets MATERIAL with 3 components,
     first for wall, second for tiling and third for skirting.
     """
-    #prepare values for materials
-    #values = (
-        #('pool', 0, 'plaster', 'MATERIAL'),
-        #('pool', 1, 'tile', 'MATERIAL'),
-        #('pool', 2, 'skirt', 'MATERIAL'),
-    #)
-    #d = prepare_material_values(values, d)
     #prepare height values
     wall_h = fabs(d['43'])
     if 'TILING' in d:
@@ -232,73 +224,6 @@ def make_w_plane(page, d):
     page.ent_dict[identity].update(closing=d['closing']+1)
 
     return
-
-def survey_w_plane(d):
-    #prepare height values
-    wall_h = fabs(d['43'])
-    if 'TILING' in d:
-        tile_h = fabs(float(d['TILING']))
-    else:
-        tile_h = 0
-    if 'SKIRTING' in d:
-        skirt_h = fabs(float(d['SKIRTING']))
-    else:
-        skirt_h = 0
-    if tile_h > wall_h:
-        tile_h = wall_h
-    if skirt_h > wall_h:
-        skirt_h = wall_h
-    if skirt_h > tile_h:
-        tile_h = skirt_h
-    wall_h = wall_h - tile_h
-    tile_h = tile_h - skirt_h
-    oput = ''
-    values = (
-        (wall_h, 'plaster', d['MATERIAL'], d['pool'], 0),
-        (tile_h, 'tile', d['MATERIAL'], d['pool'], 1),
-        (skirt_h, 'skirt', d['MATERIAL'], d['pool'], 2),
-    )
-    for v in values:
-        if v[0]:
-            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-            try:
-                component = v[3][v[4]]
-                name = component[0]
-            except:
-                name = 'Null'
-            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
-            oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-            oput += f'<td>{round(v[0], 4)}</td>'
-            oput += f'<td>-</td><td>-</td><td>-</td>'
-            oput += '<td>-</td><td>-</td></tr> \n'
-    return oput
-
-def survey_line(d):
-    oput = ''
-    if d['39']:
-        d['43'] = d['39']
-        d['41'] = sqrt( pow(d['10'] - d['11'], 2) + pow(d['20'] - d['21'], 2))
-        oput += survey_w_plane(d)
-    return oput
-
-def survey_poly(d):
-    oput = ''
-    if d['39']:
-        d['43'] = d['39']
-        d['num1'] = d['num']
-        for i in range(d['90']-1):
-            d['num'] = str(d['num1']) + '-' + str(i)
-            dx = d['vx'][i]-d['vx'][i+1]
-            dy = d['vy'][i]-d['vy'][i+1]
-            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            oput += survey_w_plane(d)
-        if d['70']:
-            d['num'] = str(d['num1']) + '-' + str(i+1)
-            dx = d['vx'][i+1]-d['vx'][0]
-            dy = d['vy'][i+1]-d['vy'][0]
-            d['41'] = sqrt(pow(dx, 2) + pow(dy, 2))
-            oput += survey_w_plane(d)
-    return oput
 
 def make_triangle(page, d):
     d['10b'] = d['10']
@@ -664,60 +589,6 @@ def make_slab(d):
 
     return oput
 
-def survey_slab(d):
-    #partitions
-    #this part equal to survey_wall except 42-43, output unit_weight
-    unit_weight = 0
-    if d['p-pool']:
-        total_thickness = 0
-        var_thickness = -1
-        for x, component in d['p-pool'].items():
-            thickness = float(component[1]/1000)
-            weight = float(component[2])
-            if thickness == 0:
-                var_thickness = x
-            total_thickness = total_thickness + thickness
-            unit_weight = unit_weight + weight*thickness
-        if total_thickness == d['43']:
-            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
-        elif total_thickness > d['43']:
-            unit_weight = 'Thin'
-        elif total_thickness < d['43'] and var_thickness > -1:
-            component = d['p-pool'][var_thickness]
-            thickness = d['43'] - total_thickness
-            weight = float(component[2])
-            unit_weight = unit_weight + weight*thickness
-            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
-        else:
-            unit_weight = 'Thick'
-    #next part is identical in survey wall
-    oput = ''
-    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-    oput += f'<td>{d["ide"]}</td><td>-</td><td>-</td>'
-    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-    oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
-    oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td>'
-    oput += '<td>-</td><td>-</td></tr> \n'
-
-    values = (
-        (0, 'floor', d['MATERIAL'], d['pool'], 2),
-        (0, 'ceiling', d['MATERIAL'], d['pool'], 0),
-    )
-    for v in values:
-        oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-        try:
-            component = v[3][v[4]]
-            name = component[0]
-        except:
-            name = 'Null'
-        oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
-        oput += f'<td>{round(fabs(d["41"]), 4)}</td><td>-</td>'
-        oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-        oput += '<td>-</td><td>-</td><td>-</td><td>-</td></tr> \n'
-
-    return oput
-
 def make_wall(d):
     """Wall default BIM block.
 
@@ -787,141 +658,6 @@ def make_wall(d):
             oput += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
             oput += entity_material(d)
             oput += '"></a-box>\n'
-
-    return oput
-
-def survey_door(d):
-    oput = ''
-    values = (
-        (0, 'panel', d['MATERIAL'], d['pool'], 0),
-        (0, 'frame', d['MATERIAL'], d['pool'], 2),
-    )
-
-    for v in values:
-        oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-        try:
-            component = v[3][v[4]]
-            name = component[0]
-        except:
-            name = 'Null'
-        oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
-        oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-        oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
-        oput += f'<td>-</td><td>{d["PART"]}</td><td>-</td>'
-        oput += f'<td>{d["DOUBLE"]}</td><td>{d["SLIDING"]}</td></tr> \n'
-    return oput
-
-def survey_window(d):
-    oput = ''
-    if d['SILL'] == '':
-        d['SILL'] = 0
-    else:
-        d['SILL'] = float(d['SILL'])
-    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-    try:
-        component = d['wpool'][2]
-        name = component[0]
-    except:
-        name = 'Null'
-    oput += f'<td>{d["ide"]}-frame</td><td>{d["WMATERIAL"]}</td><td>{name}</td>'
-    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-    oput += f'<td>{round(fabs(d["43"]) - fabs(d["SILL"]), 4)}</td>'
-    oput += f'<td>-</td><td>{d["PART"]}</td><td>-</td>'
-    oput += f'<td>{d["DOUBLE"]}</td><td>-</td></tr> \n'
-    if d['SILL']:
-        d['43'] = d['SILL']
-        d['ide'] = 'window-under'
-        oput += survey_wall(d)
-
-    return oput
-
-def survey_wall(d):
-    #partitions
-    unit_weight = 0
-    if d['p-pool']:
-        total_thickness = 0
-        var_thickness = -1
-        for x, component in d['p-pool'].items():
-            thickness = float(component[1]/1000)
-            weight = float(component[2])
-            if thickness == 0:
-                var_thickness = x
-            total_thickness = total_thickness + thickness
-            unit_weight = unit_weight + weight*thickness
-        if total_thickness == d['42']:
-            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
-        elif total_thickness > d['42']:
-            unit_weight = 'Thin'
-        elif total_thickness < d['42'] and var_thickness > -1:
-            component = d['p-pool'][var_thickness]
-            thickness = d['42'] - total_thickness
-            weight = float(component[2])
-            unit_weight = unit_weight + weight*thickness
-            unit_weight = round(unit_weight*d['41']*d['42']*d['43'], 4)
-        else:
-            unit_weight = 'Thick'
-
-    #materials
-    wall_h = wall2_h = fabs(d['43'])
-    tile_h = fabs(float(d['TILING']))
-    skirt_h = fabs(float(d['SKIRTING']))
-    tile2_h = fabs(float(d['TILING2']))
-    skirt2_h = fabs(float(d['SKIRTING2']))
-    if d['ide'] == 'openwall-above':
-        door_h = d['door_height']
-    else:
-        door_h = 0
-    if tile_h > wall_h:
-        tile_h = wall_h
-    if skirt_h > wall_h:
-        skirt_h = wall_h
-    if skirt_h < door_h:
-        skirt_h = door_h
-    if skirt_h > tile_h:
-        tile_h = skirt_h
-    if tile2_h > wall2_h:
-        tile2_h = wall2_h
-    if skirt2_h > wall2_h:
-        skirt2_h = wall2_h
-    if skirt2_h < door_h:
-        skirt2_h = door_h
-    if skirt2_h > tile2_h:
-        tile2_h = skirt2_h
-    wall_h = wall_h - tile_h
-    tile_h = tile_h - skirt_h
-    skirt_h = skirt_h - door_h
-    wall2_h = wall2_h - tile2_h
-    tile2_h = tile2_h - skirt2_h
-    skirt2_h = skirt2_h - door_h
-    oput = ''
-    oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-    oput += f'<td>{d["ide"]}</td><td>-</td><td>-</td>'
-    oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-    oput += f'<td>{round(fabs(d["43"]), 4)}</td>'
-    oput += f'<td>{round(fabs(d["42"]), 4)}</td>'
-    oput += f'<td>{d["PART"]}</td><td>{unit_weight}</td>'
-    oput += '<td>-</td><td>-</td></tr> \n'
-    values = (
-        (wall_h, 'int-plaster', d['MATERIAL'], d['pool'], 0),
-        (tile_h, 'int-tile', d['MATERIAL'], d['pool'], 1),
-        (skirt_h, 'int-skirt', d['MATERIAL'], d['pool'], 2),
-        (wall2_h, 'ext-plaster', d['MATERIAL2'], d['pool2'], 0),
-        (tile2_h, 'ext-tile', d['MATERIAL2'], d['pool2'], 1),
-        (skirt2_h, 'ext-skirt', d['MATERIAL2'], d['pool2'], 2),
-    )
-    for v in values:
-        if v[0]:
-            oput += f'<tr><td>{d["num"]}</td><td>{d["layer"]}</td>'
-            try:
-                component = v[3][v[4]]
-                name = component[0]
-            except:
-                name = 'Null'
-            oput += f'<td>{d["ide"]}-{v[1]}</td><td>{v[2]}</td><td>{name}</td>'
-            oput += f'<td>{round(fabs(d["41"]), 4)}</td>'
-            oput += f'<td>{round(v[0], 4)}</td>'
-            oput += f'<td>-</td><td>-</td><td>-</td>'
-            oput += '<td>-</td><td>-</td></tr> \n'
 
     return oput
 
@@ -1044,26 +780,6 @@ def make_openwall(d):
     oput += f'position="{xpos} 0 0"> \n'
     oput += make_wall(d2)
     oput += '</a-entity> \n'
-
-    return oput
-
-def survey_openwall(d):
-    oput = ''
-    tot = d['41']
-
-    d2 = d.copy()
-    #survey left wall
-    d2['41'] = d2['door_off_1']
-    d2['ide'] = 'openwall-left'
-    oput += survey_wall(d2)
-    #survey part above door
-    d2['41'] = d2['door_off_2'] - d2['door_off_1']
-    d2['ide'] = 'openwall-above'
-    oput += survey_wall(d2)
-    #survey right wall
-    d2['41'] = tot - d2['door_off_2']
-    d2['ide'] = 'openwall-right'
-    oput += survey_wall(d2)
 
     return oput
 
