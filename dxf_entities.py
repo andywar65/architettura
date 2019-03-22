@@ -893,40 +893,39 @@ def make_light(page, d):
         d['INTENSITY'] = 0.75
         d['DISTANCE'] = 50
         d['DECAY'] = 2
-    if d['COLOR'] == '':
-        d['COLOR'] = d['color']
-    d['prefix'] = d['ide'] = 'light'
+    d['ide'] = 'light'
 
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-entity'
-    oput = ''
-    oput += open_entity(page, d)
 
-    oput += f'light="type: {d["TYPE"]}; color: {d["COLOR"]}; intensity: {d["INTENSITY"]}; '
-    if d['TYPE'] != 'ambient':
-        if page.shadows:
-            oput += 'castShadow: true; '
-    if d['TYPE'] == 'point' or d['TYPE'] == 'spot':
-        oput += f'decay: {d["DECAY"]}; distance: {d["DISTANCE"]}; '
-    if d['TYPE'] == 'spot':
-        oput += f'angle: {d["ANGLE"]}; penumbra: {d["PENUMBRA"]}; '
-    if d['TYPE'] == 'directional':
-        oput += f'shadowCameraBottom: {-5*fabs(d["42"])}; \n'
-        oput += f'shadowCameraLeft: {-5*fabs(d["41"])}; \n'
-        oput += f'shadowCameraTop: {5*fabs(d["42"])}; \n'
-        oput += f'shadowCameraRight: {5*fabs(d["41"])}; \n'
+    identity = open_entity(page, d)
+
+    light = f'type: {d["TYPE"]}; intensity: {d["INTENSITY"]}; '
+    if d['TYPE'] == 'point':
+        light += f'decay: {d["DECAY"]}; distance: {d["DISTANCE"]}; '
+    elif d['TYPE'] == 'spot':
+        light += f'decay: {d["DECAY"]}; distance: {d["DISTANCE"]}; '
+        light += f'angle: {d["ANGLE"]}; penumbra: {d["PENUMBRA"]}; '
+    elif d['TYPE'] == 'directional':
+        light += f'shadowCameraBottom: {-5*fabs(d["42"])}; '
+        light += f'shadowCameraLeft: {-5*fabs(d["41"])}; '
+        light += f'shadowCameraTop: {5*fabs(d["42"])}; '
+        light += f'shadowCameraRight: {5*fabs(d["41"])}; '
+
+    material = d.get('COLOR', '')
+
     if d['TYPE'] == 'directional' or d['TYPE'] == 'spot':
-        oput += make_light_target(d)
+        light += f'target: #{identity}-target; '
+        page.ent_dict[identity].update(light=light, layer=d['layer'],
+            closing=0, tag='a-entity', material=material)
+        page.ent_dict[identity + '-target'] = {'position': '0 -1 0',
+            'tag': 'a-entity', 'closing': close_entity(page, d)+1,
+            'layer': d['layer']}
     else:
-        oput += '">\n'
+        page.ent_dict[identity].update(light=light, layer=d['layer'],
+            closing=close_entity(page, d), tag='a-entity', material=material)
 
-    oput += close_entity(page, d)
-    return oput
-
-def make_light_target(d):
-    oput = f'target: #light-{d["num"]}-target;"> \n'
-    oput += f'<a-entity id="light-{d["num"]}-target" position="0 -1 0"> </a-entity> \n'
-    return oput
+    return
 
 def make_text(page, d):
     d['prefix'] = d['ide'] = 'text'

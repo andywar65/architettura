@@ -27,7 +27,7 @@
       {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
       {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}
       {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
-      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.link %}link="{{ ent.link }}" {% endif %}>
+      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.link %}link="{{ ent.link }}" {% endif %}{% if ent.light %}light="{{ ent.light }}" {% endif %}>
       {% for c in ent.closing %}</{{c}}>{% endfor %}
 		{% endfor %}{% endif %}{% endwith %}
 

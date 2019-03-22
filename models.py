@@ -218,36 +218,21 @@ class DxfPage(Page):
         for identity, data in self.ent_dict.items():
             eb = DxfPageEntity(page_id=self.id, identity=identity,
                 layer=data['layer'])
-            if 'tag' in data:
-                eb.tag = data['tag']
-            if 'position' in data:
-                eb.position = data['position']
-            if 'rotation' in data:
-                eb.rotation = data['rotation']
-            if 'geometry' in data:
-                eb.geometry = data['geometry']
-            if 'line' in data:
-                eb.line = data['line']
-            if 'material' in data:
-                eb.material = data['material']
-            if 'repeat' in data:
-                eb.repeat = data['repeat']
-            if 'component' in data:
-                eb.component = data['component']
-            if 'partition' in data:
-                eb.partition = data['partition']
-            if 'text' in data:
-                eb.text = data['text']
-            if 'link' in data:
-                eb.link = data['link']
-            if 'animation' in data:
-                eb.animation = data['animation']
-            if 'animator' in data:
-                eb.animator = data['animator']
-            if 'camera' in data:
-                eb.camera = data['camera']
-            if 'closing' in data:
-                eb.closing = data['closing']
+            eb.tag = data.get('tag', '')
+            eb.position = data.get('position', '')
+            eb.rotation = data.get('rotation', '')
+            eb.geometry = data.get('geometry', '')
+            eb.line = data.get('line', '')
+            eb.material = data.get('material', '')
+            eb.repeat = data.get('repeat', '')
+            eb.component = data.get('component', '')
+            eb.partition = data.get('partition', '')
+            eb.text = data.get('text', '')
+            eb.link = data.get('link', '')
+            eb.light = data.get('light', '')
+            eb.animation = data.get('animation', '')
+            eb.animator = data.get('animator', '')
+            eb.closing = data.get('closing', '')
             eb.save()
         #prevent dxf file from overriding again database
         self.block = True
@@ -285,6 +270,9 @@ class DxfPage(Page):
                     ent.material = f'color: {layer.color}; '
                 except:
                     ent.material = ''
+            if ent.light and ent.material:
+                ent.light = ent.light + ent.material
+                ent.material = ''
             if ent.line:
                 list = ent.line.split(',')
                 ent.line = {}
