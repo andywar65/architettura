@@ -345,10 +345,8 @@ def make_poly(page, d):
             else:
                 if i == stop:
                     d['closing'] = close_entity(page, d) + 1
-                    print(i, stop, d['closing'])
                 else:
                     d['closing'] = 1
-                    print(i, stop, d['closing'])
             make_w_plane(page, d)
         if d['70']:
             d['num'] = str(d['num1']) + '-' + str(i+1)

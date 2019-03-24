@@ -225,14 +225,14 @@ class DxfPage(Page):
             eb.line = data.get('line', '')
             eb.material = data.get('material', '')
             eb.repeat = data.get('repeat', '')
-            eb.component = data.get('component', '')
+            eb.component = data.get('component', 0)
             eb.partition = data.get('partition', '')
             eb.text = data.get('text', '')
             eb.link = data.get('link', '')
             eb.light = data.get('light', '')
             eb.animation = data.get('animation', '')
             eb.animator = data.get('animator', '')
-            eb.closing = data.get('closing', '')
+            eb.closing = data.get('closing', 1)
             eb.save()
         #prevent dxf file from overriding again database
         self.block = True
@@ -262,23 +262,33 @@ class DxfPage(Page):
         page_ent = DxfPageEntity.objects.filter(page_id=self.id
             ).order_by('id').exclude(tag='a-camera')
         for ent in page_ent:
-            if ent.material:
-                ent.material = f'color: {ent.material}; '
-            else:
-                try:
-                    layer = page_layers.get(name=ent.layer)
-                    ent.material = f'color: {layer.color}; '
-                except:
-                    ent.material = ''
-            if ent.light and ent.material:
+            try:
+                layer = page_layers.get(name=ent.layer)
+                layer_color = f'color: {layer.color}; '
+            except:
+                layer_color = 'color: #ffffff; '
+            if ent.light:
+                if ent.material:
+                    ent.material = f'color: {ent.material}; '
+                else:
+                    ent.material = layer_color
                 ent.light = ent.light + ent.material
                 ent.material = ''
-            if ent.line:
+            elif ent.line:
+                if ent.material:
+                    ent.material = f'color: {ent.material}; '
+                else:
+                    ent.material = layer_color
                 list = ent.line.split(',')
                 ent.line = {}
                 for i in range(int(len(list)/2)):
                     ent.line[list[i*2]] = list[i*2+1] + ent.material
                 ent.material = ''
+            else:
+                if ent.material == 'Null':
+                    ent.material = ''
+                else:
+                    ent.material = layer_color
             if ent.animator:
                 ent.animator = ent.animator.split(',')
                 ent.animator = {ent.animator[0]: ent.animator[1]}
