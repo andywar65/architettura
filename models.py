@@ -287,6 +287,8 @@ class DxfPage(Page):
             else:
                 if ent.material == 'Null':
                     ent.material = ''
+                elif ent.material and ent.material[0] == '#':
+                    ent.material = f'color: {ent.material}; '
                 else:
                     ent.material = layer_color
             if ent.animator:
