@@ -281,7 +281,7 @@ def make_line(page, d):
         line += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
         line += f'end:{round(d["11"], 4)} '
         line += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
-        material = d.get('color', '')
+        material = d.get('COLOR', '')
         page.ent_dict[identity].update(line=line, layer=d['layer'],
             closing=close_entity(page, d), material=material, component=0,
             tag=d['tag'])
@@ -374,7 +374,7 @@ def make_poly(page, d):
             line += f',line__{i+2},start:{round(d["vx"][i+1], 4)} 0 '
             line += f'{round(d["vy"][i+1], 4)}; '
             line += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
-        material = d.get('color', '')
+        material = d.get('COLOR', '')
 
         page.ent_dict[identity].update(line=line, layer=d['layer'],
             closing=close_entity(page, d), material=material, component=0,

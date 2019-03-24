@@ -334,7 +334,7 @@ def store_entity_values(d, key, value):
     elif key == '50':#Z rotation
         d[key] = float(value)
     elif key == '62':#color
-        d['color'] = cad2hex(value)
+        d['COLOR'] = cad2hex(value)
     elif key == '70' and value == '1':#closed
         d['70'] = True
     elif key == '90':#vertex num
