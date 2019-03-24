@@ -284,6 +284,11 @@ class DxfPage(Page):
                 for i in range(int(len(list)/2)):
                     ent.line[list[i*2]] = list[i*2+1] + ent.material
                 ent.material = ''
+            elif ent.link:
+                ent.title = ent.text
+                ent.text = ''
+                ent.image = ent.material
+                ent.material = ''
             else:
                 if ent.material == 'Null':
                     ent.material = ''

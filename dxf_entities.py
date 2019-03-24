@@ -953,18 +953,19 @@ def make_text(page, d):
     return oput
 
 def make_link(page, d):
-    d['prefix'] = d['ide'] = 'link'
+    d['ide'] = 'link'
 
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-link'
 
-    oput = ''
-    oput += open_entity(page, d)
-    oput += f'scale="{d["41"]} {d["43"]} {d["42"]}"\n'
-    oput += add_link_part(page, d)
-    oput += '>\n'
-    oput += close_entity(page, d)
-    return oput
+    identity = open_entity(page, d)
+    geometry = f'width: {round(d["41"], 4)}; '
+    geometry += f'height: {round(d["43"], 4)}; '
+    link = add_link_part(page, d)
+    page.ent_dict[identity].update(link=link[0], layer=d['layer'],
+        closing=close_entity(page, d), material=link[2], geometry=geometry,
+        tag=d['tag'], text=link[1])
+    return
 
 def make_object(d):
     """Object block
@@ -1112,7 +1113,7 @@ def make_leaves(branch, lb, d):
     return oput
 
 def open_entity(page, d):
-    oput = ''
+
     if d['animation']:
         if d['RIG']:
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
@@ -1332,7 +1333,7 @@ def add_stalker(page, d):
     return oput
 
 def add_link_part(page, d):
-    oput = ''
+    link = title = image = ''
     target = False
     try:
         if d['LINK'] == 'parent':
@@ -1346,22 +1347,22 @@ def add_link_part(page, d):
     except:
         d['LINK'] = ''
     if target:
-        oput += f'href="{target.url}" \n'
-        oput += f'title="{target.title}" \n'
+        link = f'{target.url}'
+        title = f'{target.title}'
         try:
             eq_image = target.specific.equirectangular_image
             if eq_image:
-                oput += f'image="{eq_image.file.url}"'
+                image = f'#{eq_image.file.url}'
         except:
-            oput += 'image="#default-sky"'
+            image = '#default-sky'
     else:
-        oput += f'href="{d["LINK"]}" \n'
+        link = f'{d["LINK"]}'
         if d['TITLE']:
-            oput += f'title="{d["TITLE"]}" \n'
+            title = f'{d["TITLE"]}'
         else:
-            oput += 'title="Sorry, no title" \n'
-        oput += 'image="#default-sky"'
-    return oput
+            title += 'Sorry, no title'
+        image = '#default-sky'
+    return link, title, image
 
 def unit(nounit):
     #returns positive/negative scaling

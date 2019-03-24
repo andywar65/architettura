@@ -627,8 +627,8 @@ def make_entities_dict(page, collection):
             dxf_entities.make_poly(page, d)
         elif d['2'] == 'a-light':
             dxf_entities.make_light(page, d)
-        #elif d['2'] == 'a-link':
-            #entities_dict[x] = entities.make_link(page, d)
+        elif d['2'] == 'a-link':
+            dxf_entities.make_link(page, d)
         #elif d['2'] == 'a-text':
             #entities_dict[x] = entities.make_text(page, d)
         #elif d['2'] == 'a-wall':
