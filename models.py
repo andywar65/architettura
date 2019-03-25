@@ -284,6 +284,13 @@ class DxfPage(Page):
                 for i in range(int(len(list)/2)):
                     ent.line[list[i*2]] = list[i*2+1] + ent.material
                 ent.material = ''
+            elif ent.text:
+                if ent.material and ent.material[0] == '#':
+                    ent.material = f'color: {ent.material}; '
+                else:
+                    ent.material = layer_color
+                ent.text = ent.text + ent.material
+                ent.material = ''
             else:
                 if ent.material == 'Null':
                     ent.material = ''

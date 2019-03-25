@@ -925,12 +925,7 @@ def make_light(page, d):
     return
 
 def make_text(page, d):
-    d['prefix'] = d['ide'] = 'text'
-    values = (
-        ('pool', 0, d['prefix'], 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-
+    d['ide'] = 'text'
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-entity'
 
@@ -944,13 +939,13 @@ def make_text(page, d):
             wrapcount = 10
         else:
             wrapcount = length/3
-    oput = ''
-    oput += open_entity(page, d)
-    oput += f'text="width: {d["41"]}; align: {d["ALIGN"]}; color: {d["text_color"]}; '
-    oput += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
-    oput += '">\n'
-    oput += close_entity(page, d)
-    return oput
+    identity = open_entity(page, d)
+    text = f'width: {d["41"]}; align: {d["ALIGN"]}; '
+    text += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
+    material = d.get('MATERIAL', '')
+    page.ent_dict[identity].update(layer=d['layer'], material=material, 
+        closing=close_entity(page, d), tag=d['tag'], text=text)
+    return
 
 def make_link(page, d):
     d['ide'] = 'link'
