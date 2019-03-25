@@ -310,6 +310,8 @@ class DxfPage(Page):
         page_links = DxfPageEntity.objects.filter(page_id=self.id, tag='a-link')
         for ent in page_links:
             if ent.link:
+                if ent.link[0] == '#':
+                    ent.link = ''
                 list = ent.geometry.split(',')
                 ent.geometry = {}
                 for i in range(int(len(list)/2)):

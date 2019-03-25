@@ -1335,35 +1335,17 @@ def add_stalker(page, d):
     return oput
 
 def add_link_part(page, d):
-    link = title = image = ''
-    target = False
-    try:
-        if d['LINK'] == 'parent':
-            target = page.get_parent()
-        elif d['LINK'] == 'child':
-            target = page.get_first_child()
-        elif d['LINK'] == 'previous' or d['LINK'] == 'prev':
-            target = page.get_prev_sibling()
-        elif d['LINK'] == 'next':
-            target = page.get_next_sibling()
-    except:
-        d['LINK'] = ''
-    if target:
-        link = f'{target.url}'
-        title = f'{target.title}'
-        try:
-            eq_image = target.specific.equirectangular_image
-            if eq_image:
-                image = f'{eq_image.file.url}'
-        except:
-            image = '#default-sky'
+    #since we are still in dxf page, tree links are just placeholders
+    if (d['LINK'] == 'parent' or d['LINK'] == 'child' or
+        d['LINK'] == 'previous' or d['LINK'] == 'prev' or d['LINK'] == 'next'):
+        link = f'#{d["LINK"]}'
     else:
         link = f'{d["LINK"]}'
-        if d['TITLE']:
-            title = f'{d["TITLE"]}'
-        else:
-            title += 'Sorry, no title'
-        image = '#default-sky'
+    if d['TITLE']:
+        title = f'{d["TITLE"]}'
+    else:
+        title = 'Title'
+    image = '#default-sky'
     return link, title, image
 
 def unit(nounit):
