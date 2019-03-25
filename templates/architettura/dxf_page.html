@@ -28,9 +28,16 @@
       {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
       {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}
       {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
-      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.light %}light="{{ ent.light }}" {% endif %}
-      {% if ent.title %}title="{{ ent.title }}" {% endif %}{% if ent.link %}href="{{ ent.link }}" {% endif %}{% if ent.image %}image="{{ ent.image }}" {% endif %}>
+      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.light %}light="{{ ent.light }}" {% endif %}>
       {% for c in ent.closing %}</{{c}}>{% endfor %}
+		{% endfor %}{% endif %}{% endwith %}
+
+    {% with entities=page.get_links %}{% if entities %}{% for ent in entities %}
+			<a-link id="{{ ent.identity }}"
+      {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
+      {% if ent.geometry %}{% for n, l in ent.geometry.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}
+      {% if ent.material %}image="{{ ent.material }}" {% endif %}{% if ent.text %}title="{{ ent.text }}" {% endif %}{% if ent.link %}href="{{ ent.link }}" {% endif %}>
+      </a-link>
 		{% endfor %}{% endif %}{% endwith %}
 
     <a-sky src="#sky"></a-sky>

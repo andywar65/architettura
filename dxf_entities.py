@@ -957,14 +957,16 @@ def make_link(page, d):
 
     d['dx'] = d['dy'] = d['dz'] = 0
     d['tag'] = 'a-link'
+    #make sure entity is not rigged
+    d['animation'] = False
 
     identity = open_entity(page, d)
-    geometry = f'width: {round(d["41"], 4)}; '
-    geometry += f'height: {round(d["43"], 4)}; '
+    geometry = f'width,{round(d["41"], 4)},'
+    geometry += f'height,{round(d["43"], 4)}'
     link = add_link_part(page, d)
     page.ent_dict[identity].update(link=link[0], layer=d['layer'],
-        closing=close_entity(page, d), material=link[2], geometry=geometry,
-        tag=d['tag'], text=link[1])
+        closing=1, material=link[2], geometry=geometry, tag=d['tag'],
+        text=link[1])
     return
 
 def make_object(d):
@@ -1352,7 +1354,7 @@ def add_link_part(page, d):
         try:
             eq_image = target.specific.equirectangular_image
             if eq_image:
-                image = f'#{eq_image.file.url}'
+                image = f'{eq_image.file.url}'
         except:
             image = '#default-sky'
     else:

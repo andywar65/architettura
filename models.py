@@ -260,7 +260,7 @@ class DxfPage(Page):
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
         page_ent = DxfPageEntity.objects.filter(page_id=self.id
-            ).order_by('id').exclude(tag='a-camera')
+            ).order_by('id').exclude(tag='a-camera').exclude(tag='a-link')
         for ent in page_ent:
             try:
                 layer = page_layers.get(name=ent.layer)
@@ -284,11 +284,6 @@ class DxfPage(Page):
                 for i in range(int(len(list)/2)):
                     ent.line[list[i*2]] = list[i*2+1] + ent.material
                 ent.material = ''
-            elif ent.link:
-                ent.title = ent.text
-                ent.text = ''
-                ent.image = ent.material
-                ent.material = ''
             else:
                 if ent.material == 'Null':
                     ent.material = ''
@@ -310,6 +305,16 @@ class DxfPage(Page):
                     close.append('a-entity')
             ent.closing = close
         return page_ent
+
+    def get_links(self):
+        page_links = DxfPageEntity.objects.filter(page_id=self.id, tag='a-link')
+        for ent in page_links:
+            if ent.link:
+                list = ent.geometry.split(',')
+                ent.geometry = {}
+                for i in range(int(len(list)/2)):
+                    ent.geometry[list[i*2]] = list[i*2+1]
+        return page_links
 
 class DxfPageLayer(Orderable):
     page = ParentalKey(DxfPage, related_name='layers')
