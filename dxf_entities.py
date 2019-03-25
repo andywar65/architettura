@@ -57,7 +57,7 @@ def make_block(page, d):
     d['dx'] = d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = d['NAME']
+    d['ide'] = 'block'
     identity = open_entity(page, d)
     page.ent_dict[identity].update(layer=d['layer'],
         closing=0, material='Null', tag='a-entity')
@@ -81,28 +81,27 @@ def make_bim_block(page, d):
     else:
         d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = 'block'
-    oput = ''
-    oput += open_entity(page, d)
-    oput += '> \n'
+    d['ide'] = 'BIM'
+    identity = open_entity(page, d)
+    page.ent_dict[identity].update(layer=d['layer'],
+        closing=0, material='Null', tag='a-entity')
+    d['closing'] = close_entity(page, d)
 
     if d['2'] == 'a-wall':
         d['ide'] = 'wall'
-        oput += make_wall(d)
+        make_wall(page, d)
     elif d['2'] == 'a-slab':
-        oput += make_slab(d)
+        make_slab(page, d)
     elif d['2'] == 'a-door':
-        oput += make_door(d)
+        make_door(page, d)
     elif d['2'] == 'a-window':
-        oput += make_window(d)
+        make_window(page, d)
     elif d['2'] == 'a-stair':
-        oput += make_stair(page, d)
+        make_stair(page, d)
     elif d['2'] == 'a-openwall':
-        oput += make_openwall(d)
+        make_openwall(page, d)
 
-    oput += close_entity(page, d)
-
-    return oput
+    return
 
 def make_circular(page, d):
 
