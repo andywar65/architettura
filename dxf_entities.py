@@ -57,23 +57,20 @@ def make_block(page, d):
     d['dx'] = d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = 'block'
-    oput = ''
-    oput += open_entity(page, d)
-    oput += '> \n'
+    d['ide'] = d['NAME']
+    identity = open_entity(page, d)
+    page.ent_dict[identity].update(layer=d['layer'],
+        closing=0, material='Null', tag='a-entity')
+    d['closing'] = close_entity(page, d)
 
     if d['NAME'] == 't01':
-        oput += make_table_01(d)
-    elif d['NAME'] == 'obj-mtl':
-        oput += make_object(d)
-    elif d['NAME'] == 'gltf':
-        oput += make_object(d)
+        make_table_01(page, d)
+    elif d['NAME'] == 'obj-mtl' or d['NAME'] == 'gltf':
+        make_object(page, d)
     elif d['NAME'] == 'tree':
-        oput += make_tree(d)
+        make_tree(page, d)
 
-    oput += close_entity(page, d)
-
-    return oput
+    return
 
 def make_bim_block(page, d):
 
@@ -943,7 +940,7 @@ def make_text(page, d):
     text = f'width: {d["41"]}; align: {d["ALIGN"]}; '
     text += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
     material = d.get('MATERIAL', '')
-    page.ent_dict[identity].update(layer=d['layer'], material=material, 
+    page.ent_dict[identity].update(layer=d['layer'], material=material,
         closing=close_entity(page, d), tag=d['tag'], text=text)
     return
 

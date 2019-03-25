@@ -631,21 +631,12 @@ def make_entities_dict(page, collection):
             dxf_entities.make_link(page, d)
         elif d['2'] == 'a-text':
             dxf_entities.make_text(page, d)
-        #elif d['2'] == 'a-wall':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-door':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-window':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-slab':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-openwall':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-stair':
-            #entities_dict[x] = entities.make_bim_block(page, d)
-        #elif d['2'] == 'a-block':
-            #d['NAME'] = d.get('NAME', 't01')
-            #entities_dict[x] = entities.make_block(page, d)
+        elif (d['2'] == 'a-wall' or d['2'] == 'a-openwall' or
+            d['2'] == 'a-door' or d['2'] == 'a-window' or d['2'] == 'a-stair'):
+            dxf_entities.make_bim_block(page, d)
+        elif d['2'] == 'a-block':
+            d['NAME'] = d.get('NAME', 't01')
+            dxf_entities.make_block(page, d)
 
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
