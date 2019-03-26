@@ -230,6 +230,8 @@ class DxfPage(Page):
             eb.text = data.get('text', '')
             eb.link = data.get('link', '')
             eb.light = data.get('light', '')
+            eb.obj_mtl = data.get('obj_mtl', '')
+            eb.gltf = data.get('gltf', '')
             eb.animation = data.get('animation', '')
             eb.animator = data.get('animator', '')
             eb.closing = data.get('closing', 1)
@@ -291,6 +293,18 @@ class DxfPage(Page):
                     ent.material = layer_color
                 ent.text = ent.text + ent.material
                 ent.material = ''
+            elif ent.obj_mtl:
+                ent.obj_mtl = f'obj: #{ent.obj_mtl}.obj; mtl: #{ent.obj_mtl}.mtl;'
+                ent.scale = ent.geometry
+                ent.geometry = ''
+                ent.material = ''
+            elif ent.gltf:
+                ent.gltf = f'#{ent.gltf}.gltf'
+                ent.scale = ent.geometry
+                ent.geometry = ''
+                ent.material = ''
+                ent.check = ent.animator
+                ent.animator = ''
             else:
                 if ent.material == 'Null':
                     ent.material = ''

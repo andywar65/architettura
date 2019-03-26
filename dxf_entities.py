@@ -957,7 +957,7 @@ def make_link(page, d):
         text=link[1])
     return
 
-def make_object(d):
+def make_object(page, d):
     """Object block
 
     Block loads a Object Model (Wavefront) along with it's *.mtl file. PARAM1
@@ -965,20 +965,22 @@ def make_object(d):
     must share same filename and must be loaded in the media/document folder.
     If PARAM2 is set to 'scale', object will be scaled.
     """
-    oput = ''
-
-    oput += f'<a-entity id="model-{d["num"]}" \n'
-    oput += f'position="0 {-d["43"]/2} 0" \n'
-    if d['NAME'] == 'obj-mtl':
-        oput += f'obj-model="obj: #{d["PARAM1"]}.obj; \n'
-        oput += f' mtl: #{d["PARAM1"]}.mtl" \n'
-    elif d['NAME'] == 'gltf':
-        oput += f'gltf-model="#{d["PARAM1"]}.gltf" animation-mixer \n'
+    identity = f'{page.id}-model-{d["num"]}'
+    position = f'0 {round(-d["43"]/2, 4)} 0'
+    geometry = obj_mtl = gltf = animator = ''
     if d['PARAM2'] == 'scale':
-        oput += f'scale="{fabs(d["41"])} {fabs(d["43"])} {fabs(d["42"])}" \n'
-    oput += '></a-entity><!--close object--> \n'
+        geometry = f'{round(fabs(d["41"]), 4)} {round(fabs(d["43"]), 4)} '
+        geometry += f'{round(fabs(d["42"]), 4)}'
+    if d['NAME'] == 'obj-mtl':
+        obj_mtl = f'{d["PARAM1"]}'
+    elif d['NAME'] == 'gltf':
+        gltf = f'{d["PARAM1"]}'
+        animator = 'animation-mixer'
+    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
+        'geometry': geometry, 'material': '', 'obj_mtl': obj_mtl, 'gltf': gltf,
+        'tag': 'a-entity', 'closing': d['closing']+1, 'animator': animator}
 
-    return oput
+    return
 
 def make_tree(d):
     """Tree block
