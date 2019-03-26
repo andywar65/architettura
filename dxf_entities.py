@@ -377,34 +377,29 @@ def make_poly(page, d):
             tag=d['tag'])
     return
 
-def make_table_01(d):
+def make_table_01(page, d):
     """Table 01, default block (t01)
 
     A simple table with four legs. Gets dimensions from block scaling, except for
     leg diameter (5cm). Gets top material from first component and leg material
     from third component.
     """
-    values = (
-        ('pool', 2, 'top', 'MATERIAL'),
-        ('pool', 1, 'leg', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    oput = ''
 
     #table top
-    d['prefix'] = 'top'
-    d['rx'] = fabs(d["41"])
-    d['ry'] = fabs(d["42"])
-    oput += f'<a-box id="table01-{d["num"]}-top" \n'
-    oput += f'position="0 {d["43"]/2-0.025*unit(d["43"])} 0" \n'
-    oput += f'scale="{d["rx"]} 0.05 {d["ry"]}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
+    d['rx'] = round(fabs(d["41"]), 4)
+    d['ry'] = round(fabs(d["42"]), 4)
+    identity = f'{page.id}-table01-{d["num"]}-top'
+    position = f'0 {round(d["43"]/2-0.025*unit(d["43"]), 4)} 0'
+    geometry = f'width: {d["rx"]}; height: 0.05; depth: {d["ry"]};'
+    material = d.get('MATERIAL', '')
+    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
+        'geometry': geometry, 'material': material, 'component': 2,
+        'tag': 'a-box', 'closing': 1}
     #prepare legs
     d['prefix'] = 'leg'
-    scale_x = d["41"]/2-0.05*unit(d["41"])
-    scale_y = d["42"]/2-0.05*unit(d["42"])
-    height = d["43"]-0.025*unit(d["43"])
+    scale_x = round(d["41"]/2-0.05*unit(d["41"]), 4)
+    scale_y = round(d["42"]/2-0.05*unit(d["42"]), 4)
+    height = round(d["43"]-0.025*unit(d["43"]), 4)
     d['rx'] = 1
     d['ry'] = 1
     values = (
@@ -415,14 +410,16 @@ def make_table_01(d):
     )
     #make legs
     for v in values:
-        oput += f'<a-cylinder id="table01-{d["num"]}-leg-{v[0]}" \n'
-        oput += f'position="{v[1]} {(height-d["43"])/2} {v[2]}" \n'
-        oput += 'radius="0.025" \n'
-        oput += f'height="{height}" \n'
-        oput += entity_material(d)
-        oput += '"></a-cylinder>\n'
+        identity = f'{page.id}-table01-{d["num"]}-leg-{v[0]}'
+        position = f'{v[1]} {(height-round(d["43"], 4))/2} {v[2]}'
+        geometry = f'radius: 0.025; height: {height}; '
+        page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
+            'geometry': geometry, 'material': material, 'component': 1,
+            'tag': 'a-cylinder', 'closing': 1}
+    #last one closes all
+    page.ent_dict[identity].update(closing=d['closing']+1)
 
-    return oput
+    return
 
 def make_door(d):
     """Door default BIM block.
@@ -1122,7 +1119,7 @@ def open_entity(page, d):
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(d)
+                animation = add_animation(page, d)
                 page.ent_dict[identity]={'animation': animation,
                     'closing': 0,  'layer': d['layer'], 'tag': 'a-entity',
                     'material': 'Null'}
@@ -1132,13 +1129,13 @@ def open_entity(page, d):
                 page.ent_dict[identity].update(position=position)
             else:
                 identity = make_insertion(page, d)
-                animation = add_animation(d)
+                animation = add_animation(page, d)
                 page.ent_dict[identity].update(animation=animation)
         else:
             if d['PROPERTY'] == 'rotation':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
                 position = make_position(d)
-                animation = add_animation(d)
+                animation = add_animation(page, d)
                 page.ent_dict[identity]={'position': position,
                     'animation': animation, 'closing': 0, 'layer': d['layer'],
                      'tag': 'a-entity', 'material': 'Null'}
@@ -1155,7 +1152,7 @@ def open_entity(page, d):
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(d)
+                animation = add_animation(page, d)
                 page.ent_dict[identity]={'position': position,
                     'rotation': rotation, 'animation': animation,
                     'closing': 0, 'layer': d['layer'], 'tag': 'a-entity',
@@ -1168,7 +1165,7 @@ def open_entity(page, d):
                 identity = make_insertion(page, d)
                 position = make_position(d)
                 rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                animation = add_animation(d)
+                animation = add_animation(page, d)
                 page.ent_dict[identity].update(position=position,
                     rotation=rotation, animation=animation)
     else:
@@ -1190,14 +1187,17 @@ def make_insertion(page, d):
         page.ent_dict[identity]={'animator': 'checkpoint,checkpoint', }
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            page.ent_dict[identity]={'animator': f'look-at,#{d["TARGET"]}', }
+            page.ent_dict[identity]={'animator':
+                f'look-at,#{page.id}-{d["TARGET"]}', }
         else:
             page.ent_dict[identity]={'animator': 'look-at,#camera', }
     elif d['PROPERTY'] == 'stalker':
         page.ent_dict[identity]={'animator': 'look-at,#camera', }
     elif d['PROPERTY'] == 'event':
-        page.ent_dict[identity]={'animator':
-            f'event-proxy,listen: {d["START_EVENTS"]}; emit: {d["ID"]}; target: #{d["TARGET"]}', }
+        animator = f'event-proxy,listen: {d["START_EVENTS"]}; '
+        animator += f'emit: {page.id}-{d["ID"]}; '
+        animator += f'target: #{page.id}-{d["TARGET"]}; '
+        page.ent_dict[identity]={'animator': animator }
 
     return identity
 
@@ -1253,7 +1253,7 @@ def entity_geometry(d):
 
     return oput
 
-def add_animation(d):
+def add_animation(page, d):
     oput = ''
     #oput += 'animation=" \n'
     oput += 'easing: easeInOutQuad; '
@@ -1286,7 +1286,10 @@ def add_animation(d):
     else:
         oput += f'from: {d["FROM"]}; '
         oput += f'to: {d["TO"]}; '
-    oput += f'startEvents: {d["START_EVENTS"]}; '
+    if d['START_EVENTS'] == 'click':
+        oput += f'startEvents: {d["START_EVENTS"]}; '
+    else:
+        oput += f'startEvents: {page.id}-{d["START_EVENTS"]}; '
     oput += f'dir: {d["DIRECTION"]}; '
     oput += f'loop: {d["LOOP"]}; '
     oput += f'dur: {d["DURATION"]}; '
