@@ -81,7 +81,7 @@ def make_bim_block(page, d):
     else:
         d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = 'BIM'
+    d['ide'] = 'BIM-block'
     identity = open_entity(page, d)
     page.ent_dict[identity].update(layer=d['layer'],
         closing=0, material='Null', tag='a-entity')
@@ -579,7 +579,7 @@ def make_slab(d):
 
     return oput
 
-def make_wall(d):
+def make_wall(page, d):
     """Wall default BIM block.
 
     A vertical partition. Gets dimensions from block scaling, TILING and
@@ -588,15 +588,15 @@ def make_wall(d):
     respectively first component for wall, second for tiling and third for
     skirting.
     """
-    values = (
-        ('pool', 0, 'wall', 'MATERIAL'),
-        ('pool', 1, 'tile', 'MATERIAL'),
-        ('pool', 2, 'skirt', 'MATERIAL'),
-        ('pool2', 0, 'wall2', 'MATERIAL2'),
-        ('pool2', 1, 'tile2', 'MATERIAL2'),
-        ('pool2', 2, 'skirt2', 'MATERIAL2'),
-    )
-    d = prepare_material_values(values, d)
+    #values = (
+        #('pool', 0, 'wall', 'MATERIAL'),
+        #('pool', 1, 'tile', 'MATERIAL'),
+        #('pool', 2, 'skirt', 'MATERIAL'),
+        #('pool2', 0, 'wall2', 'MATERIAL2'),
+        #('pool2', 1, 'tile2', 'MATERIAL2'),
+        #('pool2', 2, 'skirt2', 'MATERIAL2'),
+    #)
+    #d = prepare_material_values(values, d)
     wall_h = wall2_h = fabs(d['43'])
     tile_h = fabs(float(d['TILING']))
     skirt_h = fabs(float(d['SKIRTING']))
@@ -631,25 +631,32 @@ def make_wall(d):
 
     oput = ''
     values = (
-        (skirt_h, 'int-skirt', skirt_h/2, d["42"]/2, fabs(d["42"]), 'skirt'),
-        (tile_h, 'int-tile', tile_h/2+skirt_h, d["42"]/2, fabs(d["42"]), 'tile'),
-        (wall_h, 'int-plaster', wall_h/2+tile_h+skirt_h, d["42"]/2, fabs(d["42"]), 'wall'),
-        (skirt2_h, 'ext-skirt', skirt2_h/2, d["42"], 0.02, 'skirt2'),
-        (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, d["42"], 0.02, 'tile2'),
-        (wall2_h, 'ext-plaster', wall2_h/2+tile2_h+skirt2_h, d["42"], 0.02, 'wall2'),
+        (skirt_h, 'int-skirt', skirt_h/2, d["42"]/2, fabs(d["42"]), 'MATERIAL',
+            2),
+        (tile_h, 'int-tile', tile_h/2+skirt_h, d["42"]/2, fabs(d["42"]),
+            'MATERIAL', 1),
+        (wall_h, 'int-plaster', wall_h/2+tile_h+skirt_h, d["42"]/2,
+            fabs(d["42"]), 'MATERIAL', 0),
+        (skirt2_h, 'ext-skirt', skirt2_h/2, d["42"], 0.02, 'MATERIAL2', 2),
+        (tile2_h, 'ext-tile', tile2_h/2+skirt2_h, d["42"], 0.02, 'MATERIAL2', 1),
+        (wall2_h, 'ext-plaster', wall2_h/2+tile2_h+skirt2_h, d["42"], 0.02,
+            'MATERIAL2', 0),
     )
     for v in values:
         if v[0]:
-            d['prefix'] = v[5]
+            #d['prefix'] = v[5]
             d['rx'] = fabs(d["41"])
             d['ry'] = v[0]
-            oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[1]}" \n'
-            oput += f'position="0 {v[2]*unit(d["43"])-d["43"]/2} {-v[3]+0.005*unit(d["42"])+d["42"]/2}" \n'
-            oput += f'scale="{d["rx"]} {v[0]} {v[4]-0.01}" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-
-    return oput
+            identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
+            position = f'0 {v[2]*unit(d["43"])-d["43"]/2} '
+            position += f'{-v[3]+0.005*unit(d["42"])+d["42"]/2}'
+            geometry = f'width: {d["rx"]}; height: {v[0]}; depth: {v[4]-0.01}; '
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 1, 'material': d[v[5]], 'component': v[6],
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    #last one closes all (we should control if entity exists)
+    page.ent_dict[identity].update(closing=d['closing']+1)
+    return
 
 def make_stair(page, d):
     values = (
@@ -974,7 +981,7 @@ def make_object(page, d):
     if d['NAME'] == 'obj-mtl':
         obj_mtl = f'{d["PARAM1"]}'
     elif d['NAME'] == 'gltf':
-        gltf = f'{d["PARAM1"]}'
+        gltf = f'{d["PARAM1"]}#'
         animator = 'animation-mixer'
     page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
         'geometry': geometry, 'material': '', 'obj_mtl': obj_mtl, 'gltf': gltf,
