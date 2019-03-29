@@ -632,7 +632,8 @@ def make_entities_dict(page, collection):
         elif d['2'] == 'a-text':
             dxf_entities.make_text(page, d)
         elif (d['2'] == 'a-wall' or d['2'] == 'a-openwall' or
-            d['2'] == 'a-door' or d['2'] == 'a-window' or d['2'] == 'a-stair'):
+            d['2'] == 'a-door' or d['2'] == 'a-window' or d['2'] == 'a-stair' or
+            d['2'] == 'a-slab'):
             dxf_entities.make_bim_block(page, d)
         elif d['2'] == 'a-block':
             d['NAME'] = d.get('NAME', 't01')

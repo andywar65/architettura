@@ -546,38 +546,33 @@ def make_door(d):
             oput += '</a-entity>\n'
             return oput
 
-def make_slab(d):
+def make_slab(page, d):
     """Slab default BIM block.
 
     An horizontal partition. Gets dimensions from block scaling. PART sets
     partition type (TODO). Gets ceiling material from first component and
     floor material from third component.
     """
-    values = (
-        ('pool', 0, 'ceiling', 'MATERIAL'),
-        ('pool', 2, 'floor', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    oput = ''
-
-    d['prefix'] = 'floor'
-    d['rx'] = fabs(d["41"])
-    d['ry'] = fabs(d["42"])
+    d['rx'] = round(fabs(d["41"]), 4)
+    d['ry'] = round(fabs(d["42"]), 4)
     #floor
-    oput += f'<a-box id="slab-{d["num"]}-floor" \n'
-    oput += f'position="0 {-0.005*unit(d["43"])+d["43"]/2} 0" \n'
-    oput += f'scale="{d["rx"]} 0.01 {d["ry"]}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
-    #ceiling
-    d['prefix'] = 'ceiling'
-    oput += f'<a-box id="slab-{d["num"]}-ceiling" \n'
-    oput += f'position="0 {-0.005*unit(d["43"])} 0" \n'
-    oput += f'scale="{d["rx"]} {fabs(d["43"])-0.01} {d["ry"]}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
+    identity = f'{page.id}-slab-{d["num"]}-floor'
+    position = f'0 {round(-0.005*unit(d["43"])+d["43"]/2, 4)} 0'
+    geometry = f'width: {d["rx"]}; height: 0.01; depth: {d["ry"]};'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
+        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
 
-    return oput
+    #ceiling
+    identity = f'{page.id}-slab-{d["num"]}-ceiling'
+    position = f'0 {round(-0.005*unit(d["43"]), 4)} 0'
+    geometry = f'width: {d["rx"]}; height: {round(fabs(d["43"])-0.01, 4)}; '
+    geometry += f'depth: {d["ry"]};'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': d['closing']+1, 'material': d['MATERIAL'], 'component': 0,
+        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+
+    return
 
 def make_wall(page, d):
     """Wall default BIM block.
@@ -588,15 +583,6 @@ def make_wall(page, d):
     respectively first component for wall, second for tiling and third for
     skirting.
     """
-    #values = (
-        #('pool', 0, 'wall', 'MATERIAL'),
-        #('pool', 1, 'tile', 'MATERIAL'),
-        #('pool', 2, 'skirt', 'MATERIAL'),
-        #('pool2', 0, 'wall2', 'MATERIAL2'),
-        #('pool2', 1, 'tile2', 'MATERIAL2'),
-        #('pool2', 2, 'skirt2', 'MATERIAL2'),
-    #)
-    #d = prepare_material_values(values, d)
     wall_h = wall2_h = fabs(d['43'])
     tile_h = fabs(float(d['TILING']))
     skirt_h = fabs(float(d['SKIRTING']))
@@ -747,38 +733,45 @@ def make_stair(page, d):
             oput += '"></a-triangle> \n'
     return oput
 
-def make_openwall(d):
-    oput = ''
-    tot = d['41']
+def make_openwall(page, d):
 
+    tot = d['41']
     d2 = d.copy()
     #make left wall
     d2['41'] = d2['door_off_1']
     d2['ide'] = 'openwall-left'
-    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
     xpos = round((d2['door_off_1']-tot)/2, 4)
-    oput += f'position="{xpos} 0 0"> \n'
-    oput += make_wall(d2)
-    oput += '</a-entity> \n'
+    position =f'{xpos} 0 0'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    d2['closing'] = 1
+    make_wall(d2)
+
     #make part above door
     d2['41'] = d2['door_off_2'] - d2['door_off_1']
     d2['ide'] = 'openwall-above'
-    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
     xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
     zpos = round(d2['door_height'], 4)
-    oput += f'position="{xpos} {zpos} 0"> \n'
-    oput += make_wall(d2)
-    oput += '</a-entity> \n'
+    position= f'{xpos} {zpos} 0'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    d2['closing'] = 1
+    make_wall(d2)
+
     #make right wall
     d2['41'] = tot - d2['door_off_2']
     d2['ide'] = 'openwall-right'
-    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
     xpos = round((-d2['41']+tot)/2, 4)
-    oput += f'position="{xpos} 0 0"> \n'
-    oput += make_wall(d2)
-    oput += '</a-entity> \n'
+    position=f'{xpos} 0 0'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    d2['closing'] = d['closing']+1
+    make_wall(d2)
 
-    return oput
+    return
 
 def make_window(d):
     if d['SILL'] == '':
