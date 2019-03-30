@@ -421,7 +421,7 @@ def make_table_01(page, d):
 
     return
 
-def make_door(d):
+def make_door(page, d):
     """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
@@ -429,41 +429,38 @@ def make_door(d):
     rendered. SLIDING and DOUBLE are boolean. Gets panel material from first
     component and frame material from third component.
     """
-    values = (
-        ('pool', 0, 'panel', 'MATERIAL'),
-        ('pool', 2, 'frame', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
 
-    oput = ''
     if d["PART"] == 'ghost':
-        return oput
+        return
 
-    d['prefix'] = 'frame'
     d['rx'] = 1
     d['ry'] = 1
     #left frame
-    oput += f'<a-box id="door-{d["num"]}-left-frame" \n'
-    oput += f'position="{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0" \n'
-    oput += 'rotation="0 0 90" \n'
-    oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
+    identity = f'{page.id}-door-{d["num"]}-left-frame'
+    position = f'{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0'
+    rotation = '0 0 90'
+    geometry = f'width: {fabs(d["43"])+0.099}; height: 0.1; depth: {fabs(d["42"])+0.02};'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
+        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],
+        'rotation': rotation,}
     #right frame
-    oput += f'<a-box id="door-{d["num"]}-right-frame" \n'
-    oput += f'position="{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0" \n'
-    oput += 'rotation="0 0 90" \n'
-    oput += f'scale="{fabs(d["43"])+0.099} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
+    identity = f'{page.id}-door-{d["num"]}-right-frame'
+    position = f'{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0'
+    rotation = '0 0 90'
+    geometry = f'width: {fabs(d["43"])+0.099}; height: 0.1; depth: {fabs(d["42"])+0.02};'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
+        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],
+        'rotation': rotation,}
     #top frame
-    oput += f'<a-box id="door-{d["num"]}-top-frame" \n'
-    oput += f'position="0 {d["43"]/2+0.049*unit(d["43"])} 0" \n'
-    oput += f'scale="{fabs(d["41"])-0.002} 0.1 {fabs(d["42"])+0.02}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box>\n'
+    identity = f'{page.id}-door-{d["num"]}-top-frame'
+    position = f'0 {d["43"]/2+0.049*unit(d["43"])} 0'
+    geometry = f'width: {fabs(d["41"])-0.002}; height: 0.1; depth: {fabs(d["42"])+0.02};'
+    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
+        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
 
-    d['prefix'] = 'panel'
     if eval(d["DOUBLE"]):
         d['rx'] = fabs(d["41"])/2-0.002
     else:
@@ -472,79 +469,109 @@ def make_door(d):
     if eval(d["SLIDING"]):
         if eval(d["DOUBLE"]):
             #animated slide 1
-            oput += f'<a-entity id="door-{d["num"]}-slide-1" \n'
-            oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
-            oput += f'animation="property: position; easing: easeInOutQuad; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-slide-1'
+            position = f'{-d["41"]/2} {-d["43"]/2} 0'
+            animation = 'animation="property: position; easing: easeInOutQuad; '
+            animation += f'from:{-d["41"]/2} {-d["43"]/2} 0; '
+            animation += f'to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation}
             #moving part 1
-            oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
-            oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
-            oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
+            identity = f'{page.id}-door-{d["num"]}-moving-part-1'
+            position = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
             #animated slide 2
-            oput += f'<a-entity id="door-{d["num"]}-slide-2" \n'
-            oput += f'position="{d["41"]/2} {-d["43"]/2} 0" \n'
-            oput += f'animation="property: position; easing: easeInOutQuad; from:{d["41"]/2} {-d["43"]/2} 0; to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-slide-2'
+            position = f'{d["41"]/2} {-d["43"]/2} 0'
+            animation = 'animation="property: position; easing: easeInOutQuad; '
+            animation += f'from:{d["41"]/2} {-d["43"]/2} 0; '
+            animation += f'to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation}
             #moving part 2
-            oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
-            oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
-            oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
-            return oput
+            identity = f'{page.id}-door-{d["num"]}-moving-part-2'
+            position = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            return
         else:#single
             #animated slide
-            oput += f'<a-entity id="door-{d["num"]}-slide" \n'
-            oput += f'position="{-d["41"]/2} {-d["43"]/2} 0" \n'
-            oput += f'animation="property: position; easing: easeInOutQuad; from:{-d["41"]/2} {-d["43"]/2} 0; to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-slide'
+            position = f'{-d["41"]/2} {-d["43"]/2} 0'
+            animation = 'animation="property: position; easing: easeInOutQuad; '
+            animation += f'from:{-d["41"]/2} {-d["43"]/2} 0; '
+            animation += f'to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
             #moving part
-            oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
-            oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0" \n'
-            oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
-            return oput
+            identity = f'{page.id}-door-{d["num"]}-moving-part'
+            position = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            geometry = f'width: {fabs(d["41"])-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            return
     else:#hinged
         if eval(d["DOUBLE"]):
             #animated hinge 1
-            oput += f'<a-entity id="door-{d["num"]}-hinge-1" \n'
-            oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-            oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-hinge-1'
+            position = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            animation += f'from:0 0 0; '
+            animation += f'to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
             #moving part 1
-            oput += f'<a-box id="door-{d["num"]}-moving-part-1" \n'
-            oput += f'position="{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
-            oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
+            identity = f'{page.id}-door-{d["num"]}-moving-part-1'
+            position = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
             #animated hinge 2
-            oput += f'<a-entity id="door-{d["num"]}-hinge-2" '
-            oput += f'position="{d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-            oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-hinge-2'
+            position = f'{d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            animation += f'from:0 0 0; '
+            animation += f'to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
             #moving part 2
-            oput += f'<a-box id="door-{d["num"]}-moving-part-2" \n'
-            oput += f'position="{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
-            oput += f'scale="{(fabs(d["41"]))/2-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
-            return oput
+            identity = f'{page.id}-door-{d["num"]}-moving-part-2'
+            position = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            return
         else:#single
             #animated hinge
-            oput += f'<a-entity id="door-{d["num"]}-hinge" \n'
-            oput += f'position="{-d["41"]/2} {-d["43"]/2} {d["42"]/2}" \n'
-            oput += f'animation="property: rotation; easing: easeInOutQuad; from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; loop: 1; dir: alternate;"> \n'
+            identity = f'{page.id}-door-{d["num"]}-hinge'
+            position = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            animation += f'from:0 0 0; '
+            animation += f'to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
+            animation += 'loop: 1; dir: alternate;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': 0, 'material': 'Null', 'tag': 'a-entity', 'animation': animation }
             #moving part
-            oput += f'<a-box id="door-{d["num"]}-moving-part" \n'
-            oput += f'position="{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}" \n'
-            oput += f'scale="{fabs(d["41"])-0.002} {d["43"]-0.001*unit(d["43"])} 0.05" \n'
-            oput += entity_material(d)
-            oput += '"></a-box>\n'
-            oput += '</a-entity>\n'
-            return oput
+            identity = f'{page.id}-door-{d["num"]}-moving-part'
+            position = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            geometry = f'width: {fabs(d["41"])-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
+            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
+                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
+                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            return
 
 def make_slab(page, d):
     """Slab default BIM block.
@@ -740,40 +767,40 @@ def make_openwall(page, d):
     #make left wall
     d2['41'] = d2['door_off_1']
     d2['ide'] = 'openwall-left'
-    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
+    identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((d2['door_off_1']-tot)/2, 4)
     position =f'{xpos} 0 0'
     page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
         'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
     d2['closing'] = 1
-    make_wall(d2)
+    make_wall(page, d2)
 
     #make part above door
     d2['41'] = d2['door_off_2'] - d2['door_off_1']
     d2['ide'] = 'openwall-above'
-    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
+    identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
     zpos = round(d2['door_height'], 4)
     position= f'{xpos} {zpos} 0'
     page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
         'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
     d2['closing'] = 1
-    make_wall(d2)
+    make_wall(page, d2)
 
     #make right wall
     d2['41'] = tot - d2['door_off_2']
     d2['ide'] = 'openwall-right'
-    identity = f'{page.id}-{d["ide"]}-{d["num"]}-ent'
+    identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((-d2['41']+tot)/2, 4)
     position=f'{xpos} 0 0'
     page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
         'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
     d2['closing'] = d['closing']+1
-    make_wall(d2)
+    make_wall(page, d2)
 
     return
 
-def make_window(d):
+def make_window(page, d):
     if d['SILL'] == '':
         d['SILL'] = 0
     else:
