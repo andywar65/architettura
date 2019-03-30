@@ -353,63 +353,10 @@ class DxfPageLayer(Orderable):
 
 class DxfPageEntity(Orderable):
     page = ParentalKey(DxfPage, related_name='entities')
-    identity = models.CharField(max_length=250, )
-    tag = models.CharField(max_length=250, null=True, blank=True,)
-    layer = models.CharField(max_length=250, )
-    position = models.CharField(max_length=250, null=True, blank=True,)
-    rotation = models.CharField(max_length=250, null=True, blank=True,)
-    geometry = models.CharField(max_length=250, null=True, blank=True,)
-    line = models.TextField(max_length=250, null=True, blank=True,)
-    material = models.CharField(max_length=250, null=True, blank=True,)
-    repeat = models.CharField(max_length=250, null=True, blank=True,)
-    component = models.IntegerField(default=0, )
-    partition = models.CharField(max_length=250, null=True, blank=True,)
-    text = models.TextField(max_length=250, null=True, blank=True,)
-    link = models.CharField(max_length=250, null=True, blank=True,)
-    animation = models.CharField(max_length=250, null=True, blank=True,)
-    animator = models.CharField(max_length=250, null=True, blank=True,)
-    light = models.CharField(max_length=250, null=True, blank=True,)
-    obj_mtl = models.CharField(max_length=250, null=True, blank=True,)
-    gltf = models.CharField(max_length=250, null=True, blank=True,)
-    closing = models.IntegerField(default=1, )
+    data = models.TextField(default='id&%identity&%tag&%a-entity&%closing&%1', )
 
     panels = [
-        FieldRowPanel([
-            FieldPanel('identity'),
-            FieldPanel('layer'),
-            FieldPanel('animator'),
-            FieldPanel('closing'),
-        ], classname="label-above"),
-        FieldRowPanel([
-            FieldPanel('geometry'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('position'),
-            FieldPanel('rotation'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('line'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('material'),
-            FieldPanel('component'),
-            FieldPanel('repeat'),
-            FieldPanel('partition'),
-        ], classname="label-above"),
-        FieldRowPanel([
-            FieldPanel('text'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('animation'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('light'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('obj_mtl'),
-            FieldPanel('gltf'),
-            FieldPanel('link'),
-        ], classname="label-above"),
+        FieldPanel('data'),
     ]
 
 class ScenePage(Page):
