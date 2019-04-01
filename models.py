@@ -161,6 +161,9 @@ class DxfPage(Page):
     object_repository = models.URLField(
         help_text="URL of external repository for OBJ/GLTF files",
         blank=True, null=True)
+    entities = models.TextField(blank=True, max_length=1000,
+        default='id=:identity=;tag=:a-entity=;closing=:1',
+        )
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -174,9 +177,10 @@ class DxfPage(Page):
             FieldPanel('object_repository'),
         ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
-        MultiFieldPanel([
-            InlinePanel('entities', label="Entities",),
-        ], heading="Entities", classname="collapsible collapsed" ),
+        FieldPanel('entities'),
+        #MultiFieldPanel([
+            #InlinePanel('entities', label="Entities",),
+        #], heading="Entities", classname="collapsible collapsed" ),
     ]
 
     def add_new_layers(self):
@@ -351,13 +355,13 @@ class DxfPageLayer(Orderable):
         FieldPanel('color'),
     ]
 
-class DxfPageEntity(Orderable):
-    page = ParentalKey(DxfPage, related_name='entities')
-    data = models.TextField(default='id&%identity&%tag&%a-entity&%closing&%1', )
+#class DxfPageEntity(Orderable):
+    #page = ParentalKey(DxfPage, related_name='entities')
+    #data = models.TextField(default='id=:identity=;tag=:a-entity=;closing=:1', )
 
-    panels = [
-        FieldPanel('data'),
-    ]
+    #panels = [
+        #FieldPanel('data'),
+    #]
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
