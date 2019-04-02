@@ -41,14 +41,12 @@ def make_box(page, d):
     d['dz'] = d['43']/2
     d['ide'] = 'box'
     identity = open_entity(page, d)
-    geometry = f'primitive: {d["ide"]}; '
-    geometry += f'width: {round(d["41"], 4)}; '
-    geometry += f'height: {round(d["43"], 4)}; '
-    geometry += f'depth: {round(d["42"], 4)}; '
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-entity')
+    blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
+    blob += f'=;depth=:{round(d["42"], 4)}=;layer=:{d["layer"]}'
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:a-entity'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -1136,11 +1134,11 @@ def open_entity(page, d):
     if d['animation']:
         if d['RIG']:
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-            position = make_position(d)
-            rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-            page.ent_dict[identity]={'position': position, 'rotation': rotation,
-                'closing': 0, 'layer': d['layer'], 'tag': 'a-entity',
-                'material': 'Null'}
+            pos = make_position(d)
+            rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+            blob = f'id:={identity}=;position=:{pos}=;rotation=:{rot}'
+            blob += '=;closing:=0=;tag=:a-entity'
+            page.ent_dict[identity] = blob
             if d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-leash'
                 l = d['TO'].split()
@@ -1148,60 +1146,61 @@ def open_entity(page, d):
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'animation': animation,
-                    'closing': 0,  'layer': d['layer'], 'tag': 'a-entity',
-                    'material': 'Null'}
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;animation=:{anime}'
+                blob += '=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity].update(position=position)
+                pos = f'{l[0]} {l[1]} {l[2]}'
+                page.ent_dict[identity] += f'=;position=:{pos}'
             else:
                 identity = make_insertion(page, d)
-                animation = add_animation(page, d)
-                page.ent_dict[identity].update(animation=animation)
+                anime = add_animation(page, d)
+                page.ent_dict[identity] += f'=;animation=:{anime}'
         else:
             if d['PROPERTY'] == 'rotation':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-                position = make_position(d)
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'position': position,
-                    'animation': animation, 'closing': 0, 'layer': d['layer'],
-                     'tag': 'a-entity', 'material': 'Null'}
+                pos = make_position(d)
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;position=:{pos}=;animation=:{anime}'
+                blob += '=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                page.ent_dict[identity].update(rotation=rotation)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                page.ent_dict[identity] += f'=;rotation=:{rot}'
             elif d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-                position = make_position(d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                pos = make_position(d)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
                 l = d['TO'].split()
                 d['FROM'] = '0 0 0'
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'position': position,
-                    'rotation': rotation, 'animation': animation,
-                    'closing': 0, 'layer': d['layer'], 'tag': 'a-entity',
-                    'material': 'Null'}
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;position=:{pos}=;rotation=:{rot}'
+                blob += f'=;animation=:{anime}=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity].update(position=position)
+                pos = f'{l[0]} {l[1]} {l[2]}'
+                page.ent_dict[identity] += f'=;position=:{pos}'
             else:
                 identity = make_insertion(page, d)
-                position = make_position(d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                animation = add_animation(page, d)
-                page.ent_dict[identity].update(position=position,
-                    rotation=rotation, animation=animation)
+                pos = make_position(d)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                anime = add_animation(page, d)
+                blob = f'=;position=:{pos}=;rotation=:{rot}=;animation=:{anime}'
+                blob += f'=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] += blob
     else:
         identity = make_insertion(page, d)
-        position = make_position(d)
-        rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-        page.ent_dict[identity].update(position=position, rotation=rotation, )
+        pos = make_position(d)
+        rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+        blob = f'=;position=:{pos}=;rotation=:{rot}'
+        page.ent_dict[identity] += blob
 
     return identity
 
@@ -1211,22 +1210,21 @@ def make_insertion(page, d):
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    page.ent_dict[identity]={}
+    page.ent_dict[identity] = f'id=:{identity}'
     if d['PROPERTY'] == 'checkpoint':
-        page.ent_dict[identity]={'animator': 'checkpoint,checkpoint', }
+        page.ent_dict[identity] += f'=;extras=:checkpoint'
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            page.ent_dict[identity]={'animator':
-                f'look-at,#{page.id}-{d["TARGET"]}', }
+            page.ent_dict[identity] += f'=;look-at:=#{page.id}-{d["TARGET"]}'
         else:
-            page.ent_dict[identity]={'animator': 'look-at,#camera', }
+            page.ent_dict[identity] += '=;look-at:=#camera'
     elif d['PROPERTY'] == 'stalker':
-        page.ent_dict[identity]={'animator': 'look-at,#camera', }
+        page.ent_dict[identity] += '=;look-at:=#camera'
     elif d['PROPERTY'] == 'event':
-        animator = f'event-proxy,listen: {d["START_EVENTS"]}; '
-        animator += f'emit: {page.id}-{d["ID"]}; '
-        animator += f'target: #{page.id}-{d["TARGET"]}; '
-        page.ent_dict[identity]={'animator': animator }
+        blob = f'=;event-proxy=:listen: {d["START_EVENTS"]}; '
+        blob += f'emit: {page.id}-{d["ID"]}; '
+        blob += f'target: #{page.id}-{d["TARGET"]}; '
+        page.ent_dict[identity] += blob
 
     return identity
 
