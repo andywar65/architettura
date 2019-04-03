@@ -260,71 +260,64 @@ class DxfPage(Page):
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id
-            ).order_by('id').exclude(tag='a-camera').exclude(tag='a-link')
-        for ent in page_ent:
+        #page_ent = DxfPageEntity.objects.filter(page_id=self.id
+            #).order_by('id').exclude(tag='a-camera').exclude(tag='a-link')
+        for ent in self.ent_list:
+            blob = ent['blob']
             try:
-                layer = page_layers.get(name=ent.layer)
+                layer = page_layers.get(name=blob['layer'])
                 layer_color = f'color: {layer.color}; '
             except:
                 layer_color = 'color: #ffffff; '
-            if ent.light:
-                if ent.material:
-                    ent.material = f'color: {ent.material}; '
+            if 'light' in blob:
+                if 'material' in blob:
+                    blob['material'] = f'color: {blob["material"]}; '
                 else:
-                    ent.material = layer_color
-                ent.light = ent.light + ent.material
-                ent.material = ''
-            elif ent.line:
-                if ent.material:
-                    ent.material = f'color: {ent.material}; '
+                    blob['material'] = layer_color
+                blob['light'] = blob['light'] + blob.pop('material')
+            elif 'line' in blob:
+                if 'material' in blob:
+                    blob['material'] = f'color: {blob["material"]}; '
                 else:
-                    ent.material = layer_color
-                list = ent.line.split(',')
-                ent.line = {}
-                for i in range(int(len(list)/2)):
-                    ent.line[list[i*2]] = list[i*2+1] + ent.material
-                ent.material = ''
-            elif ent.text:
-                if ent.material and ent.material[0] == '#':
-                    ent.material = f'color: {ent.material}; '
-                else:
-                    ent.material = layer_color
-                ent.text = ent.text + ent.material
-                ent.material = ''
-            elif ent.obj_mtl:
-                ent.obj_mtl = f'obj: #{ent.obj_mtl}.obj; mtl: #{ent.obj_mtl}.mtl;'
-                ent.scale = ent.geometry
-                ent.geometry = ''
-                ent.material = ''
-            elif ent.gltf:
-                ent.gltf = f'#{ent.gltf}.gltf'
-                ent.scale = ent.geometry
-                ent.geometry = ''
-                ent.material = ''
-                ent.check = ent.animator
-                ent.animator = ''
+                    blob['material'] = layer_color
+                blob['line'] = blob['line'] + blob.pop('material')
+                #list = ent.line.split(',')
+                #ent.line = {}
+                #for i in range(int(len(list)/2)):
+                    #ent.line[list[i*2]] = list[i*2+1] + ent.material
+                #ent.material = ''
+            elif 'text' in blob:
+                if 'material' in blob and blob['material'] != '':
+                    if blob['material'][0] == '#':
+                        blob['material'] = f'color: {blob["material"]}; '
+                    else:
+                        blob['material'] = layer_color
+                    blob['text'] = blob['text'] + blob.pop('material')
+            elif 'obj_mtl' in blob:
+                obj_mtl = blob.pop(obj_mtl)
+                blob['obj-model'] = f'obj: #{obj_mtl}.obj; mtl: #{obj_mtl}.mtl;'
+            elif 'gltf' in blob:
+                blob['gltf-model'] = f'#{blob.pop("gltf")}.gltf'
+                ent['extras'] = 'animation-mixer'
             else:
-                if ent.material == 'Null':
-                    ent.material = ''
-                elif ent.material and ent.material[0] == '#':
-                    ent.material = f'color: {ent.material}; '
-                else:
-                    ent.material = layer_color
-            if ent.animator:
-                ent.animator = ent.animator.split(',')
-                ent.animator = {ent.animator[0]: ent.animator[1]}
-            if ent.animator == {'checkpoint': 'checkpoint'}:
-                ent.check = 'checkpoint'
-                ent.animator = {}
+                if 'material' in blob:
+                    if blob['material'] == '':
+                        blob['material'] = layer_color
+                    elif blob['material'][0] == '#':
+                        blob['material'] = f'color: {blob["material"]}; '
+                    else:
+                        blob.pop('material')
+            blob.pop('component')
+            blob.pop('layer')
+            blob.pop('repeat')
             close = []
-            for c in range(ent.closing):
+            for c in range(ent['closing']):
                 if c == 0:
-                    close.append(ent.tag)
+                    close.append(ent['tag'])
                 else:
                     close.append('a-entity')
-            ent.closing = close
-        return page_ent
+            ent['closing'] = close
+        return self.ent_list
 
     def get_links(self):
         page_links = DxfPageEntity.objects.filter(page_id=self.id, tag='a-link')
