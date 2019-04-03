@@ -216,50 +216,45 @@ class DxfPage(Page):
         collection = dxf.reference_animations(collection)
         #make entity dictionary
         dxf.make_entities_dict(self, collection)
-        #delete existing Dxf Page Entities
-        DxfPageEntity.objects.filter(page_id=self.id).delete()
+        #delete existing Entities
+        self.entities = ''
         #add entities in db
-        for identity, data in self.ent_dict.items():
-            eb = DxfPageEntity(page_id=self.id, identity=identity,
-                layer=data['layer'])
-            eb.tag = data.get('tag', '')
-            eb.position = data.get('position', '')
-            eb.rotation = data.get('rotation', '')
-            eb.geometry = data.get('geometry', '')
-            eb.line = data.get('line', '')
-            eb.material = data.get('material', '')
-            eb.repeat = data.get('repeat', '')
-            eb.component = data.get('component', 0)
-            eb.partition = data.get('partition', '')
-            eb.text = data.get('text', '')
-            eb.link = data.get('link', '')
-            eb.light = data.get('light', '')
-            eb.obj_mtl = data.get('obj_mtl', '')
-            eb.gltf = data.get('gltf', '')
-            eb.animation = data.get('animation', '')
-            eb.animator = data.get('animator', '')
-            eb.closing = data.get('closing', 1)
-            eb.save()
+        for identity, blob in self.ent_dict.items():
+            self.entities += blob + '\n'
         #prevent dxf file from overriding again database
         self.block = True
         self.save()
         return
 
     def get_object_assets(self):
-        page_ent_obj = DxfPageEntity.objects.filter(page_id=self.id,
-            obj_mtl__isnull=False)
-        page_ent_gltf = DxfPageEntity.objects.filter(page_id=self.id,
-            gltf__isnull=False)
+        self.ent_list = []
+        #prepare the list of entities for general use
+        lines = self.entities.splitlines()
+        for line in lines:
+            blob = {}
+            ent = {}
+            pairs = line.split('=;')
+            for pair in pairs:
+                couple = pair.split('=:')
+                blob[couple[0]] = couple[1]
+            ent['id'] = blob.pop('id', 'ID')
+            ent['tag'] = blob.pop('tag', 'a-entity')
+            ent['closing'] = int(blob.pop('closing', 1))
+            ent['blob'] = blob
+            self.ent_list.append(ent)
+        #prepare object dictionary for template
         if self.object_repository:
             path = self.object_repository
         else:
             path = os.path.join(settings.MEDIA_URL, 'documents')
         object_dict = {}
-        for ent in page_ent_obj:
-            object_dict[ent.obj_mtl + '.' + 'obj'] = path
-            object_dict[ent.obj_mtl + '.' + 'mtl'] = path
-        for ent in page_ent_gltf:
-            object_dict[ent.gltf + '.' + 'gltf'] = path
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if 'obj_mtl' in blob:
+                object_dict[blob['obj_mtl'] + '.' + 'obj'] = path
+                object_dict[blob['obj_mtl'] + '.' + 'mtl'] = path
+            if 'gltf' in blob:
+                object_dict[blob['gltf'] + '.' + 'gltf'] = path
 
         return object_dict
 

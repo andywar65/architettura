@@ -1,6 +1,6 @@
 """Collection of functions for writing HTML of entities and blocks.
 
-Functions are referenced from architettura.aframe.make_html, a-block CAD blocks
+Functions are referenced from architettura.dxf.make_html, a-block CAD blocks
 have NAME attribute that are essentially block names, while BIM blocks use PART
 attribute for setting 'partition type'. Block appearance is determined by
 MATERIAL attribute (multiple components may be used depending on NAME), other
@@ -44,7 +44,7 @@ def make_box(page, d):
     blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
     blob += f'=;depth=:{round(d["42"], 4)}=;layer=:{d["layer"]}'
     blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
-    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:a-entity'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:a-box'
     blob += f'=;closing=:{close_entity(page, d)}'
     page.ent_dict[identity] += blob
 
