@@ -260,53 +260,35 @@ class DxfPage(Page):
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        #page_ent = DxfPageEntity.objects.filter(page_id=self.id
-            #).order_by('id').exclude(tag='a-camera').exclude(tag='a-link')
         for ent in self.ent_list:
             blob = ent['blob']
+            #set layer color
             try:
                 layer = page_layers.get(name=blob['layer'])
                 layer_color = f'color: {layer.color}; '
             except:
                 layer_color = 'color: #ffffff; '
-            if 'light' in blob:
-                if 'material' in blob:
+            #if requested, set material color
+            if 'material' in blob:
+                if blob['material'] == '':
+                    blob['material'] = layer_color
+                elif blob['material'][0] == '#':
                     blob['material'] = f'color: {blob["material"]}; '
                 else:
                     blob['material'] = layer_color
-                blob['light'] = blob['light'] + blob.pop('material')
-            elif 'line' in blob:
-                if 'material' in blob:
-                    blob['material'] = f'color: {blob["material"]}; '
-                else:
-                    blob['material'] = layer_color
-                blob['line'] = blob['line'] + blob.pop('material')
-                #list = ent.line.split(',')
-                #ent.line = {}
-                #for i in range(int(len(list)/2)):
-                    #ent.line[list[i*2]] = list[i*2+1] + ent.material
-                #ent.material = ''
-            elif 'text' in blob:
-                if 'material' in blob and blob['material'] != '':
-                    if blob['material'][0] == '#':
-                        blob['material'] = f'color: {blob["material"]}; '
+            #loop through blob items
+            for key, value in blob.items():
+                if key == 'light' or key[:4] == 'line' or key == 'text':
+                    if 'material' in blob:
+                        blob[key] = value + blob.pop('material')
                     else:
-                        blob['material'] = layer_color
-                    blob['text'] = blob['text'] + blob.pop('material')
-            elif 'obj_mtl' in blob:
-                obj_mtl = blob.pop(obj_mtl)
-                blob['obj-model'] = f'obj: #{obj_mtl}.obj; mtl: #{obj_mtl}.mtl;'
-            elif 'gltf' in blob:
-                blob['gltf-model'] = f'#{blob.pop("gltf")}.gltf'
-                ent['extras'] = 'animation-mixer'
-            else:
-                if 'material' in blob:
-                    if blob['material'] == '':
-                        blob['material'] = layer_color
-                    elif blob['material'][0] == '#':
-                        blob['material'] = f'color: {blob["material"]}; '
-                    else:
-                        blob.pop('material')
+                        blob[key] = value + layer_color
+                elif key == 'obj_mtl':
+                    obj = blob.pop(obj_mtl)
+                    blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
+                elif key == 'gltf':
+                    blob['gltf-model'] = f'#{blob.pop("gltf")}.gltf'
+                    ent['extras'] = 'animation-mixer'
             blob.pop('component')
             blob.pop('layer')
             blob.pop('repeat')
