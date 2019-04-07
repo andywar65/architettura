@@ -115,19 +115,20 @@ def make_circular(page, d):
         d['dz'] = d['43']/2
 
     d['ide'] = d['2'].replace('a-', '')
+    d['tag'] = d['2']
     identity = open_entity(page, d)
-    geometry = f'primitive: {d["ide"]}; '
+    #geometry = f'primitive: {d["ide"]}; '
     if d['2'] == 'a-circle':
-        geometry += f'radius: {fabs(d["41"])}; '
+        blob = f'=;radius=:{round(fabs(d["41"]), 4)};'
     else:
-        geometry += f'width: {round(d["41"], 4)}; '
-        geometry += f'height: {round(d["43"], 4)}; '
-        geometry += f'depth: {round(d["42"], 4)}; '
-    geometry += entity_geometry(d)
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-entity')
+        blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
+        blob += f'=;depth=:{round(d["42"], 4)}'
+    blob += entity_geometry(d)
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;layer=:{d["layer"]}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:{d["tag"]}'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -1270,15 +1271,15 @@ def entity_geometry(d):
         'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
     }
     attributes = attr_dict[d['2']]
-    oput = ''
+    blob = ''
     for attribute in attributes:
         try:
             if d[attribute]:
-                oput += f'{attribute.lower()}: {d[attribute]};'
+                blob += f'=;{attribute.lower()}=:{d[attribute]}'
         except:
             pass
 
-    return oput
+    return blob
 
 def add_animation(page, d):
     oput = ''

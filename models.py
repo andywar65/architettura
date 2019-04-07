@@ -161,7 +161,7 @@ class DxfPage(Page):
     object_repository = models.URLField(
         help_text="URL of external repository for OBJ/GLTF files",
         blank=True, null=True)
-    entities = models.TextField(blank=True, max_length=1000,
+    entities = models.TextField(blank=True,
         default='id=:identity=;tag=:a-entity=;closing=:1',
         )
 
