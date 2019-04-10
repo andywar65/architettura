@@ -286,9 +286,12 @@ class DxfPage(Page):
                 elif key == 'gltf':
                     blob['gltf-model'] = f'#{blob.pop("gltf")}.gltf'
                     ent['extras'] = 'animation-mixer'
-            blob.pop('component')
-            blob.pop('layer')
-            blob.pop('repeat')
+            if 'component' in blob:
+                blob.pop('component')
+            if 'layer' in blob:
+                blob.pop('layer')
+            if 'repeat' in blob:
+                blob.pop('repeat')
             close = []
             for c in range(ent['closing']):
                 if c == 0:

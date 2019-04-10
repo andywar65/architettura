@@ -11,7 +11,8 @@ from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
 def make_camera(page, d):
-    blob = identity = f'id=:{page.id}-camera-{d["num"]}'
+    identity = f'{page.id}-camera-{d["num"]}'
+    blob = f'id=:{identity}'
     blob += f'=;position=:{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
     blob += f'=;rotation=:{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
     blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
@@ -157,8 +158,8 @@ def make_plane(page, d):
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'], closing=0, tag=d['tag'],
-        material='Null')
+    blob = f'=;layer=:{d["layer"]}=;closing=:0=;tag=:{d["tag"]}'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
     make_w_plane(page, d)
 
@@ -203,16 +204,17 @@ def make_w_plane(page, d):
         if v[0]:
             d['ry'] = v[0]
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
-            geometry = 'primitive: plane; '
-            geometry += f'width: {round(d["rx"], 4)}; height: {v[0]}; '
-            repeat = f'repeat: {round(d["rx"], 4)} {v[0]}; '
-            position = f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
+            blob = f'id=:{identity}'
+            blob += f'=;width=:{round(d["rx"], 4)}=;height=:{round(v[0], 4)}'
+            blob += f'=;repeat=:{round(d["rx"], 4)} {v[0]}'
+            blob += f'=;position=:0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
             material = d.get('MATERIAL', '')
-            page.ent_dict[identity]={'position': position, 'geometry': geometry,
-                'material': material, 'repeat': repeat, 'component': v[0],
-                'closing': 1, 'layer': d['layer'], 'tag': 'a-entity'}
+            blob += f'=;material=:{material}=;component=:{v[3]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-plane=;closing=:1'
+            page.ent_dict[identity] = blob
     #last one closes all
-    page.ent_dict[identity].update(closing=d['closing']+1)
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1', f'closing=:{closing}')
 
     return
 
