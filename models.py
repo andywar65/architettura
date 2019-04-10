@@ -178,9 +178,6 @@ class DxfPage(Page):
         ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
         FieldPanel('entities'),
-        #MultiFieldPanel([
-            #InlinePanel('entities', label="Entities",),
-        #], heading="Entities", classname="collapsible collapsed" ),
     ]
 
     def add_new_layers(self):

@@ -140,13 +140,14 @@ def make_curvedimage(page, d):
     d['dy'] = 0
     d['dz'] = d['43']/2
     identity = open_entity(page, d)
-    geometry = f'radius: {round(fabs(d["41"]), 4)*2}; '
-    geometry += f'height: {round(d["43"], 4)}; '
-    geometry += entity_geometry(d)
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-curvedimage')
+    blob = f'=;radius=:{round(fabs(d["41"])*2, 4)};'
+    blob += f'=;height=:{round(d["43"], 4)};'
+    blob += entity_geometry(d)
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;layer=:{d["layer"]}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:{d["2"]}'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
