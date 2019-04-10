@@ -11,12 +11,13 @@ from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
 def make_camera(page, d):
-    identity = f'{page.id}-camera-{d["num"]}'
-    position = f'{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
-    rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-    geometry = f'{round(d["43"]*1.6, 4)}'
-    light = f'intensity: {d["LIGHT-INT"]}; '
-    tag = 'a-camera'
+    blob = identity = f'id=:{page.id}-camera-{d["num"]}'
+    blob += f'=;position=:{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
+    blob += f'=;rotation=:{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+    blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
+    blob += f'=;intensity=:{d["LIGHT-INT"]}'
+    blob += '=;tag=:a-camera'
+    blob += f'=;layer=:{d["layer"]}'
     #if page.mode == 'digkom':
         #oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
@@ -27,9 +28,7 @@ def make_camera(page, d):
     #oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
     #oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     #oput += '</a-camera></a-entity> \n'
-    page.ent_dict[identity]={'identity': identity, 'position': position,
-        'rotation': rotation, 'geometry': geometry, 'light': light,
-        'tag': tag, 'layer': d['layer']}
+    page.ent_dict[identity] = blob
     return
 
 def make_box(page, d):
@@ -140,8 +139,8 @@ def make_curvedimage(page, d):
     d['dy'] = 0
     d['dz'] = d['43']/2
     identity = open_entity(page, d)
-    blob = f'=;radius=:{round(fabs(d["41"])*2, 4)};'
-    blob += f'=;height=:{round(d["43"], 4)};'
+    blob = f'=;radius=:{round(fabs(d["41"])*2, 4)}'
+    blob += f'=;height=:{round(d["43"], 4)}'
     blob += entity_geometry(d)
     blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
     blob += f'=;layer=:{d["layer"]}'
