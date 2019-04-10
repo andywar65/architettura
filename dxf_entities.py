@@ -235,13 +235,13 @@ def make_triangle(page, d):
     d['ry'] = 1
     d['dx'] = d['dy'] = d['dz'] = 0
     identity = open_entity(page, d)
-    geometry = f'vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; '
-    geometry += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; '
-    geometry += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}'
+    blob = f'=;vertex-a=:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}'
+    blob += f'=;vertex-b=:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}'
+    blob += f'=;vertex-c=:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}'
     material = d.get('MATERIAL', '')
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=material, component=0,
-        tag='a-triangle')
+    blob += f'=;material=:{material}=;component=:0'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-triangle=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
