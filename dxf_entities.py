@@ -268,20 +268,21 @@ def make_line(page, d):
         d['43'] = d['39']
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
         d['50'] = -degrees(atan2(d['21'], d['11']))
-        rotation = f'0 {round(d["50"], 4)} 0'
-        page.ent_dict[identity].update(layer=d['layer'],
-            rotation=rotation, closing=0, tag=d['tag'], material='Null')
+        blob = f'=;rotation=:0 {round(d["50"], 4)} 0'
+        blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
         d['closing'] = close_entity(page, d)
         make_w_plane(page, d)
     else:
-        line = f'line,start:{round(d["10b"], 4)} '
-        line += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
-        line += f'end:{round(d["11"], 4)} '
-        line += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
+        blob = f'=;line=:start:{round(d["10b"], 4)} '
+        blob += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
+        blob += f'end:{round(d["11"], 4)} '
+        blob += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
         material = d.get('COLOR', '')
-        page.ent_dict[identity].update(line=line, layer=d['layer'],
-            closing=close_entity(page, d), material=material, component=0,
-            tag=d['tag'])
+        blob += f'=;layer=:{d["layer"]}'
+        blob += f'=;material=:{material}=;tag=:{d["tag"]}'
+        blob += f'=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
 
     return
 
