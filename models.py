@@ -276,10 +276,8 @@ class DxfPage(Page):
             #loop through blob items
             for key, value in blob.items():
                 if key == 'light' or key[:4] == 'line' or key == 'text':
-                    if 'material' in blob:
-                        blob[key] = value + blob['material']
-                        #we will pop this key later
-                        blob['material'] = 'erase'
+                    if 'color' in blob and blob['color'] != '':
+                        blob[key] = value + f'color: {blob["color"]}; '
                     else:
                         blob[key] = value + layer_color
                 elif key == 'obj_mtl':
@@ -290,13 +288,10 @@ class DxfPage(Page):
                     ent['extras'] = 'animation-mixer'
             #cannot pop keys inside loop
             values = ['component', 'layer', 'repeat', 'obj_mtl', 'gltf',
-                'material']
+                'color']
             for v in values:
                 if v in blob:
-                    if v == 'material' and blob[v] == 'erase':
-                        blob.pop(v)
-                    else:
-                        blob.pop(v)
+                    blob.pop(v)
             close = []
             for c in range(ent['closing']):
                 if c == 0:

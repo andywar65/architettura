@@ -24,7 +24,7 @@
     </a-asset>
 
 		{% with ent_list=page.get_entities %}{% if ent_list %}{% for ent in ent_list %}
-			<{{ ent.tag }} {% if ent.extras %}{{ ent.tag }} {% endif %}{% for key, value in ent.blob.items %}
+			<{{ ent.tag }} id="{{ ent.id }}" {% if ent.extras %}{{ ent.extras }} {% endif %}{% for key, value in ent.blob.items %}
       {{ key }}="{{ value }}" {% endfor %}
       >{% for c in ent.closing %}</{{c}}>{% endfor %}
 		{% endfor %}{% endif %}{% endwith %}

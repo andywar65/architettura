@@ -278,9 +278,9 @@ def make_line(page, d):
         blob += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
         blob += f'end:{round(d["11"], 4)} '
         blob += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
-        material = d.get('COLOR', '')
+        color = d.get('COLOR', '')
         blob += f'=;layer=:{d["layer"]}'
-        blob += f'=;material=:{material}=;tag=:{d["tag"]}'
+        blob += f'=;color=:{color}=;tag=:{d["tag"]}'
         blob += f'=;closing=:{close_entity(page, d)}'
         page.ent_dict[identity] += blob
 
@@ -319,8 +319,8 @@ def make_poly(page, d):
     d['num1'] = d['num']
     identity = open_entity(page, d)
     if d['39']:
-        page.ent_dict[identity].update(layer=d['layer'], closing=0,
-            tag=d['tag'], material='Null')
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
         d['42'] = 0
         d['43'] = d['39']
         stop = d['90']-2
@@ -333,9 +333,9 @@ def make_poly(page, d):
             identity = f'{page.id}-{d["ide"]}-{d["num"]}'
             position = f'{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}'
             rotation = f'0 {round(d["50"], 4)} 0'
-            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
-                'tag': d['tag'], 'position': position, 'rotation': rotation,
-                'material': 'Null'}
+            blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+            page.ent_dict[identity] = blob
             if d['70']:
                 d['closing'] = 1
             else:
@@ -353,30 +353,29 @@ def make_poly(page, d):
             identity = f'{page.id}-{d["ide"]}-{d["num"]}'
             position = f'{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}'
             rotation = f'0 {round(d["50"], 4)} 0'
-            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
-                'tag': d['tag'], 'position': position, 'rotation': rotation,
-                'material': 'Null'}
+            blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+            page.ent_dict[identity] = blob
             d['closing'] = close_entity(page, d) + 1
             make_w_plane(page, d)
         d['num'] = d['num1']
     else:
-        line = ''
+        blob = ''
         for i in range(d['90']-1):
             if i==0:
-                line += 'line,'
+                blob += '=;line'
             else:
-                line += f',line__{i+1},'
-            line += f'start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; '
-            line += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; '
+                blob += f'=;line__{i+1}'
+            blob += f'=:start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; '
+            blob += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; '
         if d['70']:
-            line += f',line__{i+2},start:{round(d["vx"][i+1], 4)} 0 '
-            line += f'{round(d["vy"][i+1], 4)}; '
-            line += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
-        material = d.get('COLOR', '')
-
-        page.ent_dict[identity].update(line=line, layer=d['layer'],
-            closing=close_entity(page, d), material=material, component=0,
-            tag=d['tag'])
+            blob += f'=;line__{i+2}=:start:{round(d["vx"][i+1], 4)} 0 '
+            blob += f'{round(d["vy"][i+1], 4)}; '
+            blob += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
+        color = d.get('COLOR', '')
+        blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;color=:{color}'
+        blob += f'=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
     return
 
 def make_table_01(page, d):
