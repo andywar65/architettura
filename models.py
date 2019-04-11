@@ -247,11 +247,11 @@ class DxfPage(Page):
         object_dict = {}
         for ent in self.ent_list:
             blob = ent['blob']
-            if 'obj_mtl' in blob:
-                object_dict[blob['obj_mtl'] + '.' + 'obj'] = path
-                object_dict[blob['obj_mtl'] + '.' + 'mtl'] = path
-            if 'gltf' in blob:
-                object_dict[blob['gltf'] + '.' + 'gltf'] = path
+            if 'obj-model' in blob:
+                object_dict[blob['obj-model'] + '.' + 'obj'] = path
+                object_dict[blob['obj-model'] + '.' + 'mtl'] = path
+            if 'gltf-model' in blob:
+                object_dict[blob['gltf-model'] + '.' + 'gltf'] = path
 
         return object_dict
 
@@ -280,15 +280,14 @@ class DxfPage(Page):
                         blob[key] = value + f'color: {blob["color"]}; '
                     else:
                         blob[key] = value + layer_color
-                elif key == 'obj_mtl':
-                    obj = blob['obj_mtl']
+                elif key == 'obj-model':
+                    obj = blob['obj-model']
                     blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
-                elif key == 'gltf':
-                    blob['gltf-model'] = f'#{blob["gltf"]}.gltf'
+                elif key == 'gltf-model':
+                    blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
                     ent['extras'] = 'animation-mixer'
             #cannot pop keys inside loop
-            values = ['component', 'layer', 'repeat', 'obj_mtl', 'gltf',
-                'color']
+            values = ['component', 'layer', 'repeat', 'color']
             for v in values:
                 if v in blob:
                     blob.pop(v)

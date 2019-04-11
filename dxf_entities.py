@@ -57,8 +57,8 @@ def make_block(page, d):
     d['tag'] = 'a-entity'
     d['ide'] = 'block'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'],
-        closing=0, material='Null', tag='a-entity')
+    blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
 
     if d['NAME'] == 't01':
@@ -995,18 +995,16 @@ def make_object(page, d):
     """
     identity = f'{page.id}-model-{d["num"]}'
     position = f'0 {round(-d["43"]/2, 4)} 0'
-    geometry = obj_mtl = gltf = animator = ''
+    blob = f'id=:{identity}=;position=:{position}'
     if d['PARAM2'] == 'scale':
-        geometry = f'{round(fabs(d["41"]), 4)} {round(fabs(d["43"]), 4)} '
-        geometry += f'{round(fabs(d["42"]), 4)}'
+        blob += f'=;scale=:{round(fabs(d["41"]), 4)} {round(fabs(d["43"]), 4)} '
+        blob += f'{round(fabs(d["42"]), 4)}'
     if d['NAME'] == 'obj-mtl':
-        obj_mtl = f'{d["PARAM1"]}'
+        blob += f'=;obj-model=:{d["PARAM1"]}'
     elif d['NAME'] == 'gltf':
-        gltf = f'{d["PARAM1"]}#'
-        animator = 'animation-mixer'
-    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-        'geometry': geometry, 'material': '', 'obj_mtl': obj_mtl, 'gltf': gltf,
-        'tag': 'a-entity', 'closing': d['closing']+1, 'animator': animator}
+        blob += f'=;gltf-model=:{d["PARAM1"]}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:{d["closing"]+1}'
+    page.ent_dict[identity] = blob
 
     return
 
