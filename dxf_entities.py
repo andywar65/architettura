@@ -393,9 +393,10 @@ def make_table_01(page, d):
     position = f'0 {round(d["43"]/2-0.025*unit(d["43"]), 4)} 0'
     geometry = f'width: {d["rx"]}; height: 0.05; depth: {d["ry"]};'
     material = d.get('MATERIAL', '')
-    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-        'geometry': geometry, 'material': material, 'component': 2,
-        'tag': 'a-box', 'closing': 1}
+    blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;material=:{material}=;component=:2'
+    page.ent_dict[identity] = blob
     #prepare legs
     d['prefix'] = 'leg'
     scale_x = round(d["41"]/2-0.05*unit(d["41"]), 4)
@@ -414,11 +415,13 @@ def make_table_01(page, d):
         identity = f'{page.id}-table01-{d["num"]}-leg-{v[0]}'
         position = f'{v[1]} {(height-round(d["43"], 4))/2} {v[2]}'
         geometry = f'radius: 0.025; height: {height}; '
-        page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-            'geometry': geometry, 'material': material, 'component': 1,
-            'tag': 'a-cylinder', 'closing': 1}
+        blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-cylinder=;closing=:1'
+        blob += f'=;material=:{material}=;component=:1'
+        page.ent_dict[identity] = blob
     #last one closes all
-    page.ent_dict[identity].update(closing=d['closing']+1)
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1', f'closing=:{closing}')
 
     return
 
