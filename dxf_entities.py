@@ -65,8 +65,8 @@ def make_block(page, d):
         make_table_01(page, d)
     elif d['NAME'] == 'obj-mtl' or d['NAME'] == 'gltf':
         make_object(page, d)
-    elif d['NAME'] == 'tree':
-        make_tree(page, d)
+    #elif d['NAME'] == 'tree':
+        #make_tree(page, d)
 
     return
 
@@ -81,8 +81,8 @@ def make_bim_block(page, d):
     d['tag'] = 'a-entity'
     d['ide'] = 'BIM-block'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'],
-        closing=0, material='Null', tag='a-entity')
+    blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
 
     if d['2'] == 'a-wall':
