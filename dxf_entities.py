@@ -665,14 +665,19 @@ def make_wall(page, d):
             d['rx'] = fabs(d["41"])
             d['ry'] = v[0]
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
-            position = f'0 {v[2]*unit(d["43"])-d["43"]/2} '
-            position += f'{-v[3]+0.005*unit(d["42"])+d["42"]/2}'
+            position = f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} '
+            position += f'{round(-v[3]+0.005*unit(d["42"])+d["42"]/2, 4)}'
             geometry = f'width: {d["rx"]}; height: {v[0]}; depth: {v[4]-0.01}; '
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 1, 'material': d[v[5]], 'component': v[6],
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
-    #last one closes all (we should control if entity exists)
-    page.ent_dict[identity].update(closing=d['closing']+1)
+            blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+            blob += f'=;material=:{d[v[5]]}=;component=:{v[6]}'
+            blob += f'=;partition=:{d["PART"]}'
+            page.ent_dict[identity] = blob
+    #last one closes all (we control if entity exists)
+    if identity:
+        closing = d['closing']+1
+        page.ent_dict[identity] = blob.replace('closing=:1',
+            f'closing=:{closing}')
     return
 
 def make_stair(page, d):

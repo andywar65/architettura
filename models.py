@@ -287,7 +287,7 @@ class DxfPage(Page):
                     blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
                     ent['extras'] = 'animation-mixer'
             #cannot pop keys inside loop
-            values = ['component', 'layer', 'repeat', 'color']
+            values = ['component', 'layer', 'repeat', 'color', 'partition']
             for v in values:
                 if v in blob:
                     blob.pop(v)
