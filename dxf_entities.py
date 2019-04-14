@@ -779,8 +779,9 @@ def make_openwall(page, d):
     identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((d2['door_off_1']-tot)/2, 4)
     position =f'{xpos} 0 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
 
@@ -791,8 +792,9 @@ def make_openwall(page, d):
     xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
     zpos = round(d2['door_height'], 4)
     position= f'{xpos} {zpos} 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
 
@@ -802,8 +804,9 @@ def make_openwall(page, d):
     identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((-d2['41']+tot)/2, 4)
     position=f'{xpos} 0 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = d['closing']+1
     make_wall(page, d2)
 
