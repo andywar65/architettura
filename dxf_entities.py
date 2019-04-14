@@ -460,23 +460,6 @@ def make_door(page, d):
         blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
         page.ent_dict[identity] = blob
 
-    #right frame
-    #identity = f'{page.id}-door-{d["num"]}-right-frame'
-    #position = f'{} {} 0'
-    #rotation = '0 0 90'
-    #geometry = f'width: {fabs(d["43"])+0.099}; height: 0.1; depth: {fabs(d["42"])+0.02};'
-    #page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        #'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        #'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],
-        #'rotation': rotation,}
-    #top frame
-    #identity = f'{page.id}-door-{d["num"]}-top-frame'
-    #position = f'0 {d["43"]/2+0.049*unit(d["43"])} 0'
-    #geometry = f'width: {fabs(d["41"])-0.002}; height: 0.1; depth: {fabs(d["42"])+0.02};'
-    #page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        #'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        #'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
-
     if eval(d["DOUBLE"]):
         d['rx'] = round(fabs(d["41"])/2-0.002, 4)
     else:
@@ -620,9 +603,11 @@ def make_slab(page, d):
     identity = f'{page.id}-slab-{d["num"]}-floor'
     position = f'0 {round(-0.005*unit(d["43"])+d["43"]/2, 4)} 0'
     geometry = f'width: {d["rx"]}; height: 0.01; depth: {d["ry"]};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:2'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    page.ent_dict[identity] = blob
 
     #ceiling
     identity = f'{page.id}-slab-{d["num"]}-ceiling'
