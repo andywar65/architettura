@@ -839,19 +839,26 @@ def make_window(page, d):
     d2 = d.copy()
     d2['43'] = d2['SILL']
     d2['ide'] = 'window-under'
-    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     zpos = round((d2['SILL']-d['43'])/2, 4)
-    oput += f'position="0 {zpos} 0"> \n'
-    oput += make_wall(d2)
-    oput += '</a-entity> \n'
-    #make sill
-    oput += f'<a-box id="{d["ide"]}-{d["num"]}-sill" \n'
+    position = f'0 {zpos} 0'
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
+    d2['closing'] = 1
+    make_wall(page, d2)
+
+    #make sill TODO assign material
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-sill'
     zpos = round(d['SILL']-d['43']/2-0.014, 4)
-    oput += f'position="0 {zpos} 0" \n'
+    position = f'0 {zpos} 0'
     sillw = round(d['41']+0.04, 4)
     silld = round(d['42']+0.04, 4)
-    oput += f'scale="{sillw} 0.03 {silld}"> \n'
-    oput += '</a-box> \n'
+    scale = f'{sillw} 0.03 {silld}'
+    blob = f'id=:{identity}=;position=:{position}=;scale=:{scale}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:2'
+    page.ent_dict[identity] = blob
+    return
     #make frame
     values = (
         ('pool', 2, 'frame', 'MATERIAL'),
