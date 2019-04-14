@@ -614,9 +614,11 @@ def make_slab(page, d):
     position = f'0 {round(-0.005*unit(d["43"]), 4)} 0'
     geometry = f'width: {d["rx"]}; height: {round(fabs(d["43"])-0.01, 4)}; '
     geometry += f'depth: {d["ry"]};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': d['closing']+1, 'material': d['MATERIAL'], 'component': 0,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:0'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+1}'
+    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    page.ent_dict[identity] = blob
 
     return
 
