@@ -849,21 +849,20 @@ def make_window(page, d):
     make_wall(page, d2)
 
     #make sill TODO assign material
-    identity = f'{page.id}-{d["ide"]}-{d["num"]}-sill'
+    identity = f'{page.id}-window-{d["num"]}-sill'
     zpos = round(d['SILL']-d['43']/2-0.014, 4)
     position = f'0 {zpos} 0'
     sillw = round(d['41']+0.04, 4)
     silld = round(d['42']+0.04, 4)
     scale = f'{sillw} 0.03 {silld}'
     blob = f'id=:{identity}=;position=:{position}=;scale=:{scale}'
-    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:2'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
     page.ent_dict[identity] = blob
-    return
+
+    if d["PART"] == 'ghost':
+        return
+
     #make frame
-    values = (
-        ('pool', 2, 'frame', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
     values = (
         #(xpos, zpos, rot, prefix, rx, rz, piece, depth, ypos),
         (d['41']/2-0.025, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL'], 'frame-right', 0.06, 0),
@@ -871,10 +870,10 @@ def make_window(page, d):
         (0, -d['43']/2+d['SILL']+0.025, 90, '', 0.05, d['41']-0.1, 'frame-bottom', 0.06, 0),
         (0, d['43']/2-0.025, 90, '', 0.05, d['41']-0.1, 'frame-top', 0.06, 0),
     )
-    d['prefix'] = 'frame'
     d['ide'] = 'window'
     for v in values:
-        oput += make_window_frame(v, d)
+        make_window_frame(page, v, d)
+    return
     #animated hinge 1
     xpos = round(-d["41"]/2+0.05*unit(d["41"]), 4)
     oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
@@ -927,17 +926,20 @@ def make_window(page, d):
 
     return oput
 
-def make_window_frame(v, d):
-    oput = ''
+def make_window_frame(page, v, d):
     d['rx'] = v[4]
     d['ry'] = v[5]
-    oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[6]}" \n'
-    oput += f'position="{round(v[0], 4)} {round(v[1], 4)} {v[8]}" \n'
-    oput += f'rotation="0 0 {v[2]}" \n'
-    oput += f'scale="{round(v[4], 4)} {round(v[5], 4)} {v[7]}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box> \n'
-    return oput
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[6]}'
+    position = f'{round(v[0], 4)} {round(v[1], 4)} {v[8]}'
+    rotation = f'0 0 {v[2]}'
+    scale = f'{round(v[4], 4)} {round(v[5], 4)} {v[7]}'
+    blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;material=:{d["WMATERIAL"]}=;component=:2'
+    blob += f'=;partition=:{d["PART"]}=;scale=:{scale}'
+    page.ent_dict[identity] = blob
+
+    return
 
 def make_light(page, d):
     #set defaults
