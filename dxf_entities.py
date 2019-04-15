@@ -698,13 +698,13 @@ def make_wall(page, d):
     return
 
 def make_stair(page, d):
-    values = (
-        ('pool', 0, 'steps', 'MATERIAL'),
-        ('pool', 2, 'railings', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    oput = ''
-    d['prefix'] = 'steps'
+    #values = (
+        #('pool', 0, 'steps', 'MATERIAL'),
+        #('pool', 2, 'railings', 'MATERIAL'),
+    #)
+    #d = prepare_material_values(values, d)
+    #oput = ''
+    #d['prefix'] = 'steps'
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     if d['STEPS']:
@@ -732,13 +732,17 @@ def make_stair(page, d):
     for i in range(int(np)):
         posz = round((d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2, 4)
         posy = round(-d["42"]/np/2-i*d["42"]/np+d["42"]/2, 4)
-        oput += f'<a-box id="stair-{d["num"]}-step-{i}" \n'
-        oput += f'position="0 {posz} {posy}" \n'
-        oput += f'rotation="0 90 0" \n'
-        oput += f'scale="{round(d["42"]/np, 4)} 0.03 {round(d["41"]-0.1, 4)}" \n'
-        oput += entity_material(d)
-        oput += '"></a-box>\n'
-    d['prefix'] = 'railings'
+        identity = f'{page.id}-stair-{d["num"]}-step-{i}'
+        position = f'0 {posz} {posy}'
+        rotation = f'0 90 0'
+        scale = f'{round(d["42"]/np, 4)} 0.03 {round(d["41"]-0.1, 4)}'
+        material = d.get('MATERIAL', '')
+        blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+        blob += f'=;material=:{material}=;component=:0=;scale=:{scale}'
+        page.ent_dict[identity] = blob
+
+    #d['prefix'] = 'railings'
     d['rx'] = 1
     d['ry'] = 1
     xtup = (-d["41"]/2, d["41"]/2-0.05)
@@ -776,15 +780,19 @@ def make_stair(page, d):
             va = vertices[f[0]]
             vb = vertices[f[1]]
             vc = vertices[f[2]]
-            oput += '<a-triangle '
-            oput += f'geometry="vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; \n'
-            oput += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; \n'
-            oput += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}" \n'
-            oput += entity_material(d)
-            if page.double_face:
-                oput += 'side: double; '
-            oput += '"></a-triangle> \n'
-    return oput
+            identity = f'{page.id}-stair-{d["num"]}-triangle-{i}'
+            geometry = f'vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; '
+            geometry += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; '
+            geometry += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}'
+            material = d.get('MATERIAL', '')
+            blob = f'id=:{identity}=;geometry=:{geometry}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-triangle=;closing=:1'
+            blob += f'=;material=:{material}=;component=:2'
+            page.ent_dict[identity] = blob
+        closing = d['closing']+1
+        page.ent_dict[identity] = blob.replace('closing=:1',
+            f'closing=:{closing}')
+    return
 
 def make_openwall(page, d):
 
