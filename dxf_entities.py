@@ -721,6 +721,7 @@ def make_stair(page, d):
             diff = (2*d["43"]/na+d["42"]/np)-.63
             if fabs(diff) <= 0.01:
                 flag = True
+                break
             else:
                 na -= 1
         if flag == False:
@@ -745,7 +746,7 @@ def make_stair(page, d):
     #d['prefix'] = 'railings'
     d['rx'] = 1
     d['ry'] = 1
-    xtup = (-d["41"]/2, d["41"]/2-0.05)
+    xdict = {'left': -d["41"]/2, 'right': d["41"]/2-0.05}
     a = round(d['43'] / na, 4)
     d['42'] = round(d['42'], 4)
     d['43'] = round(d['43'], 4)
@@ -763,7 +764,7 @@ def make_stair(page, d):
         (6, 7, 4),
         (6, 4, 5),
     ]
-    for xpos in xtup:
+    for side, xpos in xdict.items():
         x = round(xpos, 4)
         vertices = [
             (x, d['42']/2, a-d['43']/2),
@@ -780,7 +781,7 @@ def make_stair(page, d):
             va = vertices[f[0]]
             vb = vertices[f[1]]
             vc = vertices[f[2]]
-            identity = f'{page.id}-stair-{d["num"]}-triangle-{i}'
+            identity = f'{page.id}-stair-{d["num"]}-{side}-beam-{i}'
             geometry = f'vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; '
             geometry += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; '
             geometry += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}'
@@ -789,9 +790,9 @@ def make_stair(page, d):
             blob += f'=;layer=:{d["layer"]}=;tag=:a-triangle=;closing=:1'
             blob += f'=;material=:{material}=;component=:2'
             page.ent_dict[identity] = blob
-        closing = d['closing']+1
-        page.ent_dict[identity] = blob.replace('closing=:1',
-            f'closing=:{closing}')
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1',
+        f'closing=:{closing}')
     return
 
 def make_openwall(page, d):
