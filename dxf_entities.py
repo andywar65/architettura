@@ -860,6 +860,9 @@ def make_window(page, d):
     page.ent_dict[identity] = blob
 
     if d["PART"] == 'ghost':
+        closing = d['closing']+1
+        page.ent_dict[identity] = blob.replace('closing=:1',
+            f'closing=:{closing}')
         return
 
     #make frame
@@ -872,15 +875,18 @@ def make_window(page, d):
     )
     d['ide'] = 'window'
     for v in values:
-        make_window_frame(page, v, d)
-    return
+        identity = make_window_frame(page, v, d)
+
     #animated hinge 1
     xpos = round(-d["41"]/2+0.05*unit(d["41"]), 4)
-    oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
-    oput += f'position="{xpos} 0 0.025" \n'
-    oput += 'animation="property: rotation; easing: easeInOutQuad; '
-    oput += f'from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; '
-    oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-hinge-1'
+    position = f'{xpos} 0 0.025'
+    anime = 'property: rotation; easing: easeInOutQuad; '
+    anime += f'from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; '
+    anime += 'startEvents: click; loop: 1; dir: alternate; '
+    blob = f'id=:{identity}=;position=:{position}=;animation=:{anime}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     if eval(d["DOUBLE"]):
         #moving part 1
         values = (
@@ -891,15 +897,18 @@ def make_window(page, d):
             (d['41']/4-0.025, d['43']/2-0.075, 90, '', 0.05, d['41']/2-0.15, 'moving-1-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            identity = make_window_frame(page, v, d)
+
         #animated hinge 2
         xpos = round(d["41"]/2-0.05*unit(d["41"]), 4)
-        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
-        oput += f'position="{xpos} 0 0.025" \n'
-        oput += 'animation="property: rotation; easing: easeInOutQuad; '
-        oput += f'from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; '
-        oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+        identity = f'{page.id}-{d["ide"]}-{d["num"]}-hinge-2'
+        position = f'{xpos} 0 0.025'
+        anime = 'property: rotation; easing: easeInOutQuad; '
+        anime += f'from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; '
+        anime += 'startEvents: click; loop: 1; dir: alternate; '
+        blob = f'id=:{identity}=;position=:{position}=;animation=:{anime}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+        page.ent_dict[identity] = blob
         #moving part 2
         values = (
             #(xpos, zpos, rot, prefix, rx, rz, piece, depth, ypos),
@@ -909,8 +918,11 @@ def make_window(page, d):
             (-d['41']/4+0.025, d['43']/2-0.075, 90, '', 0.05, d['41']/2-0.15, 'moving-2-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            id_blob = make_window_frame(page, v, d)
+        closing = d['closing']+2
+        page.ent_dict[id_blob[0]] = id_blob[1].replace('closing=:1',
+            f'closing=:{closing}')
+
     else:
         #moving part 1
         values = (
@@ -921,10 +933,12 @@ def make_window(page, d):
             (d['41']/2-0.05, d['43']/2-0.075, 90, '', 0.05, d['41']-0.2, 'moving-1-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            id_blob = make_window_frame(page, v, d)
+        closing = d['closing']+2
+        page.ent_dict[id_blob[0]] = id_blob[1].replace('closing=:1',
+            f'closing=:{closing}')
 
-    return oput
+    return
 
 def make_window_frame(page, v, d):
     d['rx'] = v[4]
@@ -939,7 +953,7 @@ def make_window_frame(page, v, d):
     blob += f'=;partition=:{d["PART"]}=;scale=:{scale}'
     page.ent_dict[identity] = blob
 
-    return
+    return identity, blob
 
 def make_light(page, d):
     #set defaults
