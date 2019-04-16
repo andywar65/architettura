@@ -1011,7 +1011,6 @@ def make_light(page, d):
 def make_text(page, d):
     d['ide'] = 'text'
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['tag'] = 'a-entity'
 
     if d["WRAP-COUNT"]:
         wrapcount =  d["WRAP-COUNT"]
@@ -1026,9 +1025,10 @@ def make_text(page, d):
     identity = open_entity(page, d)
     text = f'width: {d["41"]}; align: {d["ALIGN"]}; '
     text += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
-    material = d.get('MATERIAL', '')
-    page.ent_dict[identity].update(layer=d['layer'], material=material,
-        closing=close_entity(page, d), tag=d['tag'], text=text)
+    color = d.get('COLOR', '')
+    blob = f'=;text=:{text}=;color=:{color}=;tag=:a-entity'
+    blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
     return
 
 def make_link(page, d):
