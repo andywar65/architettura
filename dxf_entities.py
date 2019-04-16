@@ -990,18 +990,21 @@ def make_light(page, d):
         light += f'shadowCameraTop: {5*fabs(d["42"])}; '
         light += f'shadowCameraRight: {5*fabs(d["41"])}; '
 
-    material = d.get('COLOR', '')
+    color = d.get('COLOR', '')
 
     if d['TYPE'] == 'directional' or d['TYPE'] == 'spot':
         light += f'target: #{identity}-target; '
-        page.ent_dict[identity].update(light=light, layer=d['layer'],
-            closing=0, tag='a-entity', material=material)
-        page.ent_dict[identity + '-target'] = {'position': '0 -1 0',
-            'tag': 'a-entity', 'closing': close_entity(page, d)+1,
-            'layer': d['layer']}
+        blob = f'=;light=:{light}=;tag=:a-entity=;color=:{color}'
+        blob += f'=;layer=:{d["layer"]}=;closing=:0'
+        page.ent_dict[identity] += blob
+        blob = f'id=:{identity + "-target"}=;position=:0 -1 0=;tag=:a-entity'
+        blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)+1}'
+        page.ent_dict[identity + '-target'] = blob
+
     else:
-        page.ent_dict[identity].update(light=light, layer=d['layer'],
-            closing=close_entity(page, d), tag='a-entity', material=material)
+        blob = f'=;light=:{light}=;tag=:a-entity=;color=:{color}'
+        blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
 
     return
 
