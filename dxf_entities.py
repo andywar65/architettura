@@ -698,13 +698,7 @@ def make_wall(page, d):
     return
 
 def make_stair(page, d):
-    #values = (
-        #('pool', 0, 'steps', 'MATERIAL'),
-        #('pool', 2, 'railings', 'MATERIAL'),
-    #)
-    #d = prepare_material_values(values, d)
-    #oput = ''
-    #d['prefix'] = 'steps'
+
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     if d['STEPS']:
@@ -1162,7 +1156,7 @@ def make_tree(d):
 
     oput += '</a-entity><!--close tree--> \n'
 
-    return oput
+    return oput#TODO
 
 def make_branch(branch, lb, lp, angle, rotx, d):
     d['prefix'] = 'branch'
@@ -1179,7 +1173,7 @@ def make_branch(branch, lb, lp, angle, rotx, d):
     oput += entity_material(d)
     oput += '">\n'
     oput += '</a-cone> \n'#close branch
-    return oput
+    return oput#TODO
 
 def make_leaves(branch, lb, d):
     d['prefix'] = 'leaf'
@@ -1191,7 +1185,7 @@ def make_leaves(branch, lb, d):
     oput += entity_material(d)
     oput += 'side: back;">\n'
     oput += '</a-sphere> \n'#close leaves
-    return oput
+    return oput#TODO
 
 def open_entity(page, d):
 
@@ -1311,8 +1305,8 @@ def make_position(d):
 
 def close_entity(page, d):
 
-    if d['PROPERTY'] == 'stalker':
-        pass #oput += add_stalker(page, d)
+    #if d['PROPERTY'] == 'stalker':
+        #oput += add_stalker(page, d)
     closing = 1
     if d['animation']:
         if d['RIG']:
@@ -1323,7 +1317,7 @@ def close_entity(page, d):
         else:
             if d['PROPERTY'] == 'rotation' or d['PROPERTY'] == 'orbit':
                 closing += 1
-    return closing
+    return closing#lacks stalker part
 
 def entity_geometry(d):
     attr_dict = {
@@ -1417,7 +1411,7 @@ def add_stalker(page, d):
         oput += add_link_part(page, d)
         oput += '>\n'
         oput += '</a-link>\n'
-    return oput
+    return oput#TODO
 
 def add_link_part(page, d):
     #since we are still in dxf page, tree links are just placeholders
@@ -1440,10 +1434,7 @@ def unit(nounit):
     unit = fabs(nounit)/nounit
     return unit
 
-def rfloat(string):
-    return round(float(string), 4)
-
-def entity_material(d):
+def entity_material(d):#should be eliminated
     #returns object material
     oput = ''
     if d['wireframe']:
@@ -1454,7 +1445,7 @@ def entity_material(d):
             oput += f' repeat:{d["rx"]} {d["ry"]};'
     return oput
 
-def prepare_material_values(values, d):
+def prepare_material_values(values, d):#should be eliminated
 
     for v in values:
         try:
