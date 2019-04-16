@@ -1040,12 +1040,12 @@ def make_link(page, d):
     d['animation'] = False
 
     identity = open_entity(page, d)
-    geometry = f'width,{round(d["41"], 4)},'
-    geometry += f'height,{round(d["43"], 4)}'
+    scale = f'{round(d["41"], 4)} {round(d["43"], 4)} 0'
     link = add_link_part(page, d)
-    page.ent_dict[identity].update(link=link[0], layer=d['layer'],
-        closing=1, material=link[2], geometry=geometry, tag=d['tag'],
-        text=link[1])
+    blob = f'=;scale=:{scale}=;href=:{link[0]}=;tag=:a-link'
+    blob += f'=;title=:{link[1]}=;image=:{link[2]}'
+    blob += f'=;layer=:{d["layer"]}=;closing=:1'
+    page.ent_dict[identity] += blob
     return
 
 def make_object(page, d):
