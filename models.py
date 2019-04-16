@@ -161,6 +161,9 @@ class DxfPage(Page):
     object_repository = models.URLField(
         help_text="URL of external repository for OBJ/GLTF files",
         blank=True, null=True)
+    entities = models.TextField(blank=True,
+        default='id=:identity=;tag=:a-entity=;closing=:1',
+        )
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
@@ -174,9 +177,7 @@ class DxfPage(Page):
             FieldPanel('object_repository'),
         ], heading="Sources", ),
         InlinePanel('layers', label="Layers",),
-        MultiFieldPanel([
-            InlinePanel('entities', label="Entities",),
-        ], heading="Entities", classname="collapsible collapsed" ),
+        FieldPanel('entities'),
     ]
 
     def add_new_layers(self):
@@ -212,120 +213,92 @@ class DxfPage(Page):
         collection = dxf.reference_animations(collection)
         #make entity dictionary
         dxf.make_entities_dict(self, collection)
-        #delete existing Dxf Page Entities
-        DxfPageEntity.objects.filter(page_id=self.id).delete()
+        #delete existing Entities
+        self.entities = ''
         #add entities in db
-        for identity, data in self.ent_dict.items():
-            eb = DxfPageEntity(page_id=self.id, identity=identity,
-                layer=data['layer'])
-            eb.tag = data.get('tag', '')
-            eb.position = data.get('position', '')
-            eb.rotation = data.get('rotation', '')
-            eb.geometry = data.get('geometry', '')
-            eb.line = data.get('line', '')
-            eb.material = data.get('material', '')
-            eb.repeat = data.get('repeat', '')
-            eb.component = data.get('component', 0)
-            eb.partition = data.get('partition', '')
-            eb.text = data.get('text', '')
-            eb.link = data.get('link', '')
-            eb.light = data.get('light', '')
-            eb.obj_mtl = data.get('obj_mtl', '')
-            eb.gltf = data.get('gltf', '')
-            eb.animation = data.get('animation', '')
-            eb.animator = data.get('animator', '')
-            eb.closing = data.get('closing', 1)
-            eb.save()
+        for identity, blob in self.ent_dict.items():
+            self.entities += blob + '\n'
         #prevent dxf file from overriding again database
         self.block = True
         self.save()
         return
 
     def get_object_assets(self):
-        page_ent_obj = DxfPageEntity.objects.filter(page_id=self.id,
-            obj_mtl__isnull=False)
-        page_ent_gltf = DxfPageEntity.objects.filter(page_id=self.id,
-            gltf__isnull=False)
+        self.ent_list = []
+        #prepare the list of entities for general use
+        lines = self.entities.splitlines()
+        for line in lines:
+            blob = {}
+            ent = {}
+            pairs = line.split('=;')
+            for pair in pairs:
+                couple = pair.split('=:')
+                blob[couple[0]] = couple[1]
+            ent['id'] = blob.pop('id', 'ID')
+            ent['tag'] = blob.pop('tag', 'a-entity')
+            ent['closing'] = int(blob.pop('closing', 1))
+            ent['blob'] = blob
+            self.ent_list.append(ent)
+        #prepare object dictionary for template
         if self.object_repository:
             path = self.object_repository
         else:
             path = os.path.join(settings.MEDIA_URL, 'documents')
         object_dict = {}
-        for ent in page_ent_obj:
-            object_dict[ent.obj_mtl + '.' + 'obj'] = path
-            object_dict[ent.obj_mtl + '.' + 'mtl'] = path
-        for ent in page_ent_gltf:
-            object_dict[ent.gltf + '.' + 'gltf'] = path
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if 'obj-model' in blob:
+                object_dict[blob['obj-model'] + '.' + 'obj'] = path
+                object_dict[blob['obj-model'] + '.' + 'mtl'] = path
+            if 'gltf-model' in blob:
+                object_dict[blob['gltf-model'] + '.' + 'gltf'] = path
 
         return object_dict
 
     def get_entities(self):
         page_layers = DxfPageLayer.objects.filter(page_id=self.id)
-        page_ent = DxfPageEntity.objects.filter(page_id=self.id
-            ).order_by('id').exclude(tag='a-camera').exclude(tag='a-link')
-        for ent in page_ent:
+        for ent in self.ent_list:
+            blob = ent['blob']
+            #set layer color
             try:
-                layer = page_layers.get(name=ent.layer)
+                layer = page_layers.get(name=blob['layer'])
                 layer_color = f'color: {layer.color}; '
             except:
                 layer_color = 'color: #ffffff; '
-            if ent.light:
-                if ent.material:
-                    ent.material = f'color: {ent.material}; '
+            #if requested, set material color
+            if 'material' in blob:
+                if blob['material'] == '':
+                    blob['material'] = layer_color
+                elif blob['material'][0] == '#':
+                    blob['material'] = f'color: {blob["material"]}; '
                 else:
-                    ent.material = layer_color
-                ent.light = ent.light + ent.material
-                ent.material = ''
-            elif ent.line:
-                if ent.material:
-                    ent.material = f'color: {ent.material}; '
-                else:
-                    ent.material = layer_color
-                list = ent.line.split(',')
-                ent.line = {}
-                for i in range(int(len(list)/2)):
-                    ent.line[list[i*2]] = list[i*2+1] + ent.material
-                ent.material = ''
-            elif ent.text:
-                if ent.material and ent.material[0] == '#':
-                    ent.material = f'color: {ent.material}; '
-                else:
-                    ent.material = layer_color
-                ent.text = ent.text + ent.material
-                ent.material = ''
-            elif ent.obj_mtl:
-                ent.obj_mtl = f'obj: #{ent.obj_mtl}.obj; mtl: #{ent.obj_mtl}.mtl;'
-                ent.scale = ent.geometry
-                ent.geometry = ''
-                ent.material = ''
-            elif ent.gltf:
-                ent.gltf = f'#{ent.gltf}.gltf'
-                ent.scale = ent.geometry
-                ent.geometry = ''
-                ent.material = ''
-                ent.check = ent.animator
-                ent.animator = ''
-            else:
-                if ent.material == 'Null':
-                    ent.material = ''
-                elif ent.material and ent.material[0] == '#':
-                    ent.material = f'color: {ent.material}; '
-                else:
-                    ent.material = layer_color
-            if ent.animator:
-                ent.animator = ent.animator.split(',')
-                ent.animator = {ent.animator[0]: ent.animator[1]}
-            if ent.animator == {'checkpoint': 'checkpoint'}:
-                ent.check = 'checkpoint'
-                ent.animator = {}
+                    blob['material'] = layer_color
+            #loop through blob items
+            for key, value in blob.items():
+                if key == 'light' or key[:4] == 'line' or key == 'text':
+                    if 'color' in blob and blob['color'] != '':
+                        blob[key] = value + f'color: {blob["color"]}; '
+                    else:
+                        blob[key] = value + layer_color
+                elif key == 'obj-model':
+                    obj = blob['obj-model']
+                    blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
+                elif key == 'gltf-model':
+                    blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
+                    ent['extras'] = 'animation-mixer'
+            #cannot pop keys inside loop
+            values = ['component', 'layer', 'repeat', 'color', 'partition']
+            for v in values:
+                if v in blob:
+                    blob.pop(v)
             close = []
-            for c in range(ent.closing):
+            for c in range(ent['closing']):
                 if c == 0:
-                    close.append(ent.tag)
+                    close.append(ent['tag'])
                 else:
                     close.append('a-entity')
-            ent.closing = close
-        return page_ent
+            ent['closing'] = close
+        return self.ent_list
 
     def get_links(self):
         page_links = DxfPageEntity.objects.filter(page_id=self.id, tag='a-link')
@@ -351,66 +324,13 @@ class DxfPageLayer(Orderable):
         FieldPanel('color'),
     ]
 
-class DxfPageEntity(Orderable):
-    page = ParentalKey(DxfPage, related_name='entities')
-    identity = models.CharField(max_length=250, )
-    tag = models.CharField(max_length=250, null=True, blank=True,)
-    layer = models.CharField(max_length=250, )
-    position = models.CharField(max_length=250, null=True, blank=True,)
-    rotation = models.CharField(max_length=250, null=True, blank=True,)
-    geometry = models.CharField(max_length=250, null=True, blank=True,)
-    line = models.TextField(max_length=250, null=True, blank=True,)
-    material = models.CharField(max_length=250, null=True, blank=True,)
-    repeat = models.CharField(max_length=250, null=True, blank=True,)
-    component = models.IntegerField(default=0, )
-    partition = models.CharField(max_length=250, null=True, blank=True,)
-    text = models.TextField(max_length=250, null=True, blank=True,)
-    link = models.CharField(max_length=250, null=True, blank=True,)
-    animation = models.CharField(max_length=250, null=True, blank=True,)
-    animator = models.CharField(max_length=250, null=True, blank=True,)
-    light = models.CharField(max_length=250, null=True, blank=True,)
-    obj_mtl = models.CharField(max_length=250, null=True, blank=True,)
-    gltf = models.CharField(max_length=250, null=True, blank=True,)
-    closing = models.IntegerField(default=1, )
+#class DxfPageEntity(Orderable):
+    #page = ParentalKey(DxfPage, related_name='entities')
+    #data = models.TextField(default='id=:identity=;tag=:a-entity=;closing=:1', )
 
-    panels = [
-        FieldRowPanel([
-            FieldPanel('identity'),
-            FieldPanel('layer'),
-            FieldPanel('animator'),
-            FieldPanel('closing'),
-        ], classname="label-above"),
-        FieldRowPanel([
-            FieldPanel('geometry'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('position'),
-            FieldPanel('rotation'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('line'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('material'),
-            FieldPanel('component'),
-            FieldPanel('repeat'),
-            FieldPanel('partition'),
-        ], classname="label-above"),
-        FieldRowPanel([
-            FieldPanel('text'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('animation'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('light'),
-        ]),
-        FieldRowPanel([
-            FieldPanel('obj_mtl'),
-            FieldPanel('gltf'),
-            FieldPanel('link'),
-        ], classname="label-above"),
-    ]
+    #panels = [
+        #FieldPanel('data'),
+    #]
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,

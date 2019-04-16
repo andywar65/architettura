@@ -23,22 +23,10 @@
       {% endfor %}{% endif %}{% endwith %}
     </a-asset>
 
-		{% with entities=page.get_entities %}{% if entities %}{% for ent in entities %}
-			<{{ ent.tag }} id="{{ ent.identity }}" {% if ent.animator %}{% for a, v in ent.animator.items %}{{ a }}="{{ v }}" {% endfor %}{% endif %}{% if ent.check %}checkpoint {% endif %}
-      {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
-      {% if ent.geometry %}geometry="{{ ent.geometry }}" {% endif %}{% if ent.line %}{% for n, l in ent.line.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}
-      {% if ent.material %}material="{{ ent.material }}" {% endif %}{% if ent.animation %}animation="{{ ent.animation }}" {% endif %}
-      {% if ent.obj_mtl %}obj-model="{{ ent.obj_mtl }}" {% endif %}{% if ent.gltf %}gltf-model="{{ ent.gltf }}" {% endif %}{% if ent.scale %}scale="{{ ent.scale }}" {% endif %}
-      {% if ent.text %}text="{{ ent.text }}" {% endif %}{% if ent.light %}light="{{ ent.light }}" {% endif %}>
-      {% for c in ent.closing %}</{{c}}>{% endfor %}
-		{% endfor %}{% endif %}{% endwith %}
-
-    {% with entities=page.get_links %}{% if entities %}{% for ent in entities %}
-			<a-link id="{{ ent.identity }}"
-      {% if ent.position %}position="{{ ent.position }}" {% endif %}{% if ent.rotation %}rotation="{{ ent.rotation }}" {% endif %}
-      {% if ent.geometry %}{% for n, l in ent.geometry.items %}{{ n }}="{{ l }}" {% endfor %}{% endif %}
-      {% if ent.material %}image="{{ ent.material }}" {% endif %}{% if ent.text %}title="{{ ent.text }}" {% endif %}{% if ent.link %}href="{{ ent.link }}" {% endif %}>
-      </a-link>
+		{% with ent_list=page.get_entities %}{% if ent_list %}{% for ent in ent_list %}
+			<{{ ent.tag }} id="{{ ent.id }}" {% if ent.extras %}{{ ent.extras }} {% endif %}{% for key, value in ent.blob.items %}
+      {{ key }}="{{ value }}" {% endfor %}
+      >{% for c in ent.closing %}</{{c}}>{% endfor %}
 		{% endfor %}{% endif %}{% endwith %}
 
     <a-sky src="#sky"></a-sky>

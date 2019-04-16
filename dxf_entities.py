@@ -1,6 +1,6 @@
 """Collection of functions for writing HTML of entities and blocks.
 
-Functions are referenced from architettura.aframe.make_html, a-block CAD blocks
+Functions are referenced from architettura.dxf.make_html, a-block CAD blocks
 have NAME attribute that are essentially block names, while BIM blocks use PART
 attribute for setting 'partition type'. Block appearance is determined by
 MATERIAL attribute (multiple components may be used depending on NAME), other
@@ -12,11 +12,13 @@ from random import random, gauss
 
 def make_camera(page, d):
     identity = f'{page.id}-camera-{d["num"]}'
-    position = f'{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
-    rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-    geometry = f'{round(d["43"]*1.6, 4)}'
-    light = f'intensity: {d["LIGHT-INT"]}; '
-    tag = 'a-camera'
+    blob = f'id=:{identity}'
+    blob += f'=;position=:{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
+    blob += f'=;rotation=:{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+    blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
+    blob += f'=;intensity=:{d["LIGHT-INT"]}'
+    blob += '=;tag=:a-camera'
+    blob += f'=;layer=:{d["layer"]}'
     #if page.mode == 'digkom':
         #oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
@@ -27,9 +29,7 @@ def make_camera(page, d):
     #oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
     #oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     #oput += '</a-camera></a-entity> \n'
-    page.ent_dict[identity]={'identity': identity, 'position': position,
-        'rotation': rotation, 'geometry': geometry, 'light': light,
-        'tag': tag, 'layer': d['layer']}
+    page.ent_dict[identity] = blob
     return
 
 def make_box(page, d):
@@ -41,14 +41,12 @@ def make_box(page, d):
     d['dz'] = d['43']/2
     d['ide'] = 'box'
     identity = open_entity(page, d)
-    geometry = f'primitive: {d["ide"]}; '
-    geometry += f'width: {round(d["41"], 4)}; '
-    geometry += f'height: {round(d["43"], 4)}; '
-    geometry += f'depth: {round(d["42"], 4)}; '
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-entity')
+    blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
+    blob += f'=;depth=:{round(d["42"], 4)}=;layer=:{d["layer"]}'
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:a-box'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -59,16 +57,16 @@ def make_block(page, d):
     d['tag'] = 'a-entity'
     d['ide'] = 'block'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'],
-        closing=0, material='Null', tag='a-entity')
+    blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
 
     if d['NAME'] == 't01':
         make_table_01(page, d)
     elif d['NAME'] == 'obj-mtl' or d['NAME'] == 'gltf':
         make_object(page, d)
-    elif d['NAME'] == 'tree':
-        make_tree(page, d)
+    #elif d['NAME'] == 'tree':
+        #make_tree(page, d)
 
     return
 
@@ -83,8 +81,8 @@ def make_bim_block(page, d):
     d['tag'] = 'a-entity'
     d['ide'] = 'BIM-block'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'],
-        closing=0, material='Null', tag='a-entity')
+    blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
 
     if d['2'] == 'a-wall':
@@ -117,19 +115,20 @@ def make_circular(page, d):
         d['dz'] = d['43']/2
 
     d['ide'] = d['2'].replace('a-', '')
+    d['tag'] = d['2']
     identity = open_entity(page, d)
-    geometry = f'primitive: {d["ide"]}; '
+    #geometry = f'primitive: {d["ide"]}; '
     if d['2'] == 'a-circle':
-        geometry += f'radius: {fabs(d["41"])}; '
+        blob = f'=;radius=:{round(fabs(d["41"]), 4)};'
     else:
-        geometry += f'width: {round(d["41"], 4)}; '
-        geometry += f'height: {round(d["43"], 4)}; '
-        geometry += f'depth: {round(d["42"], 4)}; '
-    geometry += entity_geometry(d)
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-entity')
+        blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
+        blob += f'=;depth=:{round(d["42"], 4)}'
+    blob += entity_geometry(d)
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;layer=:{d["layer"]}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:{d["tag"]}'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -141,13 +140,14 @@ def make_curvedimage(page, d):
     d['dy'] = 0
     d['dz'] = d['43']/2
     identity = open_entity(page, d)
-    geometry = f'radius: {round(fabs(d["41"]), 4)*2}; '
-    geometry += f'height: {round(d["43"], 4)}; '
-    geometry += entity_geometry(d)
-    repeat=f'repeat: {round(d["rx"], 4)} {round(d["ry"], 4)}; '
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=d['MATERIAL'], component=0,
-        repeat=repeat, tag='a-curvedimage')
+    blob = f'=;radius=:{round(fabs(d["41"])*2, 4)}'
+    blob += f'=;height=:{round(d["43"], 4)}'
+    blob += entity_geometry(d)
+    blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
+    blob += f'=;layer=:{d["layer"]}'
+    blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:{d["2"]}'
+    blob += f'=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -158,8 +158,8 @@ def make_plane(page, d):
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
     identity = open_entity(page, d)
-    page.ent_dict[identity].update(layer=d['layer'], closing=0, tag=d['tag'],
-        material='Null')
+    blob = f'=;layer=:{d["layer"]}=;closing=:0=;tag=:{d["tag"]}'
+    page.ent_dict[identity] += blob
     d['closing'] = close_entity(page, d)
     make_w_plane(page, d)
 
@@ -204,16 +204,17 @@ def make_w_plane(page, d):
         if v[0]:
             d['ry'] = v[0]
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
-            geometry = 'primitive: plane; '
-            geometry += f'width: {round(d["rx"], 4)}; height: {v[0]}; '
-            repeat = f'repeat: {round(d["rx"], 4)} {v[0]}; '
-            position = f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
+            blob = f'id=:{identity}'
+            blob += f'=;width=:{round(d["rx"], 4)}=;height=:{round(v[0], 4)}'
+            blob += f'=;repeat=:{round(d["rx"], 4)} {v[0]}'
+            blob += f'=;position=:0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} 0'
             material = d.get('MATERIAL', '')
-            page.ent_dict[identity]={'position': position, 'geometry': geometry,
-                'material': material, 'repeat': repeat, 'component': v[0],
-                'closing': 1, 'layer': d['layer'], 'tag': 'a-entity'}
+            blob += f'=;material=:{material}=;component=:{v[3]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-plane=;closing=:1'
+            page.ent_dict[identity] = blob
     #last one closes all
-    page.ent_dict[identity].update(closing=d['closing']+1)
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1', f'closing=:{closing}')
 
     return
 
@@ -234,13 +235,13 @@ def make_triangle(page, d):
     d['ry'] = 1
     d['dx'] = d['dy'] = d['dz'] = 0
     identity = open_entity(page, d)
-    geometry = f'vertexA:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}; '
-    geometry += f'vertexB:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}; '
-    geometry += f'vertexC:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}'
+    blob = f'=;vertex-a=:{round(d["10b"], 4)} {round(d["30b"], 4)} {round(d["20b"], 4)}'
+    blob += f'=;vertex-b=:{round(d["11"], 4)} {round(d["31"], 4)} {round(d["21"], 4)}'
+    blob += f'=;vertex-c=:{round(d["12"], 4)} {round(d["32"], 4)} {round(d["22"], 4)}'
     material = d.get('MATERIAL', '')
-    page.ent_dict[identity].update(geometry=geometry, layer=d['layer'],
-        closing=close_entity(page, d), material=material, component=0,
-        tag='a-triangle')
+    blob += f'=;material=:{material}=;component=:0'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-triangle=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
 
     return
 
@@ -267,20 +268,21 @@ def make_line(page, d):
         d['43'] = d['39']
         d['41'] = sqrt(pow(d['11'], 2) + pow(d['21'], 2))*2
         d['50'] = -degrees(atan2(d['21'], d['11']))
-        rotation = f'0 {round(d["50"], 4)} 0'
-        page.ent_dict[identity].update(layer=d['layer'],
-            rotation=rotation, closing=0, tag=d['tag'], material='Null')
+        blob = f'=;rotation=:0 {round(d["50"], 4)} 0'
+        blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
         d['closing'] = close_entity(page, d)
         make_w_plane(page, d)
     else:
-        line = f'line,start:{round(d["10b"], 4)} '
-        line += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
-        line += f'end:{round(d["11"], 4)} '
-        line += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
-        material = d.get('COLOR', '')
-        page.ent_dict[identity].update(line=line, layer=d['layer'],
-            closing=close_entity(page, d), material=material, component=0,
-            tag=d['tag'])
+        blob = f'=;line=:start:{round(d["10b"], 4)} '
+        blob += f'{round(d["30b"], 4)} {round(d["20b"], 4)}; '
+        blob += f'end:{round(d["11"], 4)} '
+        blob += f'{round(d["31"], 4)} {round(d["21"], 4)}; '
+        color = d.get('COLOR', '')
+        blob += f'=;layer=:{d["layer"]}'
+        blob += f'=;color=:{color}=;tag=:{d["tag"]}'
+        blob += f'=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
 
     return
 
@@ -317,8 +319,8 @@ def make_poly(page, d):
     d['num1'] = d['num']
     identity = open_entity(page, d)
     if d['39']:
-        page.ent_dict[identity].update(layer=d['layer'], closing=0,
-            tag=d['tag'], material='Null')
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
         d['42'] = 0
         d['43'] = d['39']
         stop = d['90']-2
@@ -331,9 +333,9 @@ def make_poly(page, d):
             identity = f'{page.id}-{d["ide"]}-{d["num"]}'
             position = f'{round(d["vx"][i]-dx/2, 4)} 0 {round(d["vy"][i]-dy/2, 4)}'
             rotation = f'0 {round(d["50"], 4)} 0'
-            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
-                'tag': d['tag'], 'position': position, 'rotation': rotation,
-                'material': 'Null'}
+            blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+            page.ent_dict[identity] = blob
             if d['70']:
                 d['closing'] = 1
             else:
@@ -351,30 +353,29 @@ def make_poly(page, d):
             identity = f'{page.id}-{d["ide"]}-{d["num"]}'
             position = f'{round(d["vx"][i+1]-dx/2, 4)} 0 {round(d["vy"][i+1]-dy/2, 4)}'
             rotation = f'0 {round(d["50"], 4)} 0'
-            page.ent_dict[identity] = {'layer': d['layer'], 'closing': 0,
-                'tag': d['tag'], 'position': position, 'rotation': rotation,
-                'material': 'Null'}
+            blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+            page.ent_dict[identity] = blob
             d['closing'] = close_entity(page, d) + 1
             make_w_plane(page, d)
         d['num'] = d['num1']
     else:
-        line = ''
+        blob = ''
         for i in range(d['90']-1):
             if i==0:
-                line += 'line,'
+                blob += '=;line'
             else:
-                line += f',line__{i+1},'
-            line += f'start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; '
-            line += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; '
+                blob += f'=;line__{i+1}'
+            blob += f'=:start:{round(d["vx"][i], 4)} 0 {round(d["vy"][i], 4)}; '
+            blob += f'end:{round(d["vx"][i+1], 4)} 0 {round(d["vy"][i+1], 4)}; '
         if d['70']:
-            line += f',line__{i+2},start:{round(d["vx"][i+1], 4)} 0 '
-            line += f'{round(d["vy"][i+1], 4)}; '
-            line += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
-        material = d.get('COLOR', '')
-
-        page.ent_dict[identity].update(line=line, layer=d['layer'],
-            closing=close_entity(page, d), material=material, component=0,
-            tag=d['tag'])
+            blob += f'=;line__{i+2}=:start:{round(d["vx"][i+1], 4)} 0 '
+            blob += f'{round(d["vy"][i+1], 4)}; '
+            blob += f'end:{round(d["vx"][0], 4)} 0 {round(d["vy"][0], 4)}; '
+        color = d.get('COLOR', '')
+        blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;color=:{color}'
+        blob += f'=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
     return
 
 def make_table_01(page, d):
@@ -392,9 +393,10 @@ def make_table_01(page, d):
     position = f'0 {round(d["43"]/2-0.025*unit(d["43"]), 4)} 0'
     geometry = f'width: {d["rx"]}; height: 0.05; depth: {d["ry"]};'
     material = d.get('MATERIAL', '')
-    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-        'geometry': geometry, 'material': material, 'component': 2,
-        'tag': 'a-box', 'closing': 1}
+    blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;material=:{material}=;component=:2'
+    page.ent_dict[identity] = blob
     #prepare legs
     d['prefix'] = 'leg'
     scale_x = round(d["41"]/2-0.05*unit(d["41"]), 4)
@@ -413,11 +415,13 @@ def make_table_01(page, d):
         identity = f'{page.id}-table01-{d["num"]}-leg-{v[0]}'
         position = f'{v[1]} {(height-round(d["43"], 4))/2} {v[2]}'
         geometry = f'radius: 0.025; height: {height}; '
-        page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-            'geometry': geometry, 'material': material, 'component': 1,
-            'tag': 'a-cylinder', 'closing': 1}
+        blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-cylinder=;closing=:1'
+        blob += f'=;material=:{material}=;component=:1'
+        page.ent_dict[identity] = blob
     #last one closes all
-    page.ent_dict[identity].update(closing=d['closing']+1)
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1', f'closing=:{closing}')
 
     return
 
@@ -425,7 +429,7 @@ def make_door(page, d):
     """Door default BIM block.
 
     A simple framed door. Gets dimensions from block scaling, except for frame
-    dimension. PART sets door features. If set to 'ghost' panel will not be
+    dimension. PART sets door features. If set to 'ghost' door will not be
     rendered. SLIDING and DOUBLE are boolean. Gets panel material from first
     component and frame material from third component.
     """
@@ -435,142 +439,155 @@ def make_door(page, d):
 
     d['rx'] = 1
     d['ry'] = 1
-    #left frame
-    identity = f'{page.id}-door-{d["num"]}-left-frame'
-    position = f'{-0.049*unit(d["41"])-d["41"]/2} {0.099*unit(d["43"])/2} 0'
-    rotation = '0 0 90'
-    geometry = f'width: {fabs(d["43"])+0.099}; height: 0.1; depth: {fabs(d["42"])+0.02};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],
-        'rotation': rotation,}
-    #right frame
-    identity = f'{page.id}-door-{d["num"]}-right-frame'
-    position = f'{d["41"]/2+0.049*unit(d["41"])} {0.099*unit(d["43"])/2} 0'
-    rotation = '0 0 90'
-    geometry = f'width: {fabs(d["43"])+0.099}; height: 0.1; depth: {fabs(d["42"])+0.02};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],
-        'rotation': rotation,}
-    #top frame
-    identity = f'{page.id}-door-{d["num"]}-top-frame'
-    position = f'0 {d["43"]/2+0.049*unit(d["43"])} 0'
-    geometry = f'width: {fabs(d["41"])-0.002}; height: 0.1; depth: {fabs(d["42"])+0.02};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    #door frame
+    values = (('left', round(-0.049*unit(d["41"])-d["41"]/2, 4),
+        round(0.099*unit(d["43"])/2, 4), '0 0 90', round(fabs(d["43"])+0.099, 4),
+        round(fabs(d["42"])+0.02, 4)),
+        ('right', round(d["41"]/2+0.049*unit(d["41"]), 4),
+        round(0.099*unit(d["43"])/2, 4), '0 0 90', round(fabs(d["43"])+0.099, 4),
+        round(fabs(d["42"])+0.02, 4)),
+        ('top', 0, round(d["43"]/2+0.049*unit(d["43"]), 4), '0 0 0',
+        round(fabs(d["41"])-0.002, 4), round(fabs(d["42"])+0.02, 4))
+        )
+    for v in values:
+        identity = f'{page.id}-door-{d["num"]}-{v[0]}-frame'
+        position = f'{v[1]} {v[2]} 0'
+        rotation = v[3]
+        geometry = f'width: {v[4]}; height: 0.1; depth: {v[5]};'
+        blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+        blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:2'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+        blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+        page.ent_dict[identity] = blob
 
     if eval(d["DOUBLE"]):
-        d['rx'] = fabs(d["41"])/2-0.002
+        d['rx'] = round(fabs(d["41"])/2-0.002, 4)
     else:
-        d['rx'] = fabs(d["41"])-0.002
-    d['ry'] = d["43"]-0.001*unit(d["43"])
+        d['rx'] = round(fabs(d["41"])-0.002, 4)
+    d['ry'] = round(d["43"]-0.001*unit(d["43"]), 4)
     if eval(d["SLIDING"]):
         if eval(d["DOUBLE"]):
             #animated slide 1
             identity = f'{page.id}-door-{d["num"]}-slide-1'
-            position = f'{-d["41"]/2} {-d["43"]/2} 0'
-            animation = 'animation="property: position; easing: easeInOutQuad; '
+            pos = f'{-d["41"]/2} {-d["43"]/2} 0'
+            animation = 'property: position; easing: easeInOutQuad; '
             animation += f'from:{-d["41"]/2} {-d["43"]/2} 0; '
             animation += f'to:{-d["41"]+0.01} {-d["43"]/2} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation}
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part 1
             identity = f'{page.id}-door-{d["num"]}-moving-part-1'
-            position = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            pos = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
             geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:2'
+            page.ent_dict[identity] = blob
             #animated slide 2
             identity = f'{page.id}-door-{d["num"]}-slide-2'
-            position = f'{d["41"]/2} {-d["43"]/2} 0'
-            animation = 'animation="property: position; easing: easeInOutQuad; '
+            pos = f'{d["41"]/2} {-d["43"]/2} 0'
+            animation = 'property: position; easing: easeInOutQuad; '
             animation += f'from:{d["41"]/2} {-d["43"]/2} 0; '
             animation += f'to:{d["41"]-0.01} {-d["43"]/2} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation}
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part 2
             identity = f'{page.id}-door-{d["num"]}-moving-part-2'
-            position = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            pos = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} 0'
             geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+2}'
+            page.ent_dict[identity] = blob
             return
         else:#single
             #animated slide
             identity = f'{page.id}-door-{d["num"]}-slide'
-            position = f'{-d["41"]/2} {-d["43"]/2} 0'
-            animation = 'animation="property: position; easing: easeInOutQuad; '
+            pos = f'{-d["41"]/2} {-d["43"]/2} 0'
+            animation = 'property: position; easing: easeInOutQuad; '
             animation += f'from:{-d["41"]/2} {-d["43"]/2} 0; '
             animation += f'to:{-d["41"]*3/2+0.01} {-d["43"]/2} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part
             identity = f'{page.id}-door-{d["num"]}-moving-part'
-            position = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0'
+            pos = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} 0'
             geometry = f'width: {fabs(d["41"])-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+2}'
+            page.ent_dict[identity] = blob
             return
     else:#hinged
         if eval(d["DOUBLE"]):
             #animated hinge 1
             identity = f'{page.id}-door-{d["num"]}-hinge-1'
-            position = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
-            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            pos = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'property: rotation; easing: easeInOutQuad; '
             animation += f'from:0 0 0; '
             animation += f'to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part 1
             identity = f'{page.id}-door-{d["num"]}-moving-part-1'
-            position = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            pos = f'{d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
             geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:2'
+            page.ent_dict[identity] = blob
             #animated hinge 2
             identity = f'{page.id}-door-{d["num"]}-hinge-2'
-            position = f'{d["41"]/2} {-d["43"]/2} {d["42"]/2}'
-            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            pos = f'{d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'property: rotation; easing: easeInOutQuad; '
             animation += f'from:0 0 0; '
             animation += f'to:0 {90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', tag: 'a-entity', 'animation': animation }
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part 2
             identity = f'{page.id}-door-{d["num"]}-moving-part-2'
-            position = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            pos = f'{-d["41"]/4} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
             geometry = f'width: {(fabs(d["41"]))/2-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+2}'
+            page.ent_dict[identity] = blob
             return
         else:#single
             #animated hinge
             identity = f'{page.id}-door-{d["num"]}-hinge'
-            position = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
-            animation = 'animation="property: rotation; easing: easeInOutQuad; '
+            pos = f'{-d["41"]/2} {-d["43"]/2} {d["42"]/2}'
+            animation = 'property: rotation; easing: easeInOutQuad; '
             animation += f'from:0 0 0; '
             animation += f'to:0 {-90*unit(d["41"])*unit(d["42"])} 0; startEvents: click; '
             animation += 'loop: 1; dir: alternate;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 0, 'material': 'Null', 'tag': 'a-entity', 'animation': animation }
+            blob = f'id=:{identity}=;position=:{pos}=;animation=:{animation}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+            page.ent_dict[identity] = blob
             #moving part
             identity = f'{page.id}-door-{d["num"]}-moving-part'
-            position = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
+            pos = f'{d["41"]/2} {(d["43"]-0.001*unit(d["43"]))/2} {-0.025*unit(d["42"])}'
             geometry = f'width: {fabs(d["41"])-0.002}; height: {d["43"]-0.001*unit(d["43"])}; depth: 0.05;'
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': d['closing']+2, 'material': d['MATERIAL'], 'component': 0,
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+            blob = f'id=:{identity}=;position=:{pos}=;geometry=:{geometry}'
+            blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
+            blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+2}'
+            page.ent_dict[identity] = blob
             return
 
 def make_slab(page, d):
@@ -586,18 +603,22 @@ def make_slab(page, d):
     identity = f'{page.id}-slab-{d["num"]}-floor'
     position = f'0 {round(-0.005*unit(d["43"])+d["43"]/2, 4)} 0'
     geometry = f'width: {d["rx"]}; height: 0.01; depth: {d["ry"]};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 1, 'material': d['MATERIAL'], 'component': 2,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:2'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    page.ent_dict[identity] = blob
 
     #ceiling
     identity = f'{page.id}-slab-{d["num"]}-ceiling'
     position = f'0 {round(-0.005*unit(d["43"]), 4)} 0'
     geometry = f'width: {d["rx"]}; height: {round(fabs(d["43"])-0.01, 4)}; '
     geometry += f'depth: {d["ry"]};'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': d['closing']+1, 'material': d['MATERIAL'], 'component': 0,
-        'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:0'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+1}'
+    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    page.ent_dict[identity] = blob
 
     return
 
@@ -661,24 +682,23 @@ def make_wall(page, d):
             d['rx'] = fabs(d["41"])
             d['ry'] = v[0]
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[1]}'
-            position = f'0 {v[2]*unit(d["43"])-d["43"]/2} '
-            position += f'{-v[3]+0.005*unit(d["42"])+d["42"]/2}'
+            position = f'0 {round(v[2]*unit(d["43"])-d["43"]/2, 4)} '
+            position += f'{round(-v[3]+0.005*unit(d["42"])+d["42"]/2, 4)}'
             geometry = f'width: {d["rx"]}; height: {v[0]}; depth: {v[4]-0.01}; '
-            page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-                'closing': 1, 'material': d[v[5]], 'component': v[6],
-                'geometry': geometry, 'tag': 'a-box', 'partition': d['PART'],}
-    #last one closes all (we should control if entity exists)
-    page.ent_dict[identity].update(closing=d['closing']+1)
+            blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+            blob += f'=;material=:{d[v[5]]}=;component=:{v[6]}'
+            blob += f'=;partition=:{d["PART"]}'
+            page.ent_dict[identity] = blob
+    #last one closes all (we control if entity exists)
+    if identity:
+        closing = d['closing']+1
+        page.ent_dict[identity] = blob.replace('closing=:1',
+            f'closing=:{closing}')
     return
 
 def make_stair(page, d):
-    values = (
-        ('pool', 0, 'steps', 'MATERIAL'),
-        ('pool', 2, 'railings', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
-    oput = ''
-    d['prefix'] = 'steps'
+
     d['rx'] = fabs(d["41"])
     d['ry'] = fabs(d["42"])
     if d['STEPS']:
@@ -695,6 +715,7 @@ def make_stair(page, d):
             diff = (2*d["43"]/na+d["42"]/np)-.63
             if fabs(diff) <= 0.01:
                 flag = True
+                break
             else:
                 na -= 1
         if flag == False:
@@ -706,16 +727,20 @@ def make_stair(page, d):
     for i in range(int(np)):
         posz = round((d["43"]/na-0.015*unit(d["43"])+i*d["43"]/na)-d["43"]/2, 4)
         posy = round(-d["42"]/np/2-i*d["42"]/np+d["42"]/2, 4)
-        oput += f'<a-box id="stair-{d["num"]}-step-{i}" \n'
-        oput += f'position="0 {posz} {posy}" \n'
-        oput += f'rotation="0 90 0" \n'
-        oput += f'scale="{round(d["42"]/np, 4)} 0.03 {round(d["41"]-0.1, 4)}" \n'
-        oput += entity_material(d)
-        oput += '"></a-box>\n'
-    d['prefix'] = 'railings'
+        identity = f'{page.id}-stair-{d["num"]}-step-{i}'
+        position = f'0 {posz} {posy}'
+        rotation = f'0 90 0'
+        scale = f'{round(d["42"]/np, 4)} 0.03 {round(d["41"]-0.1, 4)}'
+        material = d.get('MATERIAL', '')
+        blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+        blob += f'=;material=:{material}=;component=:0=;scale=:{scale}'
+        page.ent_dict[identity] = blob
+
+    #d['prefix'] = 'railings'
     d['rx'] = 1
     d['ry'] = 1
-    xtup = (-d["41"]/2, d["41"]/2-0.05)
+    xdict = {'left': -d["41"]/2, 'right': d["41"]/2-0.05}
     a = round(d['43'] / na, 4)
     d['42'] = round(d['42'], 4)
     d['43'] = round(d['43'], 4)
@@ -733,7 +758,7 @@ def make_stair(page, d):
         (6, 7, 4),
         (6, 4, 5),
     ]
-    for xpos in xtup:
+    for side, xpos in xdict.items():
         x = round(xpos, 4)
         vertices = [
             (x, d['42']/2, a-d['43']/2),
@@ -750,15 +775,19 @@ def make_stair(page, d):
             va = vertices[f[0]]
             vb = vertices[f[1]]
             vc = vertices[f[2]]
-            oput += '<a-triangle '
-            oput += f'geometry="vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; \n'
-            oput += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; \n'
-            oput += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}" \n'
-            oput += entity_material(d)
-            if page.double_face:
-                oput += 'side: double; '
-            oput += '"></a-triangle> \n'
-    return oput
+            identity = f'{page.id}-stair-{d["num"]}-{side}-beam-{i}'
+            geometry = f'vertexA:{round(va[0], 4)} {round(va[2], 4)} {round(va[1], 4)}; '
+            geometry += f'vertexB:{round(vb[0], 4)} {round(vb[2], 4)} {round(vb[1], 4)}; '
+            geometry += f'vertexC:{round(vc[0], 4)} {round(vc[2], 4)} {round(vc[1], 4)}'
+            material = d.get('MATERIAL', '')
+            blob = f'id=:{identity}=;geometry=:{geometry}'
+            blob += f'=;layer=:{d["layer"]}=;tag=:a-triangle=;closing=:1'
+            blob += f'=;material=:{material}=;component=:2'
+            page.ent_dict[identity] = blob
+    closing = d['closing']+1
+    page.ent_dict[identity] = blob.replace('closing=:1',
+        f'closing=:{closing}')
+    return
 
 def make_openwall(page, d):
 
@@ -770,8 +799,9 @@ def make_openwall(page, d):
     identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((d2['door_off_1']-tot)/2, 4)
     position =f'{xpos} 0 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
 
@@ -782,8 +812,9 @@ def make_openwall(page, d):
     xpos = round((d2['door_off_2']+d2['door_off_1']-tot)/2, 4)
     zpos = round(d2['door_height'], 4)
     position= f'{xpos} {zpos} 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
 
@@ -793,8 +824,9 @@ def make_openwall(page, d):
     identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     xpos = round((-d2['41']+tot)/2, 4)
     position=f'{xpos} 0 0'
-    page.ent_dict[identity] = {'layer': d['layer'], 'position': position,
-        'closing': 0, 'material': 'Null', 'tag': 'a-entity', }
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     d2['closing'] = d['closing']+1
     make_wall(page, d2)
 
@@ -810,24 +842,33 @@ def make_window(page, d):
     d2 = d.copy()
     d2['43'] = d2['SILL']
     d2['ide'] = 'window-under'
-    oput += f'<a-entity id="{d2["ide"]}-{d2["num"]}-ent" \n'
+    identity = f'{page.id}-{d2["ide"]}-{d2["num"]}-ent'
     zpos = round((d2['SILL']-d['43'])/2, 4)
-    oput += f'position="0 {zpos} 0"> \n'
-    oput += make_wall(d2)
-    oput += '</a-entity> \n'
-    #make sill
-    oput += f'<a-box id="{d["ide"]}-{d["num"]}-sill" \n'
+    position = f'0 {zpos} 0'
+    blob = f'id=:{identity}=;position=:{position}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
+    d2['closing'] = 1
+    make_wall(page, d2)
+
+    #make sill TODO assign material
+    identity = f'{page.id}-window-{d["num"]}-sill'
     zpos = round(d['SILL']-d['43']/2-0.014, 4)
-    oput += f'position="0 {zpos} 0" \n'
+    position = f'0 {zpos} 0'
     sillw = round(d['41']+0.04, 4)
     silld = round(d['42']+0.04, 4)
-    oput += f'scale="{sillw} 0.03 {silld}"> \n'
-    oput += '</a-box> \n'
+    scale = f'{sillw} 0.03 {silld}'
+    blob = f'id=:{identity}=;position=:{position}=;scale=:{scale}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    page.ent_dict[identity] = blob
+
+    if d["PART"] == 'ghost':
+        closing = d['closing']+1
+        page.ent_dict[identity] = blob.replace('closing=:1',
+            f'closing=:{closing}')
+        return
+
     #make frame
-    values = (
-        ('pool', 2, 'frame', 'MATERIAL'),
-    )
-    d = prepare_material_values(values, d)
     values = (
         #(xpos, zpos, rot, prefix, rx, rz, piece, depth, ypos),
         (d['41']/2-0.025, d['SILL']/2, 0, '', 0.05, d['43']-d['SILL'], 'frame-right', 0.06, 0),
@@ -835,17 +876,20 @@ def make_window(page, d):
         (0, -d['43']/2+d['SILL']+0.025, 90, '', 0.05, d['41']-0.1, 'frame-bottom', 0.06, 0),
         (0, d['43']/2-0.025, 90, '', 0.05, d['41']-0.1, 'frame-top', 0.06, 0),
     )
-    d['prefix'] = 'frame'
     d['ide'] = 'window'
     for v in values:
-        oput += make_window_frame(v, d)
+        identity = make_window_frame(page, v, d)
+
     #animated hinge 1
     xpos = round(-d["41"]/2+0.05*unit(d["41"]), 4)
-    oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
-    oput += f'position="{xpos} 0 0.025" \n'
-    oput += 'animation="property: rotation; easing: easeInOutQuad; '
-    oput += f'from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; '
-    oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-hinge-1'
+    position = f'{xpos} 0 0.025'
+    anime = 'property: rotation; easing: easeInOutQuad; '
+    anime += f'from:0 0 0; to:0 {-90*unit(d["41"])*unit(d["42"])} 0; '
+    anime += 'startEvents: click; loop: 1; dir: alternate; '
+    blob = f'id=:{identity}=;position=:{position}=;animation=:{anime}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict[identity] = blob
     if eval(d["DOUBLE"]):
         #moving part 1
         values = (
@@ -856,15 +900,18 @@ def make_window(page, d):
             (d['41']/4-0.025, d['43']/2-0.075, 90, '', 0.05, d['41']/2-0.15, 'moving-1-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            identity = make_window_frame(page, v, d)
+
         #animated hinge 2
         xpos = round(d["41"]/2-0.05*unit(d["41"]), 4)
-        oput += f'<a-entity id="{d["ide"]}-{d["num"]}-hinge-1" \n'
-        oput += f'position="{xpos} 0 0.025" \n'
-        oput += 'animation="property: rotation; easing: easeInOutQuad; '
-        oput += f'from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; '
-        oput += 'startEvents: click; loop: 1; dir: alternate;"> \n'
+        identity = f'{page.id}-{d["ide"]}-{d["num"]}-hinge-2'
+        position = f'{xpos} 0 0.025'
+        anime = 'property: rotation; easing: easeInOutQuad; '
+        anime += f'from:0 0 0; to:0 {90*unit(d["41"])*unit(d["42"])} 0; '
+        anime += 'startEvents: click; loop: 1; dir: alternate; '
+        blob = f'id=:{identity}=;position=:{position}=;animation=:{anime}'
+        blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+        page.ent_dict[identity] = blob
         #moving part 2
         values = (
             #(xpos, zpos, rot, prefix, rx, rz, piece, depth, ypos),
@@ -874,8 +921,11 @@ def make_window(page, d):
             (-d['41']/4+0.025, d['43']/2-0.075, 90, '', 0.05, d['41']/2-0.15, 'moving-2-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            id_blob = make_window_frame(page, v, d)
+        closing = d['closing']+2
+        page.ent_dict[id_blob[0]] = id_blob[1].replace('closing=:1',
+            f'closing=:{closing}')
+
     else:
         #moving part 1
         values = (
@@ -886,22 +936,27 @@ def make_window(page, d):
             (d['41']/2-0.05, d['43']/2-0.075, 90, '', 0.05, d['41']-0.2, 'moving-1-top', 0.07, -0.01),
         )
         for v in values:
-            oput += make_window_frame(v, d)
-        oput += '</a-entity> \n'
+            id_blob = make_window_frame(page, v, d)
+        closing = d['closing']+2
+        page.ent_dict[id_blob[0]] = id_blob[1].replace('closing=:1',
+            f'closing=:{closing}')
 
-    return oput
+    return
 
-def make_window_frame(v, d):
-    oput = ''
+def make_window_frame(page, v, d):
     d['rx'] = v[4]
     d['ry'] = v[5]
-    oput += f'<a-box id="{d["ide"]}-{d["num"]}-{v[6]}" \n'
-    oput += f'position="{round(v[0], 4)} {round(v[1], 4)} {v[8]}" \n'
-    oput += f'rotation="0 0 {v[2]}" \n'
-    oput += f'scale="{round(v[4], 4)} {round(v[5], 4)} {v[7]}" \n'
-    oput += entity_material(d)
-    oput += '"></a-box> \n'
-    return oput
+    identity = f'{page.id}-{d["ide"]}-{d["num"]}-{v[6]}'
+    position = f'{round(v[0], 4)} {round(v[1], 4)} {v[8]}'
+    rotation = f'0 0 {v[2]}'
+    scale = f'{round(v[4], 4)} {round(v[5], 4)} {v[7]}'
+    blob = f'id=:{identity}=;position=:{position}=;rotation=:{rotation}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
+    blob += f'=;material=:{d["WMATERIAL"]}=;component=:2'
+    blob += f'=;partition=:{d["PART"]}=;scale=:{scale}'
+    page.ent_dict[identity] = blob
+
+    return identity, blob
 
 def make_light(page, d):
     #set defaults
@@ -929,25 +984,27 @@ def make_light(page, d):
         light += f'shadowCameraTop: {5*fabs(d["42"])}; '
         light += f'shadowCameraRight: {5*fabs(d["41"])}; '
 
-    material = d.get('COLOR', '')
+    color = d.get('COLOR', '')
 
     if d['TYPE'] == 'directional' or d['TYPE'] == 'spot':
         light += f'target: #{identity}-target; '
-        page.ent_dict[identity].update(light=light, layer=d['layer'],
-            closing=0, tag='a-entity', material=material)
-        page.ent_dict[identity + '-target'] = {'position': '0 -1 0',
-            'tag': 'a-entity', 'closing': close_entity(page, d)+1,
-            'layer': d['layer']}
+        blob = f'=;light=:{light}=;tag=:a-entity=;color=:{color}'
+        blob += f'=;layer=:{d["layer"]}=;closing=:0'
+        page.ent_dict[identity] += blob
+        blob = f'id=:{identity + "-target"}=;position=:0 -1 0=;tag=:a-entity'
+        blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)+1}'
+        page.ent_dict[identity + '-target'] = blob
+
     else:
-        page.ent_dict[identity].update(light=light, layer=d['layer'],
-            closing=close_entity(page, d), tag='a-entity', material=material)
+        blob = f'=;light=:{light}=;tag=:a-entity=;color=:{color}'
+        blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)}'
+        page.ent_dict[identity] += blob
 
     return
 
 def make_text(page, d):
     d['ide'] = 'text'
     d['dx'] = d['dy'] = d['dz'] = 0
-    d['tag'] = 'a-entity'
 
     if d["WRAP-COUNT"]:
         wrapcount =  d["WRAP-COUNT"]
@@ -962,9 +1019,10 @@ def make_text(page, d):
     identity = open_entity(page, d)
     text = f'width: {d["41"]}; align: {d["ALIGN"]}; '
     text += f'value: {d["TEXT"]}; wrap-count: {wrapcount}; '
-    material = d.get('MATERIAL', '')
-    page.ent_dict[identity].update(layer=d['layer'], material=material,
-        closing=close_entity(page, d), tag=d['tag'], text=text)
+    color = d.get('COLOR', '')
+    blob = f'=;text=:{text}=;color=:{color}=;tag=:a-entity'
+    blob += f'=;layer=:{d["layer"]}=;closing=:{close_entity(page, d)}'
+    page.ent_dict[identity] += blob
     return
 
 def make_link(page, d):
@@ -976,12 +1034,12 @@ def make_link(page, d):
     d['animation'] = False
 
     identity = open_entity(page, d)
-    geometry = f'width,{round(d["41"], 4)},'
-    geometry += f'height,{round(d["43"], 4)}'
+    scale = f'{round(d["41"], 4)} {round(d["43"], 4)} 0'
     link = add_link_part(page, d)
-    page.ent_dict[identity].update(link=link[0], layer=d['layer'],
-        closing=1, material=link[2], geometry=geometry, tag=d['tag'],
-        text=link[1])
+    blob = f'=;scale=:{scale}=;href=:{link[0]}=;tag=:a-link'
+    blob += f'=;title=:{link[1]}=;image=:{link[2]}'
+    blob += f'=;layer=:{d["layer"]}=;closing=:1'
+    page.ent_dict[identity] += blob
     return
 
 def make_object(page, d):
@@ -994,18 +1052,16 @@ def make_object(page, d):
     """
     identity = f'{page.id}-model-{d["num"]}'
     position = f'0 {round(-d["43"]/2, 4)} 0'
-    geometry = obj_mtl = gltf = animator = ''
+    blob = f'id=:{identity}=;position=:{position}'
     if d['PARAM2'] == 'scale':
-        geometry = f'{round(fabs(d["41"]), 4)} {round(fabs(d["43"]), 4)} '
-        geometry += f'{round(fabs(d["42"]), 4)}'
+        blob += f'=;scale=:{round(fabs(d["41"]), 4)} {round(fabs(d["43"]), 4)} '
+        blob += f'{round(fabs(d["42"]), 4)}'
     if d['NAME'] == 'obj-mtl':
-        obj_mtl = f'{d["PARAM1"]}'
+        blob += f'=;obj-model=:{d["PARAM1"]}'
     elif d['NAME'] == 'gltf':
-        gltf = f'{d["PARAM1"]}#'
-        animator = 'animation-mixer'
-    page.ent_dict[identity] = {'position': position, 'layer': d['layer'],
-        'geometry': geometry, 'material': '', 'obj_mtl': obj_mtl, 'gltf': gltf,
-        'tag': 'a-entity', 'closing': d['closing']+1, 'animator': animator}
+        blob += f'=;gltf-model=:{d["PARAM1"]}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:{d["closing"]+1}'
+    page.ent_dict[identity] = blob
 
     return
 
@@ -1100,7 +1156,7 @@ def make_tree(d):
 
     oput += '</a-entity><!--close tree--> \n'
 
-    return oput
+    return oput#TODO
 
 def make_branch(branch, lb, lp, angle, rotx, d):
     d['prefix'] = 'branch'
@@ -1117,7 +1173,7 @@ def make_branch(branch, lb, lp, angle, rotx, d):
     oput += entity_material(d)
     oput += '">\n'
     oput += '</a-cone> \n'#close branch
-    return oput
+    return oput#TODO
 
 def make_leaves(branch, lb, d):
     d['prefix'] = 'leaf'
@@ -1129,18 +1185,18 @@ def make_leaves(branch, lb, d):
     oput += entity_material(d)
     oput += 'side: back;">\n'
     oput += '</a-sphere> \n'#close leaves
-    return oput
+    return oput#TODO
 
 def open_entity(page, d):
 
     if d['animation']:
         if d['RIG']:
             identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-            position = make_position(d)
-            rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-            page.ent_dict[identity]={'position': position, 'rotation': rotation,
-                'closing': 0, 'layer': d['layer'], 'tag': 'a-entity',
-                'material': 'Null'}
+            pos = make_position(d)
+            rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+            blob = f'id:={identity}=;position=:{pos}=;rotation=:{rot}'
+            blob += '=;closing:=0=;tag=:a-entity'
+            page.ent_dict[identity] = blob
             if d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-leash'
                 l = d['TO'].split()
@@ -1148,60 +1204,61 @@ def open_entity(page, d):
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'animation': animation,
-                    'closing': 0,  'layer': d['layer'], 'tag': 'a-entity',
-                    'material': 'Null'}
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;animation=:{anime}'
+                blob += '=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity].update(position=position)
+                pos = f'{l[0]} {l[1]} {l[2]}'
+                page.ent_dict[identity] += f'=;position=:{pos}'
             else:
                 identity = make_insertion(page, d)
-                animation = add_animation(page, d)
-                page.ent_dict[identity].update(animation=animation)
+                anime = add_animation(page, d)
+                page.ent_dict[identity] += f'=;animation=:{anime}'
         else:
             if d['PROPERTY'] == 'rotation':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-                position = make_position(d)
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'position': position,
-                    'animation': animation, 'closing': 0, 'layer': d['layer'],
-                     'tag': 'a-entity', 'material': 'Null'}
+                pos = make_position(d)
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;position=:{pos}=;animation=:{anime}'
+                blob += '=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                page.ent_dict[identity].update(rotation=rotation)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                page.ent_dict[identity] += f'=;rotation=:{rot}'
             elif d['PROPERTY'] == 'orbit':
                 identity = f'{page.id}-{d["ide"]}-{d["num"]}-rig'
-                position = make_position(d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                pos = make_position(d)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
                 l = d['TO'].split()
                 d['FROM'] = '0 0 0'
                 d['TO'] = '0 360 0'
                 d['START_EVENTS'] = d['DIRECTION'] = ''
                 d['LOOP'] = 'true; autoplay: true; easing: linear'
-                animation = add_animation(page, d)
-                page.ent_dict[identity]={'position': position,
-                    'rotation': rotation, 'animation': animation,
-                    'closing': 0, 'layer': d['layer'], 'tag': 'a-entity',
-                    'material': 'Null'}
+                anime = add_animation(page, d)
+                blob = f'id:={identity}=;position=:{pos}=;rotation=:{rot}'
+                blob += f'=;animation=:{anime}=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] = blob
 
                 identity = make_insertion(page, d)
-                position = f'{l[0]} {l[1]} {l[2]}'
-                page.ent_dict[identity].update(position=position)
+                pos = f'{l[0]} {l[1]} {l[2]}'
+                page.ent_dict[identity] += f'=;position=:{pos}'
             else:
                 identity = make_insertion(page, d)
-                position = make_position(d)
-                rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-                animation = add_animation(page, d)
-                page.ent_dict[identity].update(position=position,
-                    rotation=rotation, animation=animation)
+                pos = make_position(d)
+                rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+                anime = add_animation(page, d)
+                blob = f'=;position=:{pos}=;rotation=:{rot}=;animation=:{anime}'
+                blob += f'=;closing:=0=;tag=:a-entity'
+                page.ent_dict[identity] += blob
     else:
         identity = make_insertion(page, d)
-        position = make_position(d)
-        rotation = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-        page.ent_dict[identity].update(position=position, rotation=rotation, )
+        pos = make_position(d)
+        rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+        blob = f'=;position=:{pos}=;rotation=:{rot}'
+        page.ent_dict[identity] += blob
 
     return identity
 
@@ -1211,22 +1268,21 @@ def make_insertion(page, d):
         identity = f'{page.id}-{d["ID"]}'
     else:
         identity = f'{page.id}-{d["ide"]}-{d["num"]}'
-    page.ent_dict[identity]={}
+    page.ent_dict[identity] = f'id=:{identity}'
     if d['PROPERTY'] == 'checkpoint':
-        page.ent_dict[identity]={'animator': 'checkpoint,checkpoint', }
+        page.ent_dict[identity] += f'=;extras=:checkpoint'
     elif d['PROPERTY'] == 'look-at':
         if d['TARGET']:
-            page.ent_dict[identity]={'animator':
-                f'look-at,#{page.id}-{d["TARGET"]}', }
+            page.ent_dict[identity] += f'=;look-at:=#{page.id}-{d["TARGET"]}'
         else:
-            page.ent_dict[identity]={'animator': 'look-at,#camera', }
+            page.ent_dict[identity] += '=;look-at:=#camera'
     elif d['PROPERTY'] == 'stalker':
-        page.ent_dict[identity]={'animator': 'look-at,#camera', }
+        page.ent_dict[identity] += '=;look-at:=#camera'
     elif d['PROPERTY'] == 'event':
-        animator = f'event-proxy,listen: {d["START_EVENTS"]}; '
-        animator += f'emit: {page.id}-{d["ID"]}; '
-        animator += f'target: #{page.id}-{d["TARGET"]}; '
-        page.ent_dict[identity]={'animator': animator }
+        blob = f'=;event-proxy=:listen: {d["START_EVENTS"]}; '
+        blob += f'emit: {page.id}-{d["ID"]}; '
+        blob += f'target: #{page.id}-{d["TARGET"]}; '
+        page.ent_dict[identity] += blob
 
     return identity
 
@@ -1249,8 +1305,8 @@ def make_position(d):
 
 def close_entity(page, d):
 
-    if d['PROPERTY'] == 'stalker':
-        pass #oput += add_stalker(page, d)
+    #if d['PROPERTY'] == 'stalker':
+        #oput += add_stalker(page, d)
     closing = 1
     if d['animation']:
         if d['RIG']:
@@ -1261,7 +1317,7 @@ def close_entity(page, d):
         else:
             if d['PROPERTY'] == 'rotation' or d['PROPERTY'] == 'orbit':
                 closing += 1
-    return closing
+    return closing#lacks stalker part
 
 def entity_geometry(d):
     attr_dict = {
@@ -1272,15 +1328,15 @@ def entity_geometry(d):
         'a-sphere': ('PHI-LENGTH', 'PHI-START', 'SEGMENTS-HEIGHT', 'SEGMENTS-WIDTH', 'THETA-LENGTH', 'THETA-START', ),
     }
     attributes = attr_dict[d['2']]
-    oput = ''
+    blob = ''
     for attribute in attributes:
         try:
             if d[attribute]:
-                oput += f'{attribute.lower()}: {d[attribute]};'
+                blob += f'=;{attribute.lower()}=:{d[attribute]}'
         except:
             pass
 
-    return oput
+    return blob
 
 def add_animation(page, d):
     oput = ''
@@ -1355,7 +1411,7 @@ def add_stalker(page, d):
         oput += add_link_part(page, d)
         oput += '>\n'
         oput += '</a-link>\n'
-    return oput
+    return oput#TODO
 
 def add_link_part(page, d):
     #since we are still in dxf page, tree links are just placeholders
@@ -1378,10 +1434,7 @@ def unit(nounit):
     unit = fabs(nounit)/nounit
     return unit
 
-def rfloat(string):
-    return round(float(string), 4)
-
-def entity_material(d):
+def entity_material(d):#should be eliminated
     #returns object material
     oput = ''
     if d['wireframe']:
@@ -1392,7 +1445,7 @@ def entity_material(d):
             oput += f' repeat:{d["rx"]} {d["ry"]};'
     return oput
 
-def prepare_material_values(values, d):
+def prepare_material_values(values, d):#should be eliminated
 
     for v in values:
         try:
