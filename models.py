@@ -184,7 +184,7 @@ class DxfPage(Page):
         """Collects layers in dxf and adds Dxf Page Layers
 
         Works only if unblocked. Gets a dictionary of layers from dxf and
-        adds and/or erases layers in db, no updates. Returns nothing.
+        refreshes layers in db. Returns nothing.
         """
         #skip if blocked
         if self.block:
@@ -196,7 +196,7 @@ class DxfPage(Page):
         layer_dict = dxf.get_layer_dict(self)
         #delete existing Dxf Page Layers
         DxfPageLayer.objects.filter(page_id=self.id).delete()
-        #add layers in db, modify them if they exist
+        #add layers in db
         for name, color in layer_dict.items():
             lb = DxfPageLayer(page_id=self.id, name=name, color=color)
             lb.save()
@@ -300,18 +300,6 @@ class DxfPage(Page):
             ent['closing'] = close
         return self.ent_list
 
-    def get_links(self):
-        page_links = DxfPageEntity.objects.filter(page_id=self.id, tag='a-link')
-        for ent in page_links:
-            if ent.link:
-                if ent.link[0] == '#':
-                    ent.link = ''
-                list = ent.geometry.split(',')
-                ent.geometry = {}
-                for i in range(int(len(list)/2)):
-                    ent.geometry[list[i*2]] = list[i*2+1]
-        return page_links
-
 class DxfPageLayer(Orderable):
     page = ParentalKey(DxfPage, related_name='layers')
     name = models.CharField(max_length=250, default="0",
@@ -323,14 +311,6 @@ class DxfPageLayer(Orderable):
         FieldPanel('name'),
         FieldPanel('color'),
     ]
-
-#class DxfPageEntity(Orderable):
-    #page = ParentalKey(DxfPage, related_name='entities')
-    #data = models.TextField(default='id=:identity=;tag=:a-entity=;closing=:1', )
-
-    #panels = [
-        #FieldPanel('data'),
-    #]
 
 class ScenePage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,

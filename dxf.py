@@ -1,6 +1,5 @@
-import os, html
+import html
 from math import radians, sin, cos, asin, acos, degrees, pi, sqrt, pow, fabs, atan2
-from django.conf import settings
 
 from architettura import dxf_entities
 
@@ -35,107 +34,6 @@ def get_layer_dict(page):
 
     dxf_f.close()
     return layer_dict
-
-def get_object_dict(page):
-    """Gets MTL (filename) of object blocks from DXF file.
-
-    Scans file to see if object entities have PARAM1 attribute and collects
-    material names into a dictionary, so no name will be repeated.
-    """
-    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
-
-    object_dict = {}
-    value = 'dummy'
-    flag = False
-    attr_value = ''
-
-    while value !='ENTITIES':#skip up to ENTITIES section
-        key = dxf_f.readline().strip()
-        value = dxf_f.readline().strip()
-        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return collection
-
-    while value !='ENDSEC':
-        key = dxf_f.readline().strip()
-        value = dxf_f.readline().strip()
-        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return object_dict
-
-        if flag == 'attrib':#stores values for attributes within block
-            if key == '1':#attribute value
-                attr_value = value
-            elif key == '2':#attribute key
-                if value == 'NAME':
-                    if attr_value == 'obj-mtl':
-                        flag = 'obj'
-                    elif attr_value == 'gltf':
-                        flag = 'gltf'
-        elif flag == 'obj' or flag == 'gltf':#stores values for attributes within object block
-            if key == '1':#attribute value
-                attr_value = value
-            elif key == '2':#attribute key
-                if value == 'PARAM1':
-                    if page.dxf_file.object_repository:
-                        path = page.dxf_file.object_repository
-                    else:
-                        path = os.path.join(settings.MEDIA_URL, 'documents')
-                    if flag == 'obj':
-                        object_dict[attr_value + '.' + 'obj'] = path
-                        object_dict[attr_value + '.' + 'mtl'] = path
-                    else:
-                        object_dict[attr_value + '.' + 'gltf'] = path
-                    flag = False
-        if key == '0':
-            if flag != 'obj' and flag != 'gltf':
-                if value == 'ATTRIB':#start attribute
-                    flag = 'attrib'
-
-    dxf_f.close()
-    return object_dict
-
-def get_entity_material(page):
-    """Gets material dictionary from DXF file.
-
-    Scans file to see if entities have MATERIAL attribute and collects material
-    name into a dictionary, so no name will be repeated.
-    """
-    dxf_f = open(page.path_to_dxf, encoding = 'utf-8')
-
-    page.material_dict = {}
-    page.part_dict = {}
-    value = 'dummy'
-    flag = False
-    attr_value = ''
-
-    while value !='ENTITIES':#skip up to ENTITIES section
-        key = dxf_f.readline().strip()
-        value = dxf_f.readline().strip()
-        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return #material_dict, part_dict
-
-    while value !='ENDSEC':
-        key = dxf_f.readline().strip()
-        value = dxf_f.readline().strip()
-        if value=='EOF' or key=='':#security to avoid loops if file is corrupted
-            return #material_dict, part_dict
-
-        if flag == 'attrib':#stores values for attributes within block
-            if key == '1':#attribute value
-                attr_value = value
-            elif key == '2':#attribute key
-                if value == 'MATERIAL':
-                    page.material_dict[attr_value] = {'0': ['Null']}
-                elif value == 'PART':
-                    page.part_dict[attr_value] = {'0': ['Null']}
-                flag = False
-        if key == '0':
-
-
-            if value == 'ATTRIB':#start attribute
-                flag = 'attrib'
-
-    dxf_f.close()
-    return #material_dict, part_dict
 
 def parse_dxf(page):
     """Collects entities from DXF file.
@@ -183,27 +81,6 @@ def parse_dxf(page):
                 flag = 'attrib'
 
             elif flag == 'ent':#close all other entities
-                #layer = page.layer_dict[d['layer']]
-                #invisible = layer[1]
-                #if invisible:
-                    #flag = False
-                #else:
-                    #d['wireframe'] = layer[2]
-                    #d['no_shadows'] = layer[3]
-                    #d['color'] = d.get('color', layer[4])
-                    #d['8'] = d['image'] = layer[0]
-                    #d['repeat'] = False#TO DELETE?
-                    #d['MATERIAL'] = d.get('MATERIAL', layer[0])
-                    #d['pool'] = {}
-                    #if d['MATERIAL'] == '':
-                        #d['MATERIAL'] = layer[0]
-                    #if d['MATERIAL'] != 'default':
-                        #try:
-                            #component_pool = page.material_dict[d['MATERIAL']]
-                            #if component_pool:
-                                #d['pool'] = component_pool
-                        #except:
-                            #pass
 
                     if d['ent'] == '3df':
                         d['2'] = 'a-triangle'
@@ -642,46 +519,7 @@ def make_entities_dict(page, collection):
         elif d['2'] == 'a-animation' or d['2'] == 'a-mason':
             pass
 
-    #if no_camera:
-        #x += 1
-        #d = {
-        #'10': 0, '20': 0, '30': 0, '210': 0, '50': 0, '220': 0,  '43': 1,
-        #'LIGHT-INT': 1,
-        #}
-        #entities_dict[x] = entities.make_camera(page, d)
-
     return
-
-def make_survey(collection, layer_dict):
-    entities_dict = {}
-    for x, d in collection.items():
-        if layer_dict[d['layer']]:
-            pass
-        else:
-            if d['2'] == 'a-wall':
-                d['ide'] = 'wall'
-                entities_dict[x] = entities.survey_wall(d)
-            elif d['2'] == 'a-slab':
-                d['ide'] = 'slab'
-                entities_dict[x] = entities.survey_slab(d)
-            elif d['2'] == 'a-door':
-                d['ide'] = 'door'
-                entities_dict[x] = entities.survey_door(d)
-            elif d['2'] == 'a-window':
-                d['ide'] = 'window'
-                entities_dict[x] = entities.survey_window(d)
-            elif d['2'] == 'a-openwall':
-                entities_dict[x] = entities.survey_openwall(d)
-            elif d['2'] == 'a-plane':
-                d['ide'] = 'wall'
-                entities_dict[x] = entities.survey_w_plane(d)
-            elif d['2'] == 'a-line':
-                d['ide'] = 'wall'
-                entities_dict[x] = entities.survey_line(d)
-            elif d['2'] == 'a-poly':
-                d['ide'] = 'wall'
-                entities_dict[x] = entities.survey_poly(d)
-    return entities_dict
 
 def cad2hex(cad_color):
     cad_color = abs(int(cad_color))
