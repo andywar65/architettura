@@ -491,13 +491,21 @@ class ScenePage(Page):
         for ent in self.ent_list:
             blob = ent['blob']
             #set layer color
-            try:
+            if blob['layer'] in self.layer_dict:
                 layer = self.layer_dict[blob['layer']]
+                if layer[1]:#layer is invisible
+                    continue
                 layer_color = f'color: {layer[4]}; '
-            except:
+            else:
                 layer_color = 'color: #ffffff; '
             #if requested, set material color
             if 'material' in blob:
+                if blob['material'] in self.material_dict:
+                    components = self.material_dict[blob['material']]
+                    try:
+                        component = components[blob['component']]
+                    except:
+                        pass
                 if blob['material'] == '':
                     blob['material'] = layer_color
                 elif blob['material'][0] == '#':
