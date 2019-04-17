@@ -397,12 +397,14 @@ class ScenePage(Page):
         return 'architettura/scene_page.html'
 
     def add_new_layers(self):
-        #TODO erase layers if they are no more in dxf page
+
         self.layer_dict = {}
         dxf_layers = DxfPageLayer.objects.filter(page_id=self.dxf_file.id)
+        #prepare a dictionary with dummy values plus color
         for layer in dxf_layers:
             self.layer_dict[layer.name] = ['default', False, False, False,
                 layer.color, 'default']
+        #populate dictionary or create new layer
         for name, list in self.layer_dict.items():
             try:
                 a = ScenePageLayer.objects.get(page_id=self.id, name=name)
@@ -417,6 +419,11 @@ class ScenePage(Page):
             except:
                 b = ScenePageLayer(page_id=self.id, name=name)
                 b.save()
+        #erase layers if they are no more in dxf page
+        page_layers = ScenePageLayer.objects.filter(page_id=self.id)
+        for page_layer in page_layers:
+            if page_layer.name not in self.layer_dict:
+                page_layer.delete()
         return
 
     def get_material_assets(self):
@@ -525,7 +532,7 @@ class SurveyPage(Page):
     author = models.ForeignKey(User, blank=True, null=True,
         on_delete=models.PROTECT)
     scene = models.ForeignKey(ScenePage, blank=True, null=True,
-        on_delete=models.PROTECT, help_text="Choose Scene to be surveyed")
+        on_delete=models.SET_NULL, help_text="Choose Scene to be surveyed")
 
     search_fields = Page.search_fields + [
         index.SearchField('introduction'),
