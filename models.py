@@ -432,7 +432,34 @@ class ScenePage(Page):
         return get_material_assets_ext(self)
 
     def get_object_assets(self):
-        object_dict = aframe.get_object_dict(self)
+        self.ent_list = []
+        #prepare the list of entities for general use
+        lines = self.dxf_file.entities.splitlines()
+        for line in lines:
+            blob = {}
+            ent = {}
+            pairs = line.split('=;')
+            for pair in pairs:
+                couple = pair.split('=:')
+                blob[couple[0]] = couple[1]
+            ent['id'] = blob.pop('id', 'ID')
+            ent['tag'] = blob.pop('tag', 'a-entity')
+            ent['closing'] = int(blob.pop('closing', 1))
+            ent['blob'] = blob
+            self.ent_list.append(ent)
+        #prepare object dictionary for template
+        if self.dxf_file.object_repository:
+            path = self.dxf_file.object_repository
+        else:
+            path = os.path.join(settings.MEDIA_URL, 'documents')
+        object_dict = {}
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if 'obj-model' in blob:
+                object_dict[blob['obj-model'] + '.' + 'obj'] = path
+                object_dict[blob['obj-model'] + '.' + 'mtl'] = path
+            if 'gltf-model' in blob:
+                object_dict[blob['gltf-model'] + '.' + 'gltf'] = path
         return object_dict
 
     def get_entities(self):
