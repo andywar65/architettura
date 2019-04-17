@@ -493,25 +493,42 @@ class ScenePage(Page):
             #set layer color
             if blob['layer'] in self.layer_dict:
                 layer = self.layer_dict[blob['layer']]
-                if layer[1]:#layer is invisible
-                    continue
+                #if layer[1]:#layer is invisible
+                    #continue
                 layer_color = f'color: {layer[4]}; '
             else:
                 layer_color = 'color: #ffffff; '
-            #if requested, set material color
+            #if requested, set material
             if 'material' in blob:
                 if blob['material'] in self.material_dict:
                     components = self.material_dict[blob['material']]
                     try:
-                        component = components[blob['component']]
+                        comp = components[blob['component']]
+                        blob['material'] = f'src: #{blob["material"]+"-"+comp.name}; '
+                        blob['material'] += f'color: {comp.color}; '
+                        if comp.pattern:
+                            blob['material'] += f'repeat: {blob["repeat"]}; '
+                        if page.double_face:
+                            blob['material'] += 'side: double; '
                     except:
                         pass
-                if blob['material'] == '':
+                elif layer[0] in self.material_dict:
+                    components = self.material_dict[layer[0]]#components is a queryset
+                    #transform it in a list / tuple
+                    try:
+                        comp = components[blob['component']]
+                        blob['material'] = f'src: #{blob["material"]+"-"+comp.name}; '
+                        blob['material'] += f'color: {comp.color}; '
+                        if comp.pattern:
+                            blob['material'] += f'repeat: {blob["repeat"]}; '
+                        if page.double_face:
+                            blob['material'] += 'side: double; '
+                    except:
+                        pass
+                elif blob['material'] == '':
                     blob['material'] = layer_color
                 elif blob['material'][0] == '#':
                     blob['material'] = f'color: {blob["material"]}; '
-                else:
-                    blob['material'] = layer_color
             #loop through blob items
             for key, value in blob.items():
                 if key == 'light' or key[:4] == 'line' or key == 'text':
