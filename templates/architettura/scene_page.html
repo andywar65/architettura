@@ -47,13 +47,11 @@
 
     </a-asset>
 
-			{% with entities=page.get_entities %}
-			 {% if entities %}
-				{% for key, value in entities.items %}
-				{{ value|safe }}
-				{% endfor %}
-			 {% endif %}
-			{% endwith %}
+    {% with ent_list=page.get_entities %}{% if ent_list %}{% for ent in ent_list %}
+      <{{ ent.tag }} id="{{ ent.id }}" {% if ent.extras %}{{ ent.extras }} {% endif %}{% for key, value in ent.blob.items %}
+      {{ key }}="{{ value }}" {% endfor %}
+      >{% for c in ent.closing %}</{{c}}>{% endfor %}
+    {% endfor %}{% endif %}{% endwith %}
 
     {% with ambient_light=page.get_ambient_light %}
       <a-entity light="type: hemisphere; {{ ambient_light }}"></a-entity>
@@ -61,36 +59,14 @@
     {% if page.equirectangular_image %}
       <a-sky src="#sky"></a-sky>
     {% endif %}
+    <a-entity id="camera-ent">
+      <a-camera id="camera" look-controls="pointerLockEnabled: true">
+        <a-cursor color="#2E3A87"></a-cursor>
+        <a-light type="point" distance="10"></a-light>
+        <a-entity position="0 -1.6 0" id="camera-foot"></a-entity>
+      </a-camera>
+    </a-entity>
 
   </a-scene>
-  {% with survey_list=page.get_survey %}
-    {% if survey_list %}
-      <h3 id="survey-list-title">Click to survey this Scene:</h3>
-      <ul id="survey-list">
-      {% for survey in survey_list %}
-      <li><a id="{{ survey.title }}-survey" href="{{ survey.url }}">{{ survey.title }}</a></li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-  {% with material_list=page.get_material_list %}
-    {% if material_list %}
-      <h3 id="material-list-title">Click to see Materials used in this Scene:</h3>
-      <ul id="material-list">
-      {% for material in material_list %}
-      <li><a id="{{ material.title }}-material" href="{{ material.url }}">{{ material.title }}</a></li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-  {% with part_list=page.get_part_list %}
-    {% if part_list %}
-      <h3 id="part-list-title">Click to see Partitions used in this Scene:</h3>
-      <ul id="part-list">
-      {% for part in part_list %}
-      <li><a id="{{ part.title }}-part" href="{{ part.url }}">{{ part.title }}</a></li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+
 {% endblock %}

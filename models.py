@@ -471,7 +471,8 @@ class ScenePage(Page):
                 pass
         for ent in self.ent_list:
             blob = ent['blob']
-            if 'material' in blob and blob['material'][0] != '#':
+            if ('material' in blob and blob['material'] != '' and
+                blob['material'][0] != '#'):
                 try:
                     m = materials.get(title=blob['material'])
                     components = MaterialPageComponent.objects.filter(page_id=m.id)
@@ -484,7 +485,49 @@ class ScenePage(Page):
         return image_dict
 
     def get_entities(self):
-        return get_entities_ext(self)
+        #page_layers = DxfPageLayer.objects.filter(page_id=self.dxf_file.id)
+        for ent in self.ent_list:
+            blob = ent['blob']
+            #set layer color
+            try:
+                layer = self.layer_dict[blob['layer']]
+                layer_color = f'color: {layer[4]}; '
+            except:
+                layer_color = 'color: #ffffff; '
+            #if requested, set material color
+            if 'material' in blob:
+                if blob['material'] == '':
+                    blob['material'] = layer_color
+                elif blob['material'][0] == '#':
+                    blob['material'] = f'color: {blob["material"]}; '
+                else:
+                    blob['material'] = layer_color
+            #loop through blob items
+            for key, value in blob.items():
+                if key == 'light' or key[:4] == 'line' or key == 'text':
+                    if 'color' in blob and blob['color'] != '':
+                        blob[key] = value + f'color: {blob["color"]}; '
+                    else:
+                        blob[key] = value + layer_color
+                elif key == 'obj-model':
+                    obj = blob['obj-model']
+                    blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
+                elif key == 'gltf-model':
+                    blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
+                    ent['extras'] = 'animation-mixer'
+            #cannot pop keys inside loop
+            values = ['component', 'layer', 'repeat', 'color', 'partition']
+            for v in values:
+                if v in blob:
+                    blob.pop(v)
+            close = []
+            for c in range(ent['closing']):
+                if c == 0:
+                    close.append(ent['tag'])
+                else:
+                    close.append('a-entity')
+            ent['closing'] = close
+        return self.ent_list
 
     def get_ambient_light(self):
         return get_ambient_light_ext(self)
