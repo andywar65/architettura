@@ -41,8 +41,9 @@ def make_box(page, d):
     d['dz'] = d['43']/2
     d['ide'] = 'box'
     identity = open_entity(page, d)
-    blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
-    blob += f'=;depth=:{round(d["42"], 4)}=;layer=:{d["layer"]}'
+    geometry = f'width: {round(d["41"], 4)}; height: {round(d["43"], 4)}; '
+    geometry += f'depth: {round(d["42"], 4)}'
+    blob = f'=;geometry=:{geometry}=;layer=:{d["layer"]}'
     blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
     blob += f'=;material=:{d["MATERIAL"]}=;component=:0=;tag=:a-box'
     blob += f'=;closing=:{close_entity(page, d)}'
