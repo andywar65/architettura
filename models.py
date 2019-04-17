@@ -459,11 +459,13 @@ class ScenePage(Page):
 
     def get_material_assets(self):
         image_dict = {}
+        self.material_dict = {}
         materials = MaterialPage.objects.all()
         for name, list in self.layer_dict.items():
             try:
                 m = materials.get(title=list[0])
                 components = MaterialPageComponent.objects.filter(page_id=m.id)
+                self.material_dict[m.title] = components
                 for component in components:
                     if component.image:
                         image_dict[m.title + '-' + component.name] = component.image
@@ -476,6 +478,7 @@ class ScenePage(Page):
                 try:
                     m = materials.get(title=blob['material'])
                     components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    self.material_dict[m.title] = components
                     for component in components:
                         if component.image:
                             image_dict[m.title + '-' + component.name] = component.image
@@ -485,7 +488,6 @@ class ScenePage(Page):
         return image_dict
 
     def get_entities(self):
-        #page_layers = DxfPageLayer.objects.filter(page_id=self.dxf_file.id)
         for ent in self.ent_list:
             blob = ent['blob']
             #set layer color
