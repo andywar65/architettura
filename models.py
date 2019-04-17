@@ -426,11 +426,6 @@ class ScenePage(Page):
                 page_layer.delete()
         return
 
-    def get_material_assets(self):
-        self.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-            self.dxf_file.dxf_file.filename)
-        return get_material_assets_ext(self)
-
     def get_object_assets(self):
         self.ent_list = []
         #prepare the list of entities for general use
@@ -461,6 +456,32 @@ class ScenePage(Page):
             if 'gltf-model' in blob:
                 object_dict[blob['gltf-model'] + '.' + 'gltf'] = path
         return object_dict
+
+    def get_material_assets(self):
+        image_dict = {}
+        materials = MaterialPage.objects.all()
+        for name, list in self.layer_dict.items():
+            try:
+                m = materials.get(title=list[0])
+                components = MaterialPageComponent.objects.filter(page_id=m.id)
+                for component in components:
+                    if component.image:
+                        image_dict[m.title + '-' + component.name] = component.image
+            except:
+                pass
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if 'material' in blob and blob['material'][0] != '#':
+                try:
+                    m = materials.get(title=blob['material'])
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    for component in components:
+                        if component.image:
+                            image_dict[m.title + '-' + component.name] = component.image
+                except:
+                    pass
+
+        return image_dict
 
     def get_entities(self):
         return get_entities_ext(self)

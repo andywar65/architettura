@@ -39,14 +39,11 @@
       <a-asset-item id="{{ name }}" src="{{ path }}/{{ name }}"></a-asset-item>
       {% endfor %}{% endif %}{% endwith %}
 
-      {% with materials=page.get_material_assets %}
-        {% if materials %}
+      {% with materials=page.get_material_assets %}{% if materials %}
           {% for name, component in materials.items %}
           {% image component original as temp_image %}
             <img id="{{ name }}" src="{{ temp_image.url }}">
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+          {% endfor %}{% endif %}{% endwith %}
 
     </a-asset>
 
