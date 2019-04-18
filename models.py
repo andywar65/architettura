@@ -502,7 +502,9 @@ class ScenePage(Page):
         for ent in self.ent_list:
             blob = ent['blob']
             if self.shadows:
-                blob['shadow'] = 'cast: true; receive: true'
+                if ('material' in blob or 'obj-model' in blob or
+                    'gltf-model' in blob):
+                    blob['shadow'] = 'cast: true; receive: true'
             #set layer color
             if blob['layer'] in self.layer_dict:
                 layer = self.layer_dict[blob['layer']]
