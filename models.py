@@ -545,6 +545,8 @@ class ScenePage(Page):
                     blob['material'] = layer_color
                 elif blob['material'][0] == '#':
                     blob['material'] = f'color: {blob["material"]}; '
+                if layer[2]:
+                    blob['material'] += 'wireframe: true;'
             #loop through blob items
             for key, value in blob.items():
                 if key == 'light' or key[:4] == 'line' or key == 'text':
