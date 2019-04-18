@@ -464,11 +464,16 @@ class ScenePage(Page):
         for name, list in self.layer_dict.items():
             try:
                 m = materials.get(title=list[0])
-                components = MaterialPageComponent.objects.filter(page_id=m.id)
-                self.material_dict[m.title] = components
-                for component in components:
-                    if component.image:
-                        image_dict[m.title + '-' + component.name] = component.image
+                if m.title not in self.material_dict:
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    comp_list = []
+                    for comp in components:
+                        values = (comp.name, comp.image,
+                            comp.pattern, comp.color)
+                        comp_list.append(values)
+                        if comp.image:
+                            image_dict[m.title + '-' + comp.name] = comp.image
+                    self.material_dict[m.title] = comp_list
             except:
                 pass
         for ent in self.ent_list:
@@ -477,13 +482,19 @@ class ScenePage(Page):
                 blob['material'][0] != '#'):
                 try:
                     m = materials.get(title=blob['material'])
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    self.material_dict[m.title] = components
-                    for component in components:
-                        if component.image:
-                            image_dict[m.title + '-' + component.name] = component.image
+                    if m.title not in self.material_dict:
+                        components = MaterialPageComponent.objects.filter(page_id=m.id)
+                        comp_list = []
+                        for comp in components:
+                            values = (comp.name, comp.image,
+                                comp.pattern, comp.color)
+                            comp_list.append(values)
+                            if comp.image:
+                                image_dict[m.title + '-' + comp.name] = comp.image
+                        self.material_dict[m.title] = comp_list
                 except:
-                    pass
+                    m = MaterialPage(title=blob['material'])
+                    self.add_child(instance=m)
 
         return image_dict
 
@@ -506,9 +517,9 @@ class ScenePage(Page):
                     components = self.material_dict[blob['material']]
                     try:
                         comp = components[blob['component']]
-                        blob['material'] = f'src: #{blob["material"]+"-"+comp.name}; '
-                        blob['material'] += f'color: {comp.color}; '
-                        if comp.pattern:
+                        blob['material'] = f'src: #{blob["material"]+"-"+comp[0]}; '
+                        blob['material'] += f'color: {comp[3]}; '
+                        if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
                         if page.double_face:
                             blob['material'] += 'side: double; '
@@ -516,12 +527,11 @@ class ScenePage(Page):
                         pass
                 elif layer[0] in self.material_dict:
                     components = self.material_dict[layer[0]]#components is a queryset
-                    #transform it in a list / tuple
                     try:
                         comp = components[blob['component']]
-                        blob['material'] = f'src: #{blob["material"]+"-"+comp.name}; '
-                        blob['material'] += f'color: {comp.color}; '
-                        if comp.pattern:
+                        blob['material'] = f'src: #{blob["material"]+"-"+comp[0]}; '
+                        blob['material'] += f'color: {comp[3]}; '
+                        if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
                         if page.double_face:
                             blob['material'] += 'side: double; '
@@ -544,8 +554,10 @@ class ScenePage(Page):
                 elif key == 'gltf-model':
                     blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
                     ent['extras'] = 'animation-mixer'
+                if key == 'light' and self.shadows:
+                    blob['light'] += 'castShadow: true; '
             #cannot pop keys inside loop
-            values = ['component', 'layer', 'repeat', 'color', 'partition']
+            values = ('component', 'layer', 'repeat', 'color', 'partition')
             for v in values:
                 if v in blob:
                     blob.pop(v)
