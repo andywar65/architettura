@@ -516,8 +516,8 @@ class ScenePage(Page):
                 if blob['material'] in self.material_dict:
                     components = self.material_dict[blob['material']]
                     try:
-                        comp = components[blob['component']]
-                        blob['material'] = f'src: #{blob["material"]+"-"+comp[0]}; '
+                        comp = components[int(blob['component'])]
+                        blob['material'] = f'src: #{blob["material"]}-{comp[0]}; '
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
@@ -526,10 +526,10 @@ class ScenePage(Page):
                     except:
                         pass
                 elif layer[0] in self.material_dict:
-                    components = self.material_dict[layer[0]]#components is a queryset
+                    components = self.material_dict[layer[0]]#components is a list
                     try:
-                        comp = components[blob['component']]
-                        blob['material'] = f'src: #{blob["material"]+"-"+comp[0]}; '
+                        comp = components[int(blob['component'])]
+                        blob['material'] = f'src: #{layer[0]}-{comp[0]}; '
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
