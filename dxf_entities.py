@@ -11,14 +11,33 @@ from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
 
 def make_camera(page, d):
-    identity = f'{page.id}-camera-{d["num"]}'
-    blob = f'id=:{identity}'
-    blob += f'=;position=:{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
-    blob += f'=;rotation=:{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
-    blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
-    blob += f'=;intensity=:{d["LIGHT-INT"]}'
-    blob += '=;tag=:a-camera'
-    blob += f'=;layer=:{d["layer"]}'
+    #TODO different cameras to choose from
+    pos = f'{round(d["10"], 4)} {round(d["30"], 4)} {round(d["20"], 4)}'
+    rot = f'{round(d["210"], 4)} {round(d["50"], 4)} {round(d["220"], 4)}'
+    blob = f'id=:camera-ent=;position=:{pos}=;rotation=:{rot}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    page.ent_dict['camera-ent'] = blob
+
+    pos = f'0 {round(d["43"]*1.6, 4)} 0'
+    blob = f'id=:camera=;position=:{pos}=;look-controls=:pointerLockEnabled: true'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-camera=;closing=:0'
+    page.ent_dict['camera'] = blob
+
+    blob = f'id=:camera-light=;type=:point=;distance=:10=;intensity=:{d["LIGHT-INT"]}'
+    blob += f'=;layer=:{d["layer"]}=;tag=:a-light=;closing=:1'
+    page.ent_dict['camera-light'] = blob
+
+    blob = f'id=:cursor=;layer=:{d["layer"]}=;tag=:a-cursor=;closing=:3'
+    page.ent_dict['cursor'] = blob
+
+
+    #identity = f'{page.id}-camera-{d["num"]}'
+    #look-controls=""
+    #blob = f'id=:{identity}'
+    #blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
+    #blob += f'=;intensity=:{d["LIGHT-INT"]}'
+    #blob += '=;tag=:a-camera'
+    #blob += f'=;layer=:{d["layer"]}'
     #if page.mode == 'digkom':
         #oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
         #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
@@ -29,7 +48,7 @@ def make_camera(page, d):
     #oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
     #oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
     #oput += '</a-camera></a-entity> \n'
-    page.ent_dict[identity] = blob
+    #page.ent_dict[identity] = blob
     return
 
 def make_box(page, d):

@@ -291,12 +291,16 @@ class DxfPage(Page):
             for v in values:
                 if v in blob:
                     blob.pop(v)
-            close = []
-            for c in range(ent['closing']):
-                if c == 0:
-                    close.append(ent['tag'])
-                else:
-                    close.append('a-entity')
+            if ent['tag'] == 'a-cursor':
+                blob['color'] = '#2E3A87'
+                close = ['a-cursor', 'a-camera', 'a-entity']
+            else:
+                close = []
+                for c in range(ent['closing']):
+                    if c == 0:
+                        close.append(ent['tag'])
+                    else:
+                        close.append('a-entity')
             ent['closing'] = close
         return self.ent_list
 
@@ -510,7 +514,7 @@ class ScenePage(Page):
                 layer = self.layer_dict[blob['layer']]
                 if layer[1]:#layer is invisible
                     blob['visible'] = 'false'
-                if layer[3]:#layer casts/receives no shadows
+                if layer[3] and 'material' in blob:#layer casts/receives no shadows
                     blob['shadow'] = 'cast: false; receive: false'
                 layer_color = f'color: {layer[4]}; '
             else:
@@ -562,17 +566,30 @@ class ScenePage(Page):
                     ent['extras'] = 'animation-mixer'
                 if key == 'light' and self.shadows:
                     blob['light'] += 'castShadow: true; '
+            if ent['id'] == 'camera-ent':
+                if self.mode == 'digkom':
+                    blob['movement-controls'] = 'controls: checkpoint'
+                    blob['checkpoint-controls'] = 'mode: animate'
+            elif ent['id'] == 'camera':
+                if self.mode == 'digkom':
+                    blob['wasd-controls'] = 'enabled: false'
+                else:
+                    blob['wasd-controls'] = f'fly: {str(self.fly_camera).lower()}'
             #cannot pop keys inside loop
             values = ('component', 'layer', 'repeat', 'color', 'partition')
             for v in values:
                 if v in blob:
                     blob.pop(v)
-            close = []
-            for c in range(ent['closing']):
-                if c == 0:
-                    close.append(ent['tag'])
-                else:
-                    close.append('a-entity')
+            if ent['tag'] == 'a-cursor':
+                blob['color'] = '#2E3A87'
+                close = ['a-cursor', 'a-camera', 'a-entity']
+            else:
+                close = []
+                for c in range(ent['closing']):
+                    if c == 0:
+                        close.append(ent['tag'])
+                    else:
+                        close.append('a-entity')
             ent['closing'] = close
         return self.ent_list
 
