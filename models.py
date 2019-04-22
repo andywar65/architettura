@@ -237,6 +237,8 @@ class DxfPage(Page):
             ent['id'] = blob.pop('id', 'ID')
             ent['tag'] = blob.pop('tag', 'a-entity')
             ent['closing'] = int(blob.pop('closing', 1))
+            if 'extras' in blob:
+                ent['extras'] = blob.pop('extras')
             ent['blob'] = blob
             self.ent_list.append(ent)
         #prepare object dictionary for template
@@ -444,6 +446,8 @@ class ScenePage(Page):
             ent['id'] = blob.pop('id', 'ID')
             ent['tag'] = blob.pop('tag', 'a-entity')
             ent['closing'] = int(blob.pop('closing', 1))
+            if 'extras' in blob:
+                ent['extras'] = blob.pop('extras')
             ent['blob'] = blob
             self.ent_list.append(ent)
         #prepare object dictionary for template

@@ -30,25 +30,6 @@ def make_camera(page, d):
     blob = f'id=:cursor=;layer=:{d["layer"]}=;tag=:a-cursor=;closing=:3'
     page.ent_dict['cursor'] = blob
 
-
-    #identity = f'{page.id}-camera-{d["num"]}'
-    #look-controls=""
-    #blob = f'id=:{identity}'
-    #blob += f'=;foot=:{round(d["43"]*1.6, 4)}'
-    #blob += f'=;intensity=:{d["LIGHT-INT"]}'
-    #blob += '=;tag=:a-camera'
-    #blob += f'=;layer=:{d["layer"]}'
-    #if page.mode == 'digkom':
-        #oput += 'movement-controls="controls: checkpoint" checkpoint-controls="mode: animate"> \n'
-        #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="enabled: false" '
-    #else:
-        #oput += '> \n'
-        #oput += f'<a-camera id="camera" look-controls="pointerLockEnabled: true" wasd-controls="fly: {str(page.fly_camera).lower() }" '
-    #oput += '<a-cursor color="#2E3A87"></a-cursor> \n'
-    #oput += f'<a-light type="point" distance="10" intensity="{d["LIGHT-INT"]}"></a-light> \n'
-    #oput += f'<a-entity position="0 {-d["43"]*1.6} 0" id="camera-foot"></a-entity> \n'
-    #oput += '</a-camera></a-entity> \n'
-    #page.ent_dict[identity] = blob
     return
 
 def make_box(page, d):
