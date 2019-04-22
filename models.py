@@ -557,7 +557,11 @@ class ScenePage(Page):
                     if 'color' in blob and blob['color'] != '':
                         blob[key] = value + f'color: {blob["color"]}; '
                     else:
-                        blob[key] = value + layer_color
+                        try:
+                            comp = components[0]
+                            blob[key] += f'color: {comp[3]}; '
+                        except:
+                            blob[key] = value + layer_color
                 elif key == 'obj-model':
                     obj = blob['obj-model']
                     blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
