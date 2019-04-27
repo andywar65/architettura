@@ -31,7 +31,7 @@ class PartitionPage(Page):
     ]
 
     def write_html(self):
-        output = ''
+        output = []
         i = 1
         layers = self.layers.all()
         if layers:
@@ -48,12 +48,9 @@ class PartitionPage(Page):
                     dist = 0
                 else:
                     dist += dist2 + thickness/2
+                output.append({'dist': -dist, 'color': dxf.cad2hex(i),
+                    'thick': thickness, 'text': name})
                 i += 1
-                output += f'<a-box position="0 1.5 {-dist}" \n'
-                output += f' material="color: {aframe.cad2hex(i)}" \n'
-                output += f'depth="{thickness}" height="3" width="1"> \n'
-                output += f'<a-entity text="anchor: left; width: 1.5; color: black; value:{name}" \n'
-                output += 'position="0.55 -1.5 0 "rotation="-90 0 0"></a-entity></a-box> \n'
                 dist2 = thickness/2
 
         return output
