@@ -572,6 +572,25 @@ class ScenePage(Page):
                 elif key == 'gltf-model':
                     blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
                     ent['extras'] = 'animation-mixer'
+                elif key == 'href':
+                    try:
+                        if blob['href'] == '#parent':
+                            target = self.get_parent()
+                        elif blob['href'] == '#child':
+                            target = self.get_first_child()
+                        elif blob['href'] == '#previous' or blob['href'] == '#prev':
+                            target = self.get_prev_sibling()
+                        elif blob['href'] == '#next':
+                            target = self.get_next_sibling()
+                        blob['href'] = target.url
+                        blob['title'] = target.title
+                        try:
+                            eq_image = target.specific.equirectangular_image
+                            blob['image'] = eq_image.file.url
+                        except:
+                            pass
+                    except:
+                        blob['href'] = ''
                 if key == 'light' and self.shadows:
                     blob['light'] += 'castShadow: true; '
             if ent['id'] == 'camera-ent':
