@@ -122,8 +122,8 @@ def make_circular(page, d):
     if d['2'] == 'a-circle':
         blob = f'=;radius=:{round(fabs(d["41"]), 4)};'
     else:
-        blob = f'=;width=:{round(d["41"], 4)}=;height=:{round(d["43"], 4)}'
-        blob += f'=;depth=:{round(d["42"], 4)}'
+        blob = f'=;scale=:{round(d["41"], 4)} {round(d["43"], 4)} '
+        blob += f'{round(d["42"], 4)}'
     blob += entity_geometry(d)
     blob += f'=;repeat=:{round(d["rx"], 4)} {round(d["ry"], 4)}'
     blob += f'=;layer=:{d["layer"]}'
