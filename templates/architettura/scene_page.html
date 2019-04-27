@@ -71,5 +71,15 @@
       </ul>
     {% endif %}
   {% endwith %}
+  {% with part_list=page.get_part_list %}
+    {% if part_list %}
+      <h3 id="part-list-title">Click to see Partitions used in this Scene:</h3>
+      <ul id="part-list">
+      {% for part in part_list %}
+      <li><a id="{{ part.title }}-part" href="{{ part.url }}">{{ part.title }}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
 {% endblock %}

@@ -573,7 +573,9 @@ class ScenePage(Page):
     def get_material_assets(self):
         image_dict = {}
         self.material_dict = {}
+        self.part_dict = {}
         materials = MaterialPage.objects.all()
+        partitions = PartitionPage.objects.all()
         for name, list in self.layer_dict.items():
             try:
                 m = materials.get(title=list[0])
@@ -587,6 +589,12 @@ class ScenePage(Page):
                         if comp.image:
                             image_dict[m.title + '-' + comp.name] = comp.image
                     self.material_dict[m.title] = comp_list
+            except:
+                pass
+            try:
+                p = partitions.get(title=list[5])
+                if p.title not in self.part_dict:
+                    self.part_dict[p.title] = ''
             except:
                 pass
         for ent in self.ent_list:
@@ -608,7 +616,14 @@ class ScenePage(Page):
                 except:
                     m = MaterialPage(title=blob['material'])
                     self.add_child(instance=m)
-
+            if 'partition' in blob and blob['partition'] != '':
+                try:
+                    p = partitions.get(title=blob['partition'])
+                    if p.title not in self.part_dict:
+                        self.part_dict[p.title] = ''
+                except:
+                    p = PartitionPage(title=blob['partition'])
+                    self.add_child(instance=p)
         return image_dict
 
     def get_entities(self):
