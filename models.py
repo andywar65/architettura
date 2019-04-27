@@ -132,7 +132,6 @@ class MaterialPage(Page):
     def get_entities(self):
         for ent in self.ent_list:
             blob = ent['blob']
-            print(blob)
 
             if ('material' in blob or 'obj-model' in blob or
                 'gltf-model' in blob):
