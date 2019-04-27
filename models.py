@@ -87,16 +87,16 @@ class MaterialPage(Page):
 
         self.layer_dict = {}
         #prepare a dictionary with dummy values plus color
-        self.layer_dict[0] = [self.title, False, False, False,
+        self.layer_dict['0'] = [self.title, False, False, False,
             '#ffffff', 'default']
 
         return
 
     def get_object_assets(self):
-        
+
         self.ent_list = []
         #prepare the list of entities for general use
-        lines = blobs.materials.splitlines()
+        lines = blobs.get_material_blob().splitlines()
         for line in lines:
             blob = {}
             ent = {}
@@ -117,51 +117,26 @@ class MaterialPage(Page):
     def get_material_assets(self):
         image_dict = {}
         self.material_dict = {}
-        materials = MaterialPage.objects.all()
-        for name, list in self.layer_dict.items():
-            try:
-                m = materials.get(title=list[0])
-                if m.title not in self.material_dict:
-                    components = MaterialPageComponent.objects.filter(page_id=m.id)
-                    comp_list = []
-                    for comp in components:
-                        values = (comp.name, comp.image,
-                            comp.pattern, comp.color)
-                        comp_list.append(values)
-                        if comp.image:
-                            image_dict[m.title + '-' + comp.name] = comp.image
-                    self.material_dict[m.title] = comp_list
-            except:
-                pass
-        for ent in self.ent_list:
-            blob = ent['blob']
-            if ('material' in blob and blob['material'] != '' and
-                blob['material'][0] != '#'):
-                try:
-                    m = materials.get(title=blob['material'])
-                    if m.title not in self.material_dict:
-                        components = MaterialPageComponent.objects.filter(page_id=m.id)
-                        comp_list = []
-                        for comp in components:
-                            values = (comp.name, comp.image,
-                                comp.pattern, comp.color)
-                            comp_list.append(values)
-                            if comp.image:
-                                image_dict[m.title + '-' + comp.name] = comp.image
-                        self.material_dict[m.title] = comp_list
-                except:
-                    m = MaterialPage(title=blob['material'])
-                    self.add_child(instance=m)
+        components = MaterialPageComponent.objects.filter(page_id=self.id)
+        comp_list = []
+        for comp in components:
+            values = (comp.name, comp.image,
+                comp.pattern, comp.color)
+            comp_list.append(values)
+            if comp.image:
+                image_dict[self.title + '-' + comp.name] = comp.image
+        self.material_dict[self.title] = comp_list
 
         return image_dict
 
     def get_entities(self):
         for ent in self.ent_list:
             blob = ent['blob']
-            if self.shadows:
-                if ('material' in blob or 'obj-model' in blob or
-                    'gltf-model' in blob):
-                    blob['shadow'] = 'cast: true; receive: true'
+            print(blob)
+
+            if ('material' in blob or 'obj-model' in blob or
+                'gltf-model' in blob):
+                blob['shadow'] = 'cast: true; receive: true'
             #set layer color
             if blob['layer'] in self.layer_dict:
                 layer = self.layer_dict[blob['layer']]
@@ -182,8 +157,6 @@ class MaterialPage(Page):
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
-                        if page.double_face:
-                            blob['material'] += 'side: double; '
                     except:
                         pass
                 elif layer[0] in self.material_dict:
@@ -194,8 +167,6 @@ class MaterialPage(Page):
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
-                        if page.double_face:
-                            blob['material'] += 'side: double; '
                     except:
                         pass
                 elif blob['material'] == '':
@@ -240,17 +211,9 @@ class MaterialPage(Page):
                             pass
                     except:
                         blob['href'] = ''
-                if key == 'light' and self.shadows:
+                if key == 'light':
                     blob['light'] += 'castShadow: true; '
-            if ent['id'] == 'camera-ent':
-                if self.mode == 'digkom':
-                    blob['movement-controls'] = 'controls: checkpoint'
-                    blob['checkpoint-controls'] = 'mode: animate'
-            elif ent['id'] == 'camera':
-                if self.mode == 'digkom':
-                    blob['wasd-controls'] = 'enabled: false'
-                else:
-                    blob['wasd-controls'] = f'fly: {str(self.fly_camera).lower()}'
+
             #cannot pop keys inside loop
             values = ('component', 'layer', 'repeat', 'color', 'partition')
             for v in values:
@@ -679,7 +642,7 @@ class ScenePage(Page):
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
-                        if page.double_face:
+                        if self.double_face:
                             blob['material'] += 'side: double; '
                     except:
                         pass
@@ -691,7 +654,7 @@ class ScenePage(Page):
                         blob['material'] += f'color: {comp[3]}; '
                         if comp[2]:
                             blob['material'] += f'repeat: {blob["repeat"]}; '
-                        if page.double_face:
+                        if self.double_face:
                             blob['material'] += 'side: double; '
                     except:
                         pass

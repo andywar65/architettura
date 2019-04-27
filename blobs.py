@@ -1,4 +1,5 @@
-material = """id=:camera-ent=;position=:-1.4231 0.0 -0.0011=;rotation=:0 324.9208 0=;layer=:0=;tag=:a-entity=;closing=:0
+def get_material_blob():
+    material = """id=:camera-ent=;position=:-1.4231 0.0 -0.0011=;rotation=:0 324.9208 0=;layer=:0=;tag=:a-entity=;closing=:0
 id=:camera=;position=:0 1.6 0=;look-controls=:pointerLockEnabled: true=;layer=:0=;tag=:a-camera=;closing=:0
 id=:camera-light=;type=:point=;distance=:10=;intensity=:1=;layer=:0=;tag=:a-light=;closing=:1
 id=:cursor=;layer=:0=;tag=:a-cursor=;closing=:3
@@ -75,3 +76,4 @@ id=:40-openwall-right-10-int-plaster=;position=:0 0.8 0.005=;geometry=:width: 1.
 id=:40-openwall-right-10-ext-skirt=;position=:0 -1.45 -0.145=;geometry=:width: 1.0999704525813003; height: 0.1; depth: 0.01; =;layer=:0=;tag=:a-box=;closing=:1=;material=:=;component=:2=;partition=:
 id=:40-openwall-right-10-ext-tile=;position=:0 -0.65 -0.145=;geometry=:width: 1.0999704525813003; height: 1.5; depth: 0.01; =;layer=:0=;tag=:a-box=;closing=:1=;material=:=;component=:1=;partition=:
 id=:40-openwall-right-10-ext-plaster=;position=:0 0.8 -0.145=;geometry=:width: 1.0999704525813003; height: 1.4; depth: 0.01; =;layer=:0=;tag=:a-box=;closing=:3=;material=:=;component=:0=;partition=:"""
+    return material
