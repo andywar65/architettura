@@ -1,6 +1,6 @@
 import os
 from math import fabs
-from architettura import aframe, dxf
+from architettura import aframe, dxf, blobs
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -83,45 +83,191 @@ class MaterialPage(Page):
         InlinePanel('image_files', label="Components",),
     ]
 
+    def add_new_layers(self):
+
+        self.layer_dict = {}
+        #prepare a dictionary with dummy values plus color
+        self.layer_dict[0] = [self.title, False, False, False,
+            '#ffffff', 'default']
+
+        return
+
+    def get_object_assets(self):
+        
+        self.ent_list = []
+        #prepare the list of entities for general use
+        lines = blobs.materials.splitlines()
+        for line in lines:
+            blob = {}
+            ent = {}
+            pairs = line.split('=;')
+            for pair in pairs:
+                couple = pair.split('=:')
+                blob[couple[0]] = couple[1]
+            ent['id'] = blob.pop('id', 'ID')
+            ent['tag'] = blob.pop('tag', 'a-entity')
+            ent['closing'] = int(blob.pop('closing', 1))
+            if 'extras' in blob:
+                ent['extras'] = blob.pop('extras')
+            ent['blob'] = blob
+            self.ent_list.append(ent)
+
+        return
+
     def get_material_assets(self):
         image_dict = {}
-        components = MaterialPageComponent.objects.filter(page_id=self.id)
-        for component in components:
+        self.material_dict = {}
+        materials = MaterialPage.objects.all()
+        for name, list in self.layer_dict.items():
             try:
-                if component.image:
-                    image_dict[self.title + '-' + component.name] = component.image
+                m = materials.get(title=list[0])
+                if m.title not in self.material_dict:
+                    components = MaterialPageComponent.objects.filter(page_id=m.id)
+                    comp_list = []
+                    for comp in components:
+                        values = (comp.name, comp.image,
+                            comp.pattern, comp.color)
+                        comp_list.append(values)
+                        if comp.image:
+                            image_dict[m.title + '-' + comp.name] = comp.image
+                    self.material_dict[m.title] = comp_list
             except:
                 pass
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if ('material' in blob and blob['material'] != '' and
+                blob['material'][0] != '#'):
+                try:
+                    m = materials.get(title=blob['material'])
+                    if m.title not in self.material_dict:
+                        components = MaterialPageComponent.objects.filter(page_id=m.id)
+                        comp_list = []
+                        for comp in components:
+                            values = (comp.name, comp.image,
+                                comp.pattern, comp.color)
+                            comp_list.append(values)
+                            if comp.image:
+                                image_dict[m.title + '-' + comp.name] = comp.image
+                        self.material_dict[m.title] = comp_list
+                except:
+                    m = MaterialPage(title=blob['material'])
+                    self.add_child(instance=m)
+
         return image_dict
 
     def get_entities(self):
-        self.path_to_dxf = os.path.join(settings.STATIC_ROOT,
-            'architettura/samples/materials.dxf')
-
-        self.material_dict = {}
-        components = MaterialPageComponent.objects.filter(page_id=self.id)
-        x=0
-        component_dict = {}
-        for component in components:
-            component_dict[x] = [component.name, component.color,
-                component.pattern]
-            x += 1
-        self.material_dict[self.title] = component_dict
-        self.layer_dict = {}
-        self.layer_dict['0'] = [self.title, False, False, False, '#ffffff']
-        collection = aframe.parse_dxf(self)
-        collection = aframe.reference_openings(collection)
-        collection = aframe.reference_animations(collection)
-        for x, d in collection.items():
-            d['MATERIAL'] = self.title
-            d['WMATERIAL'] = self.title
-            d['pool'] = component_dict
-            d['wpool'] = component_dict
-        self.shadows = True
-        self.double_face = False
-        self.fly_camera = False
-        entities_dict = aframe.make_html(self, collection)
-        return entities_dict
+        for ent in self.ent_list:
+            blob = ent['blob']
+            if self.shadows:
+                if ('material' in blob or 'obj-model' in blob or
+                    'gltf-model' in blob):
+                    blob['shadow'] = 'cast: true; receive: true'
+            #set layer color
+            if blob['layer'] in self.layer_dict:
+                layer = self.layer_dict[blob['layer']]
+                if layer[1]:#layer is invisible
+                    blob['visible'] = 'false'
+                if layer[3] and 'material' in blob:#layer casts/receives no shadows
+                    blob['shadow'] = 'cast: false; receive: false'
+                layer_color = f'color: {layer[4]}; '
+            else:
+                layer_color = 'color: #ffffff; '
+            #if requested, set material
+            if 'material' in blob:
+                if blob['material'] in self.material_dict:
+                    components = self.material_dict[blob['material']]
+                    try:
+                        comp = components[int(blob['component'])]
+                        blob['material'] = f'src: #{blob["material"]}-{comp[0]}; '
+                        blob['material'] += f'color: {comp[3]}; '
+                        if comp[2]:
+                            blob['material'] += f'repeat: {blob["repeat"]}; '
+                        if page.double_face:
+                            blob['material'] += 'side: double; '
+                    except:
+                        pass
+                elif layer[0] in self.material_dict:
+                    components = self.material_dict[layer[0]]#components is a list
+                    try:
+                        comp = components[int(blob['component'])]
+                        blob['material'] = f'src: #{layer[0]}-{comp[0]}; '
+                        blob['material'] += f'color: {comp[3]}; '
+                        if comp[2]:
+                            blob['material'] += f'repeat: {blob["repeat"]}; '
+                        if page.double_face:
+                            blob['material'] += 'side: double; '
+                    except:
+                        pass
+                elif blob['material'] == '':
+                    blob['material'] = layer_color
+                elif blob['material'][0] == '#':
+                    blob['material'] = f'color: {blob["material"]}; '
+                if layer[2]:
+                    blob['material'] += 'wireframe: true;'
+            #loop through blob items
+            for key, value in blob.items():
+                if key == 'light' or key[:4] == 'line' or key == 'text':
+                    if 'color' in blob and blob['color'] != '':
+                        blob[key] = value + f'color: {blob["color"]}; '
+                    else:
+                        try:
+                            comp = components[0]
+                            blob[key] += f'color: {comp[3]}; '
+                        except:
+                            blob[key] = value + layer_color
+                elif key == 'obj-model':
+                    obj = blob['obj-model']
+                    blob['obj-model'] = f'obj: #{obj}.obj; mtl: #{obj}.mtl;'
+                elif key == 'gltf-model':
+                    blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
+                    ent['extras'] = 'animation-mixer'
+                elif key == 'href':
+                    try:
+                        if blob['href'] == '#parent':
+                            target = self.get_parent()
+                        elif blob['href'] == '#child':
+                            target = self.get_first_child()
+                        elif blob['href'] == '#previous' or blob['href'] == '#prev':
+                            target = self.get_prev_sibling()
+                        elif blob['href'] == '#next':
+                            target = self.get_next_sibling()
+                        blob['href'] = target.url
+                        blob['title'] = target.title
+                        try:
+                            eq_image = target.specific.equirectangular_image
+                            blob['image'] = eq_image.file.url
+                        except:
+                            pass
+                    except:
+                        blob['href'] = ''
+                if key == 'light' and self.shadows:
+                    blob['light'] += 'castShadow: true; '
+            if ent['id'] == 'camera-ent':
+                if self.mode == 'digkom':
+                    blob['movement-controls'] = 'controls: checkpoint'
+                    blob['checkpoint-controls'] = 'mode: animate'
+            elif ent['id'] == 'camera':
+                if self.mode == 'digkom':
+                    blob['wasd-controls'] = 'enabled: false'
+                else:
+                    blob['wasd-controls'] = f'fly: {str(self.fly_camera).lower()}'
+            #cannot pop keys inside loop
+            values = ('component', 'layer', 'repeat', 'color', 'partition')
+            for v in values:
+                if v in blob:
+                    blob.pop(v)
+            if ent['tag'] == 'a-cursor':
+                blob['color'] = '#2E3A87'
+                close = ['a-cursor', 'a-camera', 'a-entity']
+            else:
+                close = []
+                for c in range(ent['closing']):
+                    if c == 0:
+                        close.append(ent['tag'])
+                    else:
+                        close.append('a-entity')
+            ent['closing'] = close
+        return self.ent_list
 
 class MaterialPageComponent(Orderable):
     page = ParentalKey(MaterialPage, related_name='image_files')
