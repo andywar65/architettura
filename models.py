@@ -211,7 +211,8 @@ class MaterialPage(Page):
                     blob['light'] += 'castShadow: true; '
 
             #cannot pop keys inside loop
-            values = ('component', 'layer', 'repeat', 'color', 'partition')
+            values = ('component', 'layer', 'repeat', 'color', 'partition',
+                'survey')
             for v in values:
                 if v in blob:
                     blob.pop(v)
@@ -394,7 +395,8 @@ class DxfPage(Page):
                     blob['gltf-model'] = f'#{blob["gltf-model"]}.gltf'
                     ent['extras'] = 'animation-mixer'
             #cannot pop keys inside loop
-            values = ['component', 'layer', 'repeat', 'color', 'partition']
+            values = ['component', 'layer', 'repeat', 'color', 'partition',
+                'survey']
             for v in values:
                 if v in blob:
                     blob.pop(v)
@@ -723,7 +725,8 @@ class ScenePage(Page):
                 else:
                     blob['wasd-controls'] = f'fly: {str(self.fly_camera).lower()}'
             #cannot pop keys inside loop
-            values = ('component', 'layer', 'repeat', 'color', 'partition')
+            values = ('component', 'layer', 'repeat', 'color', 'partition',
+                'survey')
             for v in values:
                 if v in blob:
                     blob.pop(v)
