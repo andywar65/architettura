@@ -1,6 +1,6 @@
 import os
 from math import fabs
-from architettura import aframe, dxf, blobs
+from architettura import dxf, blobs
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -887,7 +887,7 @@ class SurveyPage(Page):
         if layers:
             for layer in layers:
                 layer_dict[layer.name] = layer.invisible
-        
+
         return
 
 class SurveyPageLayer(Orderable):
@@ -900,91 +900,3 @@ class SurveyPageLayer(Orderable):
         FieldPanel('name'),
         FieldPanel('invisible'),
     ]
-
-def get_material_assets_ext(page_obj):
-    aframe.get_entity_material(page_obj)
-    for name, list in page_obj.layer_dict.items():
-        try:
-            m = MaterialPage.objects.get(title=list[0])
-            page_obj.material_dict[m.title] = {'0': ['Null']}
-        except:
-            pass
-        try:
-            p = PartitionPage.objects.get(title=list[5])
-            page_obj.part_dict[p.title] = {'0': ['Null']}
-        except:
-            pass
-
-    image_dict = {}
-    if page_obj.material_dict:
-        for material, dummy in page_obj.material_dict.items():
-            try:
-                m = MaterialPage.objects.get(title=material)
-            except:
-                if material and material != 'default':
-                    m = MaterialPage(title=material)
-                    page_obj.add_child(instance=m)
-            try:
-                components = MaterialPageComponent.objects.filter(page_id=m.id)
-                x=0
-                component_dict = {}
-                for component in components:
-                    component_dict[x] = [component.name, component.color,
-                        component.pattern]
-                    x += 1
-                    if component.image:
-                        image_dict[m.title + '-' +
-                            component.name] = component.image
-                page_obj.material_dict[material] = component_dict
-            except:
-                pass
-    if page_obj.part_dict:
-        for partition, dummy in page_obj.part_dict.items():
-            try:
-                p = PartitionPage.objects.get(title=partition)
-            except:
-                if (partition and
-                    partition != 'default' and partition != 'ghost'):
-                    p = PartitionPage(title=partition)
-                    page_obj.add_child(instance=p)
-            try:
-                components = PartitionPageComponent.objects.filter(page_id=p.id)
-                x=0
-                component_dict = {}
-                for component in components:
-                    component_dict[x] = [component.name, component.thickness,
-                        component.weight]
-                    x += 1
-                page_obj.part_dict[partition] = component_dict
-            except:
-                pass
-
-    return image_dict
-
-def get_entities_ext(page_obj):
-    collection = aframe.parse_dxf(page_obj)
-    collection = aframe.reference_openings(collection)
-    collection = aframe.reference_animations(collection)
-    entities_dict = aframe.make_html(page_obj, collection)
-    return entities_dict
-
-def add_partitions(page, collection):
-    for x, d in collection.items():
-        if (d['2'] == 'a-wall' or d['2'] == 'a-openwall' or
-            d['2'] == 'a-window' or d['2'] == 'a-door' or d['2'] == 'a-slab' or
-            d['2'] == 'a-stair'):
-
-            layer = page.layer_dict[d['layer']]
-            d['PART'] = d.get('PART', layer[5])
-            d['p-pool'] = {}
-            if d['PART'] == '':
-                d['PART'] = layer[5]
-            if d['PART'] != 'default':
-                try:
-                    component_pool = page.part_dict[d['PART']]
-                    if component_pool:
-                        d['p-pool'] = component_pool
-                except:
-                    pass
-
-    return collection
