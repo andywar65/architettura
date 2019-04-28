@@ -12,8 +12,9 @@
   <p id="survey-author">By: {{ page.author }}</p>
   <p id="survey-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
 
-  {% with nl=page.add_new_layers %}
-  {% endwith %}
+  {% with nl=page.add_new_layers %}{% endwith %}
+  {% with dummy=page.get_object_assets %}{% endwith %}
+  {% with dummy=page.get_material_assets %}{% endwith %}
 
 	{% with entities=page.get_entities %}
 	 {% if entities %}
@@ -21,9 +22,7 @@
     <tr><th>NUM</th><th>LAYER</th><th>IDENTITY</th><th>MATERIAL</th>
     <th>COMPONENT</th><th>WIDTH(m)</th><th>HEIGTH(m)</th><th>DEPTH(m)</th>
     <th>PARTITION</th><th>WEIGHT(N)</th><th>DOUBLE</th><th>SLIDE</th></tr>
-		{% for key, value in entities.items %}
-		  {{ value|safe }}
-		{% endfor %}
+		
   </table>
 	 {% endif %}
 	{% endwith %}

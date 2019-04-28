@@ -870,22 +870,25 @@ class SurveyPage(Page):
                 page_layer.delete()
         return
 
+    def get_object_assets(self):
+        #here is where we extract the entities
+        dummy = self.scene.get_object_assets()
+        return
+
+    def get_material_assets(self):
+        #here is where we extract material and partition dicts
+        dummy = self.scene.get_material_assets()
+        return
+
     def get_entities(self):
-        self.scene.path_to_dxf = os.path.join(settings.MEDIA_ROOT, 'documents',
-                                self.scene.dxf_file.dxf_file.filename)
-        #image dict is useless here, but that's how we get dicts
-        image_dict = get_material_assets_ext(self.scene)
-        collection = aframe.parse_dxf(self.scene)
-        collection = aframe.reference_openings(collection)
-        collection = aframe.reference_animations(collection)
-        collection = add_partitions(self.scene, collection)
+        #here we get the survey layers visibility
         layer_dict = {}
         layers = SurveyPageLayer.objects.filter(page_id=self.id)
         if layers:
             for layer in layers:
                 layer_dict[layer.name] = layer.invisible
-        entities_dict = aframe.make_survey(collection, layer_dict)
-        return entities_dict
+        
+        return
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
