@@ -741,7 +741,10 @@ class ScenePage(Page):
         return self.ent_list
 
     def get_ambient_light(self):
-        return get_ambient_light_ext(self)
+        ambient_light = f'color: {self.ambient_light_color}; '
+        ambient_light += f'groundColor: {self.hemispheric_color}; '
+        ambient_light += f'intensity: {self.ambient_light_intensity}; '
+        return ambient_light
 
     def get_survey(self):
         survey = SurveyPage.objects.filter(scene_id=self.id)
@@ -957,12 +960,6 @@ def get_entities_ext(page_obj):
     collection = aframe.reference_animations(collection)
     entities_dict = aframe.make_html(page_obj, collection)
     return entities_dict
-
-def get_ambient_light_ext(page_obj):
-    ambient_light = f'color: {page_obj.ambient_light_color}; '
-    ambient_light += f'groundColor: {page_obj.hemispheric_color}; '
-    ambient_light += f'intensity: {page_obj.ambient_light_intensity}; '
-    return ambient_light
 
 def add_partitions(page, collection):
     for x, d in collection.items():
