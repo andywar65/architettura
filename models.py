@@ -856,7 +856,6 @@ class SurveyPage(Page):
 
     def add_new_layers(self):
         #we still have to produce the scene page layer dict
-        #TODO erase layers if they are no more in dxf
         self.scene.add_new_layers()
         for name, list in self.scene.layer_dict.items():
             try:
@@ -864,6 +863,11 @@ class SurveyPage(Page):
             except:
                 b = SurveyPageLayer(page_id=self.id, name=name)
                 b.save()
+        #erase layers if they are no more in dxf page
+        page_layers = SurveyPageLayer.objects.filter(page_id=self.id)
+        for page_layer in page_layers:
+            if page_layer.name not in self.scene.layer_dict:
+                page_layer.delete()
         return
 
     def get_entities(self):
