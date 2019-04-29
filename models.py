@@ -890,7 +890,12 @@ class SurveyPage(Page):
         if layers:
             for layer in layers:
                 layer_dict[layer.name] = layer.invisible
-
+        survey_list = []
+        for ent in self.scene.ent_list:
+            blob = ent['blob']
+            if 'survey' in blob and layer_dict[blob['layer']] == False:
+                survey_list.append(ent)
+        print(survey_list)
         return
 
 class SurveyPageLayer(Orderable):
