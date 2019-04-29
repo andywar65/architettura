@@ -80,14 +80,16 @@ def make_bim_block(page, d):
     else:
         d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = 'BIM-block'
-    identity = open_entity(page, d)
-    blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
-    page.ent_dict[identity] += blob
-    d['closing'] = close_entity(page, d)
+    #d['ide'] = 'BIM-block'
 
     if d['2'] == 'a-wall':
         d['ide'] = 'wall'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        blob += f'=;survey=:{round(d["41"]), 4} {round(d["43"]), 4} '
+        blob += f'{round(d["43"]), 4}=;partition=:{d["PART"]}'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_wall(page, d)
     elif d['2'] == 'a-slab':
         make_slab(page, d)
@@ -689,7 +691,7 @@ def make_wall(page, d):
             blob = f'id=:{identity}=;position=:{position}=;geometry=:{geometry}'
             blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
             blob += f'=;material=:{d[v[5]]}=;component=:{v[6]}'
-            blob += f'=;partition=:{d["PART"]}'
+            blob += f'=;survey=:{d["rx"]} {v[0]}'
             page.ent_dict[identity] = blob
     #last one closes all (we control if entity exists)
     if identity:
