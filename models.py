@@ -622,7 +622,13 @@ class ScenePage(Page):
                 try:
                     p = partitions.get(title=blob['partition'])
                     if p.title not in self.part_dict:
-                        self.part_dict[p.title] = ''
+                        components = PartitionPageComponent.objects.filter(page_id=p.id)
+                        comp_list = []
+                        for comp in components:
+                            values = (comp.name, comp.thickness,
+                                comp.weight, )
+                            comp_list.append(values)
+                        self.part_dict[p.title] = comp_list
                 except:
                     p = PartitionPage(title=blob['partition'])
                     self.add_child(instance=p)
