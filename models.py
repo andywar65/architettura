@@ -906,6 +906,10 @@ class SurveyPage(Page):
             i += 1
             ent['num'] = i
             blob = ent['blob']
+            values = blob['survey'].split()
+            ent['width'] = values[0]
+            ent['height'] = values[1]
+            ent['depth'] = values[2]
             layer = self.scene.layer_dict[blob['layer']]
             ent['layer'] = blob['layer']
             if 'material' in blob:
@@ -932,11 +936,12 @@ class SurveyPage(Page):
                     ent['part'] = blob['partition']
                 elif layer[5] in self.scene.part_dict:
                     ent['part'] = layer[5]
-            values = blob['survey'].split()
-            ent['width'] = values[0]
-            ent['height'] = values[1]
-            ent['depth'] = values[2]
+                components = self.scene.part_dict[ent['part']]
+                ent['weight'] = self.get_weight(ent['depth'], components)
         return self.survey_list
+
+    def get_weight(self, depth, components):
+        return 'baloo!'
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
