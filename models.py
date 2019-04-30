@@ -596,7 +596,13 @@ class ScenePage(Page):
             try:
                 p = partitions.get(title=list[5])
                 if p.title not in self.part_dict:
-                    self.part_dict[p.title] = ''
+                    components = PartitionPageComponent.objects.filter(page_id=p.id)
+                    comp_list = []
+                    for comp in components:
+                        values = (comp.name, comp.thickness,
+                            comp.weight, )
+                        comp_list.append(values)
+                    self.part_dict[p.title] = comp_list
             except:
                 pass
         for ent in self.ent_list:
@@ -907,9 +913,9 @@ class SurveyPage(Page):
             ent['num'] = i
             blob = ent['blob']
             values = blob['survey'].split()
-            ent['width'] = values[0]
-            ent['height'] = values[1]
-            ent['depth'] = values[2]
+            ent['width'] = float(values[0])
+            ent['height'] = float(values[1])
+            ent['depth'] = float(values[2])
             layer = self.scene.layer_dict[blob['layer']]
             ent['layer'] = blob['layer']
             if 'material' in blob:
@@ -937,11 +943,37 @@ class SurveyPage(Page):
                 elif layer[5] in self.scene.part_dict:
                     ent['part'] = layer[5]
                 components = self.scene.part_dict[ent['part']]
-                ent['weight'] = self.get_weight(ent['depth'], components)
+                print(self.scene.part_dict)
+                ent['weight'] = self.get_weight(ent, components)
         return self.survey_list
 
-    def get_weight(self, depth, components):
-        return 'baloo!'
+    def get_weight(self, ent, components):
+        unit_weight = 0
+        if components:
+            total_thickness = 0
+            var_thickness = -1
+            i = 0
+            for component in components:
+                thickness = float(component[1]/1000)
+                weight = float(component[2])
+                if thickness == 0:
+                    var_thickness = i
+                total_thickness = total_thickness + thickness
+                unit_weight = unit_weight + weight*thickness
+                i += 1
+            if total_thickness == ent['depth']:
+                unit_weight = round(unit_weight*ent['width']*ent['height']*ent['depth'], 4)
+            elif total_thickness > ent['depth']:
+                unit_weight = 'Thin'
+            elif total_thickness < ent['depth'] and var_thickness > -1:
+                component = components[var_thickness]
+                thickness = ent['depth'] - total_thickness
+                weight = float(component[2])
+                unit_weight = unit_weight + weight*thickness
+                unit_weight = round(unit_weight*ent['width']*ent['height']*ent['depth'], 4)
+            else:
+                unit_weight = 'Thick'
+        return unit_weight
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
