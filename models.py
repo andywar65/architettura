@@ -890,13 +890,43 @@ class SurveyPage(Page):
         if layers:
             for layer in layers:
                 layer_dict[layer.name] = layer.invisible
-        survey_list = []
+        self.survey_list = []
         for ent in self.scene.ent_list:
             blob = ent['blob']
             if 'survey' in blob and layer_dict[blob['layer']] == False:
-                survey_list.append(ent)
-        print(survey_list)
-        return
+                self.survey_list.append(ent)
+        i = 0
+        for ent in self.survey_list:
+            i += 1
+            ent['num'] = i
+            blob = ent['blob']
+            layer = self.scene.layer_dict[blob['layer']]
+            ent['layer'] = blob['layer']
+            if 'material' in blob:
+                if blob['material'] in self.scene.material_dict:
+                    ent['material'] = blob['material']
+                    components = self.scene.material_dict[blob['material']]
+                    try:
+                        comp = components[int(blob['component'])]
+                        if comp[0]:
+                            ent['component'] = comp[0]
+                    except:
+                        pass
+                elif layer[0] in self.scene.material_dict:
+                    ent['material'] = layer[0]
+                    components = self.scene.material_dict[layer[0]]
+                    try:
+                        comp = components[int(blob['component'])]
+                        if comp[0]:
+                            ent['component'] = comp[0]
+                    except:
+                        pass
+            values = blob['survey'].split()
+            print(values)
+            ent['width'] = values[0]
+            ent['height'] = values[1]
+            ent['depth'] = values[2]
+        return self.survey_list
 
 class SurveyPageLayer(Orderable):
     page = ParentalKey(SurveyPage, related_name='layers')
