@@ -916,6 +916,8 @@ class SurveyPage(Page):
             ent['width'] = float(values[0])
             ent['height'] = float(values[1])
             ent['depth'] = float(values[2])
+            ent['double'] = values[3]
+            ent['slide'] = values[4]
             layer = self.scene.layer_dict[blob['layer']]
             ent['layer'] = blob['layer']
             if 'material' in blob:
@@ -943,7 +945,6 @@ class SurveyPage(Page):
                 elif layer[5] in self.scene.part_dict:
                     ent['part'] = layer[5]
                 components = self.scene.part_dict[ent['part']]
-                print(self.scene.part_dict)
                 ent['weight'] = self.get_weight(ent, components)
         return self.survey_list
 
