@@ -921,8 +921,12 @@ class SurveyPage(Page):
                             ent['component'] = comp[0]
                     except:
                         pass
+            if 'partition' in blob:
+                if blob['partition'] in self.scene.part_dict:
+                    ent['part'] = blob['partition']
+                elif layer[5] in self.scene.part_dict:
+                    ent['part'] = layer[5]
             values = blob['survey'].split()
-            print(values)
             ent['width'] = values[0]
             ent['height'] = values[1]
             ent['depth'] = values[2]

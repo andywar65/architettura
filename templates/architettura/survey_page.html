@@ -24,7 +24,8 @@
 		{% for ent in entities %}<tr><td>{{ ent.num }}</td><td>{{ ent.layer }}</td>
     <td>{{ ent.id }}</td><td>{{ ent.material }}</td><td>{{ ent.component }}</td>
     <td>{{ ent.width }}</td><td>{{ ent.height }}</td><td>{{ ent.depth }}</td>
-    <td>PARTITION</td><td>WEIGHT(N)</td><td>DOUBLE</td><td>SLIDE</td></tr>{% endfor %}
+    <td>{{ ent.part }}</td><td>{{ ent.weight }}</td><td>{{ ent.double }}</td>
+    <td>{{ ent.slide }}</td></tr>{% endfor %}
   </table>
 	 {% endif %}{% endwith %}
 
