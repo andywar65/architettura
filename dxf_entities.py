@@ -110,6 +110,13 @@ def make_bim_block(page, d):
         d['closing'] = close_entity(page, d)
         make_door(page, d)
     elif d['2'] == 'a-window':
+        d['ide'] = 'window'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        blob += f'=;survey=:{round(d["41"], 4)} {round(d["43"] - float(d["SILL"]), 4)} 0 '
+        blob += f'{d["DOUBLE"]} False'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_window(page, d)
     elif d['2'] == 'a-stair':
         d['ide'] = 'stair'
@@ -883,6 +890,8 @@ def make_window(page, d):
     position = f'0 {zpos} 0'
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    blob += f'=;survey=:{round(d["41"], 4)} {round(d2["43"], 4)} '
+    blob += f'{round(d["42"], 4)} Null Null=;partition=:{d["PART"]}'
     page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
