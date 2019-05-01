@@ -1482,7 +1482,7 @@ def unit(nounit):
     unit = fabs(nounit)/nounit
     return unit
 
-def entity_material(d):#should be eliminated
+def entity_material(d):#should be eliminated, only called in make_tree
     #returns object material
     oput = ''
     if d['wireframe']:
@@ -1493,7 +1493,7 @@ def entity_material(d):#should be eliminated
             oput += f' repeat:{d["rx"]} {d["ry"]};'
     return oput
 
-def prepare_material_values(values, d):#should be eliminated
+def prepare_material_values(values, d):#should be eliminated, only called in make_tree
 
     for v in values:
         try:

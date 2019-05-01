@@ -20,20 +20,28 @@ To include meshes, explode them to 3Dfaces (I know it's bad, but this is how it 
 
 ### Wagtail backend
 
-Create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date).
-In the VR Settings panel first select how you want to move around in the scene, with keyboard input or clicking on checkpoints (see interaction), then load the most important stuff: the DXF file. It will be stored in the `media/documents` folder. You can add other CAD files to the Scene, but this function isn't active yet. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided. Insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models).
+Create a page of the `Dxf Page` kind. You will have to enter a Title and introduction.
+In the Source section load the `Dxf Page`most important stuff: the DXF file. It will be stored in the `media/documents` folder. Don't check the `Block` box and eventually insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models).
+Save and view the page. Your file has been already transformed into VR. If you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. Notice that entities inherit the original layer color. Ok, now let's go back to editing the page.
+Notiche that the `Block` box is now checked, this means that if you view the page again, the program won't read the DXF again, but it's database: DXF layers have been imported (you can change the color, and add new layers), and there is a list of all the entities extracted frm the DXF. The list is a little bit cryptic, but you can change the appearance and position of any entity from here.
+
+Now, to add materials, create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date).
+In the VR Settings panel first select how you want to move around in the scene, with keyboard input or clicking on checkpoints (see interaction), then choose the DXF Page that you want to render. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided.
 In the Ambient Setting panel load the Equirectangular Image for the VR background (if none, a default one will be picked). Equirectangular images are like those planispheres where Greenland is bigger than Africa. You can also set ambient background colors and lights.
 
-At first entities inherit the original layer color, but you can change that associating `Materials` and `Partitions` to layers. Layers are extracted from DXF first time you view the page, set them to `Invisible` if you want to turn them off. You can also set layer to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
+Okay, now publish and go to the frontend to see how your model behaves. At first it should look like in the Dxf Page, apart from how you move around (see Interaction and Checkpoint paragraphs). Now get back to editing the page.
 
-Each `Material Page` can contain as many `Components` as you want. A Component needs a Name, an Image and a Color. If the image is a 1x1 meter pattern, check the appropriate box. Default color is `white`, but you can change it with the color picker. Color affects appearance of the image. Entities use Components in different ways, some blocks use up to three components for different surfaces.
+You should notice thet layers have been imported from the Dxf Page. At first entities inherit the original DXF color, but you can change that associating `Materials` and `Partitions` to layers (see next paragraph). You can set them to `Invisible` if you want to turn them off. If you set them to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
+
+### Materials and Partitions
+
+You saw thet layers in Scene Page can load materials and partitions. These are external pages that can be shared by different Scenes. It is convenient to prepare your own materials in advance.
+Each `Material Page` can contain as many `Components` as you want. A Component needs a Name, an Image and a Color. If the image is a 1x1 meter pattern, check the appropriate box. Default color is `white`, but you can change it with the color picker. Color affects appearance of the image. Entities use Components in different ways, some blocks use up to three components for different surfaces. In example, a whole room uses the first component for the paint on walls and the ceiling, the second for tiled surfaces and the third for skirting and pavement.
 `Partitions` are taken in account only during surveys (see further). Also Partitions have `Components`, but they refer more to physical characteristics, like `thickness` and unit `weight`. Partition displays what your wall or slab is made of.
-
-Okay, now publish and go to the frontend to see how your model behaves.
 
 ### Interaction, keyboard mode
 
-The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. On some mobiles you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
+The model window is embedded within your website, but you can go fullscreen by pressing `F` or the visor icon in the right bottom corner of the window. On some mobiles the image will be split in two, with stereoscopic effect. You will need one of those cardboard headgears to appreciate the effect. Press `ESC` to exit fullscreen mode. On laptops, if you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. On some devices you literally walk to explore the model, but I've never experienced that. Some elements like Doors have animations, just click on them.
 Last but not least, press the `Ctrl+Alt+I` to enter the Inspector mode, that makes you inspect and modify the entities of the model. Modifications can be saved to HTML files.
 Notice that under the model window you have some lists, with links to surveys (see further), materials and partitions used in the scene.
 
@@ -71,7 +79,7 @@ Standard blocks come with attributes that affect their geometry. In CAD, attribu
 
 `a-animation` standard block animates the blocks that have same insertion point in CAD file. Refer to [A-Frame Animation Component Documentation](https://aframe.io/docs/0.9.0/core/animations.html) for further details on animation attributes. Apart from regular animations, `PROPERTY` can be set to `checkpoint`, `look-at`, `event` and `stalker`.
 `Checkpoint` transforms into checkpoints the blocks that have same insertion point in CAD file. Checkpoints are useful to move you around in `digitalkOmiX mode` (see before). Thanks to [Don McCurdy](https://github.com/donmccurdy/aframe-extras) for the component.
-`Look-at` and `stalker` have similar behaviour. First gazes towards the camera or given `TARGET`, latter stalkers the camera and may have a `TEXT` in a balloon or a `LINK`.
+`Look-at` and `stalker` have similar behaviour. First gazes towards the camera or given `TARGET`, latter stalkers the camera and may have a `TEXT` in a balloon or a `LINK` (dismissed function at the moment).
 `Event` animation connects two entities with given `ID`. On click first entity emits an event targeting second entity, that triggers animation with `startEvents` equal to first `ID`. Thanks to [Supermedium](https://github.com/supermedium/superframe/tree/master/components/animation/examples/events) for the component.
 
 `a-mason` standard block transforms lines and polylines with thickness and a-planes into `Wall` surfaces (see further). To work it has to be attached at insertion point of a-plane or at origin of line or polyline.
@@ -90,4 +98,4 @@ Doors can be hinged or sliding, single or double. Geometry and behaviour are def
 
 ### Survey Pages
 
-A `Survey Page` is useful to calculate surfaces and weights. Create a Survey and select the Scene you want to survey. Save and view the survey. A table of entities is displayed, with informations regarding materials, partitions and dimensions, along with weights of walls and slabs if you provided them with a `Partition`. You can copy and paste the table to a spreadsheet to calculate surfaces and volumes. Edit again the Survey Page: you will notice that Scene Page Layers have been imported, with the ability to exclude them from the survey. This is pretty handy, because you can have multiple surveys targeting the same Scene, taking in account different dimensional aspects (i.e. Demolitions and Reconstructions).
+A `Survey Page` is useful to calculate surfaces and weights. Create a Survey and select the Scene you want to survey. Save and view the survey. A table of entities is displayed, with informations regarding materials, partitions and dimensions, along with weights of walls and slabs if you provided them with a `Partition`. You can copy and paste the table to a spreadsheet to calculate surfaces and volumes. Edit again the Survey Page: you will notice that Scene Page Layers have been imported, with the ability to exclude them from the survey. This is pretty handy, because you can have multiple surveys targeting the same Scene, taking into account different dimensional aspects (i.e. Demolitions and Reconstructions).
