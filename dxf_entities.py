@@ -106,6 +106,7 @@ def make_bim_block(page, d):
         blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
         blob += f'=;survey=:{round(d["41"], 4)} {round(d["43"], 4)} 0 '
         blob += f'{d["DOUBLE"]} {d["SLIDING"]}'
+        blob += f'=;material=:{d["MATERIAL"]}=;component=:0'
         page.ent_dict[identity] += blob
         d['closing'] = close_entity(page, d)
         make_door(page, d)
@@ -115,6 +116,7 @@ def make_bim_block(page, d):
         blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
         blob += f'=;survey=:{round(d["41"], 4)} {round(d["43"] - float(d["SILL"]), 4)} 0 '
         blob += f'{d["DOUBLE"]} False'
+        blob += f'=;material=:{d["WMATERIAL"]}=;component=:2'
         page.ent_dict[identity] += blob
         d['closing'] = close_entity(page, d)
         make_window(page, d)
