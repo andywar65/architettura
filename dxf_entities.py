@@ -101,12 +101,24 @@ def make_bim_block(page, d):
         d['closing'] = close_entity(page, d)
         make_slab(page, d)
     elif d['2'] == 'a-door':
+        d['ide'] = 'door'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        blob += f'=;survey=:{round(d["41"], 4)} {round(d["43"], 4)} 0 '
+        blob += f'{d["DOUBLE"]} {d["SLIDING"]}'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_door(page, d)
     elif d['2'] == 'a-window':
         make_window(page, d)
     elif d['2'] == 'a-stair':
         make_stair(page, d)
     elif d['2'] == 'a-openwall':
+        d['ide'] = 'openwall'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_openwall(page, d)
 
     return
@@ -814,6 +826,8 @@ def make_openwall(page, d):
     position =f'{xpos} 0 0'
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    blob += f'=;survey=:{round(d2["41"], 4)} {round(d2["42"], 4)} '
+    blob += f'{round(d2["43"], 4)} Null Null=;partition=:{d2["PART"]}'
     page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
@@ -827,6 +841,8 @@ def make_openwall(page, d):
     position= f'{xpos} {zpos} 0'
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    blob += f'=;survey=:{round(d2["41"], 4)} {round(d2["42"], 4)} '
+    blob += f'{round(d2["43"], 4)} Null Null=;partition=:{d2["PART"]}'
     page.ent_dict[identity] = blob
     d2['closing'] = 1
     make_wall(page, d2)
@@ -839,6 +855,8 @@ def make_openwall(page, d):
     position=f'{xpos} 0 0'
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-entity=;closing=:0'
+    blob += f'=;survey=:{round(d2["41"], 4)} {round(d2["42"], 4)} '
+    blob += f'{round(d2["43"], 4)} Null Null=;partition=:{d2["PART"]}'
     page.ent_dict[identity] = blob
     d2['closing'] = d['closing']+1
     make_wall(page, d2)
