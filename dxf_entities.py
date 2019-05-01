@@ -92,6 +92,13 @@ def make_bim_block(page, d):
         d['closing'] = close_entity(page, d)
         make_wall(page, d)
     elif d['2'] == 'a-slab':
+        d['ide'] = 'slab'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        blob += f'=;survey=:{round(d["41"], 4)} {round(d["42"], 4)} '
+        blob += f'{round(d["43"], 4)} Null Null=;partition=:{d["PART"]}'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_slab(page, d)
     elif d['2'] == 'a-door':
         make_door(page, d)
@@ -609,7 +616,8 @@ def make_slab(page, d):
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:2'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
-    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    blob += f'=;repeat=:{d["rx"]} {d["ry"]}'
+    blob += f'=;survey=:{d["rx"]} {d["ry"]} 0 Null Null'
     page.ent_dict[identity] = blob
 
     #ceiling
@@ -620,7 +628,8 @@ def make_slab(page, d):
     blob = f'id=:{identity}=;position=:{position}'
     blob += f'=;geometry=:{geometry}=;material=:{d["MATERIAL"]}=;component=:0'
     blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:{d["closing"]+1}'
-    blob += f'=;partition=:{d["PART"]}=;repeat=:{d["rx"]} {d["ry"]}'
+    blob += f'=;repeat=:{d["rx"]} {d["ry"]}'
+    blob += f'=;survey=:{d["rx"]} {d["ry"]} 0 Null Null'
     page.ent_dict[identity] = blob
 
     return
@@ -692,6 +701,7 @@ def make_wall(page, d):
             blob += f'=;layer=:{d["layer"]}=;tag=:a-box=;closing=:1'
             blob += f'=;material=:{d[v[5]]}=;component=:{v[6]}'
             blob += f'=;survey=:{d["rx"]} {v[0]} 0 Null Null'
+            blob += f'=;repeat=:{d["rx"]} {v[0]}'
             page.ent_dict[identity] = blob
     #last one closes all (we control if entity exists)
     if identity:
