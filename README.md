@@ -21,9 +21,9 @@ To include meshes, explode them to 3Dfaces (I know it's bad, but this is how it 
 ### Wagtail backend
 
 Create a page of the `Dxf Page` kind. You will have to enter a Title and introduction.
-In the Source section load the `Dxf Page`most important stuff: the DXF file. It will be stored in the `media/documents` folder. Don't check the `Block` box and eventually insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models).
+In the Source section load the most important stuff: the DXF file. It will be stored in the `media/documents` folder. Don't check the `Block` box and eventually insert URL of a CDN with CORS enabled from where you want to eventually [serve 3D model files](https://aframe.io/docs/0.9.0/introduction/hosting-and-publishing.html#hosting-models).
 Save and view the page. Your file has been already transformed into VR. If you want to look around, press mouse button, then just move the mouse. To move around press the `W-A-S-D` keys. Notice that entities inherit the original layer color. Ok, now let's go back to editing the page.
-Notiche that the `Block` box is now checked, this means that if you view the page again, the program won't read the DXF again, but it's database: DXF layers have been imported (you can change the color, and add new layers), and there is a list of all the entities extracted frm the DXF. The list is a little bit cryptic, but you can change the appearance and position of any entity from here.
+Notice that the `Block` box is now checked, this means that if you view the page again, the program will skip the DXF and read it's database: DXF layers have been imported (you can change the color, and add new layers), and there is a list of all the entities extracted from the DXF. The list is a little bit cryptic, but you can change the appearance and position of any entity from here, and even add new ones.
 
 Now, to add materials, create a page of the `Scene Page` kind. You will have to enter a Title plus other page informations (Intro, Image, Author and date).
 In the VR Settings panel first select how you want to move around in the scene, with keyboard input or clicking on checkpoints (see interaction), then choose the DXF Page that you want to render. Then you will have to check if you want your shadows on, if you want your camera to be able to fly and if 3D faces must be double sided.
@@ -31,7 +31,7 @@ In the Ambient Setting panel load the Equirectangular Image for the VR backgroun
 
 Okay, now publish and go to the frontend to see how your model behaves. At first it should look like in the Dxf Page, apart from how you move around (see Interaction and Checkpoint paragraphs). Now get back to editing the page.
 
-You should notice thet layers have been imported from the Dxf Page. At first entities inherit the original DXF color, but you can change that associating `Materials` and `Partitions` to layers (see next paragraph). You can set them to `Invisible` if you want to turn them off. If you set them to `Wireframe`, and all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
+You should notice thet layers have been imported from the Dxf Page. At first entities inherit the original DXF color, but you can change that associating `Materials` and `Partitions` to layers (see next paragraph). You can set them to `Invisible` if you want to turn them off. If you set them to `Wireframe`, all entities on that layer will display only edges. If you set `No shadows` entities on the layer will be unaffected by lighting.
 
 ### Materials and Partitions
 
