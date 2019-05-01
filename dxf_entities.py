@@ -247,6 +247,7 @@ def make_w_plane(page, d):
             material = d.get('MATERIAL', '')
             blob += f'=;material=:{material}=;component=:{v[3]}'
             blob += f'=;layer=:{d["layer"]}=;tag=:a-plane=;closing=:1'
+            blob += f'=;survey=:{round(d["rx"], 4)} {v[0]} 0 Null Null'
             page.ent_dict[identity] = blob
     #last one closes all
     closing = d['closing']+1
