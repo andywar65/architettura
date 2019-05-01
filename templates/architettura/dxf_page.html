@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static wagtailuserbar %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-v0.9.0.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'architettura/js/aframe-look-at-component.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'architettura/js/event-proxy.js' %}"></script>
+{% endblock %}
+
+{% block body_class %}template-dxfpage{% endblock %}
+
+{% block content %}
+  <h1 id="scene-title">Viewing Dxf Page: {{ page.title }}</h1>
+    <a-scene style="width: 100%; height: 768px" embedded>
+    {% with nl=page.add_new_layers %}{% endwith %}
+    {% with ae=page.add_entities %}{% endwith %}
+    <a-asset>
+      <img id="sky" src="{% static 'architettura/images/target.png' %}">
+        <img id="default-sky" src="{% static 'architettura/images/target.png' %}">
+      {% with object_dict=page.get_object_assets %}{% if object_dict %}{% for name, path in object_dict.items %}
+      <a-asset-item id="{{ name }}" src="{{ path }}/{{ name }}"></a-asset-item>
+      {% endfor %}{% endif %}{% endwith %}
+    </a-asset>
+
+		{% with ent_list=page.get_entities %}{% if ent_list %}{% for ent in ent_list %}
+			<{{ ent.tag }} id="{{ ent.id }}" {% if ent.extras %}{{ ent.extras }} {% endif %}{% for key, value in ent.blob.items %}
+      {{ key }}="{{ value }}" {% endfor %}
+      >{% for c in ent.closing %}</{{c}}>{% endfor %}
+		{% endfor %}{% endif %}{% endwith %}
+
+    <a-sky src="#sky"></a-sky>
+
+  </a-scene>
+
+{% endblock %}

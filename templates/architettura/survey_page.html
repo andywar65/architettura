@@ -12,21 +12,22 @@
   <p id="survey-author">By: {{ page.author }}</p>
   <p id="survey-published-date">Posted: {{ page.date_published|date:'d-M-Y' }}</p>
 
-  {% with nl=page.add_new_layers %}
-  {% endwith %}
+  {% with nl=page.add_new_layers %}{% endwith %}
+  {% with dummy=page.get_object_assets %}{% endwith %}
+  {% with dummy=page.get_material_assets %}{% endwith %}
 
-	{% with entities=page.get_entities %}
-	 {% if entities %}
+	{% with entities=page.get_entities %}{% if entities %}
    <table>
     <tr><th>NUM</th><th>LAYER</th><th>IDENTITY</th><th>MATERIAL</th>
     <th>COMPONENT</th><th>WIDTH(m)</th><th>HEIGTH(m)</th><th>DEPTH(m)</th>
     <th>PARTITION</th><th>WEIGHT(N)</th><th>DOUBLE</th><th>SLIDE</th></tr>
-		{% for key, value in entities.items %}
-		  {{ value|safe }}
-		{% endfor %}
+		{% for ent in entities %}<tr><td>{{ ent.num }}</td><td>{{ ent.layer }}</td>
+    <td>{{ ent.id }}</td><td>{{ ent.material }}</td><td>{{ ent.component }}</td>
+    <td>{{ ent.width }}</td><td>{{ ent.height }}</td><td>{{ ent.depth }}</td>
+    <td>{{ ent.part }}</td><td>{{ ent.weight }}</td><td>{{ ent.double }}</td>
+    <td>{{ ent.slide }}</td></tr>{% endfor %}
   </table>
-	 {% endif %}
-	{% endwith %}
+	 {% endif %}{% endwith %}
 
   <p id="survey-scene">Back to Scene <a href="{{ page.scene.url }}">{{ page.scene }}</a></p>
 
