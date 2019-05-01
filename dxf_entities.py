@@ -112,6 +112,11 @@ def make_bim_block(page, d):
     elif d['2'] == 'a-window':
         make_window(page, d)
     elif d['2'] == 'a-stair':
+        d['ide'] = 'stair'
+        identity = open_entity(page, d)
+        blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
+        page.ent_dict[identity] += blob
+        d['closing'] = close_entity(page, d)
         make_stair(page, d)
     elif d['2'] == 'a-openwall':
         d['ide'] = 'openwall'
