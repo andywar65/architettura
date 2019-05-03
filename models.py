@@ -652,7 +652,7 @@ class ScenePage(Page):
                 layer = self.layer_dict[blob['layer']]
                 if layer[1]:#layer is invisible
                     blob['visible'] = 'false'
-                if layer[3] and 'material' in blob:#layer casts/receives no shadows
+                if layer[3] and 'shadow' in blob:#layer casts/receives no shadows
                     blob['shadow'] = 'cast: false; receive: false'
                 layer_color = f'color: {layer[4]}; '
             else:
