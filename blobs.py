@@ -78,44 +78,44 @@ id=:40-openwall-right-10-ext-tile=;position=:0 -0.65 -0.145=;geometry=:width: 1.
 id=:40-openwall-right-10-ext-plaster=;position=:0 0.8 -0.145=;geometry=:width: 1.0999704525813003; height: 1.4; depth: 0.01; =;layer=:0=;tag=:a-box=;closing=:3=;material=:=;component=:0=;partition=:"""
     return material
 
-def get_grl():
+def get_grl_blob():
     material = """
-        id=:37-pelvis=;position=:0.0 0.8684 -0.0149=;rotation=:10.0 0.0 0.0=;scale=:0.132 0.1826 0.088=;radius-bottom=:1=;radius-top=:0.74=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-pubes=;position=:0.0 0.7692 -0.0324=;rotation=:10.0 0.0 0.0=;scale=:0.132 0.066 0.088=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-gluteus=;position=:-0.0546 0.7865 -0.0463=;rotation=:0 0 0=;scale=:0.099 0.099 0.099=;repeat=:0.099 0.099=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-gluteus=;position=:0.0546 0.7865 -0.0463=;rotation=:0 0 0=;scale=:0.099 0.099 0.099=;repeat=:0.099 0.099=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-thigh=;position=:0.0737 0.5775 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.077 0.418 0.077=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.077 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-l-knee=;position=:0.0737 0.3685 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-tibia=;position=:0.0737 0.2035 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.0385 0.33 0.0385=;radius-bottom=:1=;radius-top=:.8=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-l-heel=;position=:0.0737 0.0385 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-thigh=;position=:-0.0737 0.5775 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.077 0.418 0.077=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.077 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-r-knee=;position=:-0.0737 0.3685 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-tibia=;position=:-0.0737 0.2035 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.0385 0.33 0.0385=;radius-bottom=:1=;radius-top=:.8=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-r-heel=;position=:-0.0737 0.0385 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-tit=;position=:-0.077 1.0762 0.0524=;rotation=:15.3957 -25.9985 -7.3774=;scale=:0.055 0.055 0.077=;repeat=:0.055 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-shoulder=;position=:-0.1562 1.168 -0.0407=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-shoulder=;position=:0.1562 1.168 -0.0407=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-chest=;position=:0.0 1.0297 -0.0064=;rotation=:4.8166 -180.0 180.0=;scale=:0.132 0.1658 0.088=;radius-bottom=:1=;radius-top=:0.74=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-sternum=;position=:0.0 1.1123 -0.0134=;rotation=:-4.8166 -0.0 0.0=;scale=:0.132 0.121 0.088=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-tit=;position=:0.077 1.0762 0.0524=;rotation=:15.3957 25.9985 7.3774=;scale=:0.055 0.055 0.077=;repeat=:0.055 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-elbow=;position=:-0.1562 0.9315 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.033 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-arm=;position=:-0.1562 1.0498 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.85=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-r-forearm=;position=:-0.1562 0.8133 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-r-wirst=;position=:-0.1562 0.695 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.066 0.022=;repeat=:0.033 0.022=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-elbow=;position=:0.1562 0.9315 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.033 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-arm=;position=:0.1562 1.0498 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.85=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-l-forearm=;position=:0.1562 0.8133 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-l-wrist=;position=:0.1562 0.695 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.066 0.022=;repeat=:0.033 0.022=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-calf=;position=:0.0738 0.3064 -0.0574=;rotation=:0 0 0=;scale=:0.033 0.088 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-calf=;position=:-0.0736 0.3064 -0.0574=;rotation=:0 0 0=;scale=:0.033 0.088 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-head=;position=:0.0 1.371 -0.0191=;rotation=:0 0 0=;scale=:0.099 0.1045 0.1045=;repeat=:0.099 0.1045=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-neck=;position=:0.0 1.2474 -0.0315=;rotation=:0 0 0=;scale=:0.0385 0.132 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cylinder=;closing=:1
-        id=:37-belly=;position=:0.0 0.9527 -0.0=;rotation=:10.0 0.0 0.0=;scale=:0.099 0.0495 0.066=;repeat=:0.099 0.066=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-r-scapula=;position=:-0.1016 1.1633 -0.0357=;rotation=:85.0 -92.0 3.1651=;scale=:0.055 0.11 0.055=;radius-bottom=:1=;radius-top=:.7=;repeat=:0.055 0.055=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-l-scapula=;position=:0.1016 1.1633 -0.0357=;rotation=:85.0 92.0 -3.1651=;scale=:0.055 0.11 0.055=;radius-bottom=:1=;radius-top=:.7=;repeat=:0.055 0.055=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
-        id=:37-hair=;position=:0.0 1.371 -0.0191=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;theta-length=:90=;theta-start=:0=;repeat=:0.121 0.121=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-fringe=;position=:0.0 1.3105 -0.0191=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;open-ended=:True=;theta-length=:180=;theta-start=:90=;repeat=:0.121 0.121=;layer=:0=;material=:=;component=:0=;tag=:a-cylinder=;closing=:1
-        id=:37-r-foot=;position=:-0.0815 0.022 0.0059=;rotation=:0 350.0 0=;scale=:0.0385 0.022 0.11=;repeat=:0.0385 0.11=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
-        id=:37-l-foot=;position=:0.0815 0.022 0.0059=;rotation=:0 10.0 0=;scale=:0.0385 0.022 0.11=;repeat=:0.0385 0.11=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:pelvis=;position=:0.0 0.8684 -0.0149=;rotation=:10.0 0.0 0.0=;scale=:0.132 0.1826 0.088=;radius-bottom=:1=;radius-top=:0.74=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:pubes=;position=:0.0 0.7692 -0.0324=;rotation=:10.0 0.0 0.0=;scale=:0.132 0.066 0.088=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-gluteus=;position=:-0.0546 0.7865 -0.0463=;rotation=:0 0 0=;scale=:0.099 0.099 0.099=;repeat=:0.099 0.099=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-gluteus=;position=:0.0546 0.7865 -0.0463=;rotation=:0 0 0=;scale=:0.099 0.099 0.099=;repeat=:0.099 0.099=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-thigh=;position=:0.0737 0.5775 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.077 0.418 0.077=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.077 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:l-knee=;position=:0.0737 0.3685 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-tibia=;position=:0.0737 0.2035 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.0385 0.33 0.0385=;radius-bottom=:1=;radius-top=:.8=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:l-heel=;position=:0.0737 0.0385 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-thigh=;position=:-0.0737 0.5775 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.077 0.418 0.077=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.077 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:r-knee=;position=:-0.0737 0.3685 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-tibia=;position=:-0.0737 0.2035 -0.0352=;rotation=:0.0 -180.0 -180.0=;scale=:0.0385 0.33 0.0385=;radius-bottom=:1=;radius-top=:.8=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:r-heel=;position=:-0.0737 0.0385 -0.0352=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-tit=;position=:-0.077 1.0762 0.0524=;rotation=:15.3957 -25.9985 -7.3774=;scale=:0.055 0.055 0.077=;repeat=:0.055 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-shoulder=;position=:-0.1562 1.168 -0.0407=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-shoulder=;position=:0.1562 1.168 -0.0407=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:chest=;position=:0.0 1.0297 -0.0064=;rotation=:4.8166 -180.0 180.0=;scale=:0.132 0.1658 0.088=;radius-bottom=:1=;radius-top=:0.74=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:sternum=;position=:0.0 1.1123 -0.0134=;rotation=:-4.8166 -0.0 0.0=;scale=:0.132 0.121 0.088=;repeat=:0.132 0.088=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-tit=;position=:0.077 1.0762 0.0524=;rotation=:15.3957 25.9985 7.3774=;scale=:0.055 0.055 0.077=;repeat=:0.055 0.077=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-elbow=;position=:-0.1562 0.9315 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.033 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-arm=;position=:-0.1562 1.0498 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.85=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:r-forearm=;position=:-0.1562 0.8133 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:r-wirst=;position=:-0.1562 0.695 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.066 0.022=;repeat=:0.033 0.022=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-elbow=;position=:0.1562 0.9315 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.033 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-arm=;position=:0.1562 1.0498 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.85=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:l-forearm=;position=:0.1562 0.8133 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;radius-bottom=:1=;radius-top=:.5=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:l-wrist=;position=:0.1562 0.695 -0.0407=;rotation=:0 0 0=;scale=:0.033 0.066 0.022=;repeat=:0.033 0.022=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-calf=;position=:0.0738 0.3064 -0.0574=;rotation=:0 0 0=;scale=:0.033 0.088 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-calf=;position=:-0.0736 0.3064 -0.0574=;rotation=:0 0 0=;scale=:0.033 0.088 0.033=;repeat=:0.033 0.033=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:head=;position=:0.0 1.371 -0.0191=;rotation=:0 0 0=;scale=:0.099 0.1045 0.1045=;repeat=:0.099 0.1045=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:neck=;position=:0.0 1.2474 -0.0315=;rotation=:0 0 0=;scale=:0.0385 0.132 0.0385=;repeat=:0.0385 0.0385=;layer=:0=;material=:=;component=:0=;tag=:a-cylinder=;closing=:1
+        id=:belly=;position=:0.0 0.9527 -0.0=;rotation=:10.0 0.0 0.0=;scale=:0.099 0.0495 0.066=;repeat=:0.099 0.066=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:r-scapula=;position=:-0.1016 1.1633 -0.0357=;rotation=:85.0 -92.0 3.1651=;scale=:0.055 0.11 0.055=;radius-bottom=:1=;radius-top=:.7=;repeat=:0.055 0.055=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:l-scapula=;position=:0.1016 1.1633 -0.0357=;rotation=:85.0 92.0 -3.1651=;scale=:0.055 0.11 0.055=;radius-bottom=:1=;radius-top=:.7=;repeat=:0.055 0.055=;layer=:0=;material=:=;component=:0=;tag=:a-cone=;closing=:1
+        id=:hair=;position=:0.0 1.371 -0.0191=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;theta-length=:90=;theta-start=:0=;repeat=:0.121 0.121=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:fringe=;position=:0.0 1.3105 -0.0191=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;open-ended=:True=;theta-length=:180=;theta-start=:90=;repeat=:0.121 0.121=;layer=:0=;material=:=;component=:0=;tag=:a-cylinder=;closing=:1
+        id=:r-foot=;position=:-0.0815 0.022 0.0059=;rotation=:0 350.0 0=;scale=:0.0385 0.022 0.11=;repeat=:0.0385 0.11=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
+        id=:l-foot=;position=:0.0815 0.022 0.0059=;rotation=:0 10.0 0=;scale=:0.0385 0.022 0.11=;repeat=:0.0385 0.11=;layer=:0=;material=:=;component=:0=;tag=:a-sphere=;closing=:1
         """
     return material

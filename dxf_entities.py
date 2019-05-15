@@ -9,6 +9,7 @@ features depend on PARAM attributes.
 
 from math import degrees, sqrt, pow, fabs, atan2, sin, cos, radians
 from random import random, gauss
+from architettura import blobs
 
 def make_camera(page, d):
     #TODO different cameras to choose from
@@ -1236,6 +1237,19 @@ def make_leaves(branch, lb, d):
     oput += 'side: back;">\n'
     oput += '</a-sphere> \n'#close leaves
     return oput#TODO
+
+def make_grl(page, d):
+    lines = blobs.get_grl_blob().splitlines()
+    for line in lines:
+        line.replace('id:=', f'id:={page.id}-grl-{d["num"]}-')
+        pairs = line.split(';=')
+        couple = pairs[0].split(':=')
+        identity = couple[1]
+        page.ent_dict[identity] = line
+    closing = d['closing']+1
+    page.ent_dict[identity] = line.replace('closing=:1',
+        f'closing=:{closing}')
+    return
 
 def open_entity(page, d):
 
