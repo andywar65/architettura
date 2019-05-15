@@ -56,7 +56,7 @@ def make_block(page, d):
     d['dx'] = d['dy'] = 0
     d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
-    d['ide'] = 'block'
+    d['ide'] = d['NAME']
     identity = open_entity(page, d)
     blob = f'=;layer=:{d["layer"]}=;tag=:{d["tag"]}=;closing=:0'
     page.ent_dict[identity] += blob
@@ -66,6 +66,8 @@ def make_block(page, d):
         make_table_01(page, d)
     elif d['NAME'] == 'obj-mtl' or d['NAME'] == 'gltf':
         make_object(page, d)
+    elif d['NAME'] == 'grl':
+        make_grl(page, d)
     #elif d['NAME'] == 'tree':
         #make_tree(page, d)
 
