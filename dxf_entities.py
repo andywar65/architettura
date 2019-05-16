@@ -1241,9 +1241,9 @@ def make_leaves(branch, lb, d):
 def make_grl(page, d):
     lines = blobs.get_grl_blob().splitlines()
     for line in lines:
-        line.replace('id:=', f'id:={page.id}-grl-{d["num"]}-')
-        pairs = line.split(';=')
-        couple = pairs[0].split(':=')
+        line = line.replace('id=:', f'id=:{page.id}-grl-{d["num"]}-')
+        pairs = line.split('=;')
+        couple = pairs[0].split('=:')
         identity = couple[1]
         page.ent_dict[identity] = line
     closing = d['closing']+1
