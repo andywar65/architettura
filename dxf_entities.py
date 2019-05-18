@@ -1242,6 +1242,10 @@ def make_grl(page, d):
     lines = blobs.get_grl_blob().splitlines()
     for line in lines:
         line = line.replace('id=:', f'id=:{page.id}-grl-{d["num"]}-')
+        material = d.get('MATERIAL', '')
+        line = line.replace('material=:', f'material=:{material}')
+        layer = d.get('layer', '0')
+        line += f'=;layer=:{layer}'
         pairs = line.split('=;')
         couple = pairs[0].split('=:')
         identity = couple[1]
