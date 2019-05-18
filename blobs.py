@@ -86,9 +86,9 @@ id=:r-tit=;geometry=:primitive: sphere; =;position=:-0.0729 0.126 0.0441=;rotati
 id=:l-tit=;geometry=:primitive: sphere; =;position=:0.0729 0.126 0.0441=;rotation=:15.3957 25.9985 7.3774=;scale=:0.055 0.055 0.077=;repeat=:0.055 0.077=;material=:=;component=:0=;tag=:a-entity=;closing=:1
 id=:neck-ent=;position=:0 0.2287 -0.0315=;rotation=:0 0 0=;tag=:a-entity=;closing=:0
 id=:neck=;geometry=:primitive: cylinder; =;position=:0 0.066 0=;rotation=:0 0 0=;scale=:0.0385 0.132 0.0385=;repeat=:0.0385 0.0385=;material=:=;component=:0=;tag=:a-entity=;closing=:1
-id=:head=;geometry=:primitive: sphere; =;position=:0.0 0.1896 0.0124=;rotation=:0 0 0=;scale=:0.099 0.1045 0.1045=;repeat=:0.099 0.1045=;material=:=;component=:0=;tag=:a-entity=;closing=:0
-id=:hair=;geometry=:primitive: sphere; theta-length: 90;theta-start: 0; =;position=:0 0 0=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;repeat=:0.121 0.121=;material=:=;component=:0=;tag=:a-entity=;closing=:1=;side=:double
-id=:fringe=;geometry=:primitive: cylinder; open-ended: true; theta-length: 180; theta-start: 90; =;position=:0.0 -0.0605 0=;rotation=:0 0 0=;scale=:0.121 0.121 0.121=;repeat=:0.121 0.121=;material=:=;component=:0=;tag=:a-entity=;closing=:3=;side=:double
+id=:head=;geometry=:primitive: sphere; radius: 0.1045; =;position=:0.0 0.1896 0.0124=;rotation=:0 0 0=;repeat=:0.1045 0.1045=;material=:=;component=:0=;tag=:a-entity=;closing=:0
+id=:hair=;geometry=:primitive: sphere; radius: 0.121; theta-length: 90;theta-start: 0; =;position=:0 0 0=;rotation=:0 0 0=;repeat=:0.121 0.121=;material=:=;component=:0=;tag=:a-entity=;closing=:1=;side=:double
+id=:fringe=;geometry=:primitive: cylinder; radius: 0.121; height: 0.121; open-ended: true; theta-length: 180; theta-start: 90; =;position=:0.0 -0.0605 0=;rotation=:0 0 0=;repeat=:0.121 0.121=;material=:=;component=:0=;tag=:a-entity=;closing=:3=;side=:double
 id=:r-scapula=;geometry=:primitive: cone; radius-bottom: 1; radius-top: 0.7; =;position=:-0.1016 0.2105 -0.0357=;rotation=:85.0 -92.0 3.1651=;scale=:0.055 0.11 0.055=;repeat=:0.055 0.055=;material=:=;component=:0=;tag=:a-entity=;closing=:1
 id=:r-shoulder=;geometry=:primitive: sphere; =;position=:-0.1562 0.2153 -0.0407=;rotation=:0 0 0=;scale=:0.0385 0.0385 0.0385=;repeat=:0.0385 0.0385=;material=:=;component=:0=;tag=:a-entity=;closing=:1
 id=:r-arm=;geometry=:primitive: cone; radius-bottom: 1; radius-top: 0.85; =;position=:-0.1562 0.0971 -0.0407=;rotation=:0.0 -180.0 -180.0=;scale=:0.033 0.2365 0.033=;repeat=:0.033 0.033=;material=:=;component=:0=;tag=:a-entity=;closing=:1
