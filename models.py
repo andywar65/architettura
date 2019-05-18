@@ -169,6 +169,8 @@ class MaterialPage(Page):
                     blob['material'] = layer_color
                 elif blob['material'][0] == '#':
                     blob['material'] = f'color: {blob["material"]}; '
+                if 'side' in blob:
+                    blob['material'] += f'side: {blob["side"]};'
                 if layer[2]:
                     blob['material'] += 'wireframe: true;'
             #loop through blob items
@@ -212,7 +214,7 @@ class MaterialPage(Page):
 
             #cannot pop keys inside loop
             values = ('component', 'layer', 'repeat', 'color', 'partition',
-                'survey')
+                'survey', 'side')
             for v in values:
                 if v in blob:
                     blob.pop(v)
@@ -381,6 +383,8 @@ class DxfPage(Page):
                     blob['material'] = f'color: {blob["material"]}; '
                 else:
                     blob['material'] = layer_color
+                if 'side' in blob:
+                    blob['material'] += f'side: {blob["side"]};'
             #loop through blob items
             for key, value in blob.items():
                 if key == 'light' or key[:4] == 'line' or key == 'text':
@@ -396,7 +400,7 @@ class DxfPage(Page):
                     ent['extras'] = 'animation-mixer'
             #cannot pop keys inside loop
             values = ['component', 'layer', 'repeat', 'color', 'partition',
-                'survey']
+                'survey', 'side']
             for v in values:
                 if v in blob:
                     blob.pop(v)
@@ -687,6 +691,8 @@ class ScenePage(Page):
                     blob['material'] = layer_color
                 elif blob['material'][0] == '#':
                     blob['material'] = f'color: {blob["material"]}; '
+                if 'side' in blob and self.double_face == False:
+                    blob['material'] += f'side: {blob["side"]};'
                 if layer[2]:
                     blob['material'] += 'wireframe: true;'
             #loop through blob items
@@ -738,7 +744,7 @@ class ScenePage(Page):
                     blob['wasd-controls'] = f'fly: {str(self.fly_camera).lower()}'
             #cannot pop keys inside loop
             values = ('component', 'layer', 'repeat', 'color', 'partition',
-                'survey')
+                'survey', 'side')
             for v in values:
                 if v in blob:
                     blob.pop(v)
