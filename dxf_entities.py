@@ -951,7 +951,10 @@ def make_window(page, d):
             (d['41']/4-0.025, d['43']/2-0.075, 90, '', 0.05, d['41']/2-0.15, 'moving-1-top', 0.07, -0.01),
         )
         for v in values:
-            identity = make_window_frame(page, v, d)
+            id_blob = make_window_frame(page, v, d)
+        closing = 2
+        page.ent_dict[id_blob[0]] = id_blob[1].replace('closing=:1',
+            f'closing=:{closing}')
 
         #animated hinge 2
         xpos = round(d["41"]/2-0.05*unit(d["41"]), 4)
