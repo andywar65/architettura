@@ -55,7 +55,10 @@ def make_box(page, d):
 def make_block(page, d):
 
     d['dx'] = d['dy'] = 0
-    d['dz'] = d['43']/2
+    if d['NAME'] == 'grl' and d['PARAM2'] != 'scale':
+        d['dz'] = (unit(d['43'])*1.9054)/2
+    else:
+        d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
     d['ide'] = d['NAME']
     identity = open_entity(page, d)
