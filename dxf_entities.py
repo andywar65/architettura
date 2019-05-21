@@ -1246,18 +1246,25 @@ def make_leaves(branch, lb, d):
 
 def make_grl(page, d):
     lines = blobs.get_grl_blob().splitlines()
+    anime = blobs.get_grl_anime(d['PARAM1'])
     for line in lines:
+        pairs = line.split('=;')
+        couple = pairs[0].split('=:')
+        identity = couple[1]
+        if identity in anime:
+            line = line.replace(f'animation=:{identity}',
+                f'animation=:{anime[identity]}')
+        else:
+            line = line.replace(f'=;animation=:{identity}', '')
         line = line.replace('id=:', f'id=:{page.id}-grl-{d["num"]}-')
         material = d.get('MATERIAL', '')
         line = line.replace('material=:', f'material=:{material}')
         layer = d.get('layer', '0')
         line += f'=;layer=:{layer}'
-        pairs = line.split('=;')
-        couple = pairs[0].split('=:')
-        identity = couple[1]
+        identity = f'{page.id}-grl-{d["num"]}-' + identity
         page.ent_dict[identity] = line
-    closing = d['closing']+1
-    page.ent_dict[identity] = line.replace('closing=:1',
+    closing = d['closing']+5
+    page.ent_dict[identity] = line.replace('closing=:6',
         f'closing=:{closing}')
     return
 
