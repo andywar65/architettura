@@ -55,8 +55,8 @@ def make_box(page, d):
 def make_block(page, d):
 
     d['dx'] = d['dy'] = 0
-    if d['NAME'] == 'grl' and d['PARAM2'] != 'scale':
-        d['dz'] = (unit(d['43'])*1.9054)/2
+    if d['NAME'] == 'grl':
+        d['dz'] = (d['43']*1.9054)/2
     else:
         d['dz'] = d['43']/2
     d['tag'] = 'a-entity'
@@ -71,6 +71,9 @@ def make_block(page, d):
     elif d['NAME'] == 'obj-mtl' or d['NAME'] == 'gltf':
         make_object(page, d)
     elif d['NAME'] == 'grl':
+        if d['PARAM2'] == 'scale':
+            scale = f'=;scale=:{d["41"]} {d["43"]} {d["42"]}'
+            page.ent_dict[identity] += scale
         make_grl(page, d)
     #elif d['NAME'] == 'tree':
         #make_tree(page, d)
