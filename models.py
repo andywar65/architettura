@@ -818,16 +818,34 @@ class SceneIndexPage(Page):
     introduction = models.TextField(
         help_text='Text to describe the page',
         blank=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Landscape mode only; horizontal width between 1000px and 3000px.'
+    )
+    date_published = models.DateField(
+        "Date article published", blank=True, null=True
+        )
+    author = models.ForeignKey(User, blank=True, null=True,
+        on_delete=models.PROTECT)
 
     content_panels = Page.content_panels + [
-        FieldPanel('introduction', classname="full"),
+        MultiFieldPanel([
+            FieldPanel('introduction'),
+            ImageChooserPanel('image'),
+            FieldPanel('author'),
+            FieldPanel('date_published'),
+        ], heading="Presentation", ),
     ]
 
     # Speficies that only ScenePage objects can live under this index page
-    subpage_types = ['ScenePage']
+    subpage_types = ['ScenePage', 'SceneIndexPage']
 
     # Defines a method to access the children of the page (e.g. ScenePage
-    # objects).
+    # and SceneindexPage objects).
     def children(self):
         return self.get_children().specific().live()
 
@@ -840,6 +858,11 @@ class SceneIndexPage(Page):
             self).live().order_by(
             '-first_published_at')
         return context
+    def get_folders(self):
+        folders = SceneIndexPage.objects.descendant_of(
+            self).live().order_by(
+            '-first_published_at')
+        return folders
 
 class SurveyPage(Page):
     introduction = models.CharField(max_length=250, null=True, blank=True,
