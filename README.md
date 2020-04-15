@@ -1,6 +1,7 @@
 # architettura.APP
 
 A basic BIM as a [Django 2.1.3](https://www.djangoproject.com/) / [Wagtail 2.3](https://wagtail.io/) app that imports [CAD](https://en.wikipedia.org/wiki/AutoCAD_DXF) files and renders Virtual Reality using [A-Frame 0.9.2](https://aframe.io) library.
+The repository is archived due to a security issue in Wagtail.
 
 ### How to get DXF files
 
